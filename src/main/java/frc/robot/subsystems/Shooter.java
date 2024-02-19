@@ -48,6 +48,7 @@ import frc.robot.commands.shooter.RampShooter;
 import frc.robot.regression.ShooterInterpolator;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Intake.Direction;
+import frc.robot.subsystems.LED.LEDColor;
 import frc.team254.lib.util.InterpolatingDouble;
 
 public class Shooter extends ProfiledPIDSubsystem {
@@ -293,6 +294,10 @@ public class Shooter extends ProfiledPIDSubsystem {
         && bottomShooterAtSetpoint() 
         && pivotAtSetpoint() 
         && isShooting;
+    }
+
+    public Command shooterReadyLEDCommand() {
+        return RobotContainer.s_Led.flashUntilCommand(LEDColor.GREEN, 0.1, () -> !isReadyToShoot());
     }
 
     public void manualShooterPivot(Boolean pivotingUp) {

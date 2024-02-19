@@ -1,25 +1,43 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
+
+import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.RobotContainer;
 
 public class LED extends SubsystemBase {
 
   private AddressableLED LEDStrip;
   private AddressableLEDBuffer LEDBuffer;
-  private static int rainbowStart = 0;
+
   private double lastChange;
   private boolean isOn;
-  private static int waveIndex = 0;
-  private static final int waveLength = 25; //15
-  private static LEDColor currentColor = LEDColor.OFF;
+  private int waveIndex = 0;
+  private int rainbowStart = 0;
+  private int bounceWaveIndex = 0;
+  private int bounceWaveDirection = 1; // 1 is forward, 0 is backward
+
+  private LEDColor currentColor = LEDColor.OFF;
+
+  private static final int waveLength = 10;
+  private static final int bounceWaveLength = 7;
+
+  private int strip1Start;
+  private int strip2Start;
+  private int stripLength;
+
+  // private int port;
+  // private int length;
 
   public enum LEDColor {
     PURPLE(70, 2, 115),
@@ -52,9 +70,15 @@ public enum LEDMode {
     private LEDMode() {}
 }
 
-  public LED() {
-    LEDStrip = new AddressableLED(Constants.Led.port);
-    LEDBuffer = new AddressableLEDBuffer(Constants.Led.length);
+  public LED(int port, int length) {
+    // this.port = port;
+    // this.length = length;
+    strip1Start = 0;
+    strip2Start = length / 2;
+    stripLength = length / 2;
+
+    LEDStrip = new AddressableLED(port);
+    LEDBuffer = new AddressableLEDBuffer(length);
 
     LEDStrip.setLength(LEDBuffer.getLength());
    
@@ -88,35 +112,58 @@ public enum LEDMode {
   }
 
   public void wave(LEDColor color) {
-    if (waveIndex == 0) {
-        for (byte i = 0; i <= waveLength; i++) {
-            this.LEDBuffer.setRGB(i, color.r, color.g, color.b);
-        }
-    } else {
-        for (byte i = 0; i < this.LEDBuffer.getLength() - 2; i++) {
-            if (waveIndex > 0) this.LEDBuffer.setRGB(waveIndex - 1, 0, 0, 0);
-
-            if (waveIndex + waveLength < LEDBuffer.getLength() - 1) {
-                this.LEDBuffer.setRGB(waveIndex + waveLength, color.r, color.g, color.b);
-            } else {
-                this.LEDBuffer.setRGB(waveIndex + waveLength - (LEDBuffer.getLength() - 1), color.r, color.g, color.b);
-            }
-
-            if (waveIndex > LEDBuffer.getLength() - 1) waveIndex = -1;
-        }
+    for (int i = 0; i < stripLength; i++) {
+      if ((i >= waveIndex && i < waveIndex + waveLength)
+      || (waveIndex + waveLength > stripLength && i < (waveIndex + waveLength) % stripLength)) {
+        this.LEDBuffer.setRGB(i, color.r, color.g, color.b);
+        this.LEDBuffer.setRGB(i + strip2Start, color.r, color.g, color.b);
+      } else {
+        this.LEDBuffer.setRGB(i, 0, 0, 0);
+        this.LEDBuffer.setRGB(i + strip2Start, 0, 0, 0);
+      }
     }
-    waveIndex += 1;
+
+    waveIndex++;
+    waveIndex %= stripLength;
 
     currentColor = LEDColor.OFF;
     this.LEDStrip.setData(this.LEDBuffer);
-}
+  }
+
+  public void bounceWave(LEDColor color) {
+    for (int i = 0; i < stripLength; i++) {
+      if (i >= bounceWaveIndex && i < bounceWaveIndex + bounceWaveLength) {
+        this.LEDBuffer.setRGB(i, color.r, color.g, color.b);
+        this.LEDBuffer.setRGB(i + strip2Start, color.r, color.g, color.b);
+      } else {
+        this.LEDBuffer.setRGB(i, 0, 0, 0);
+        this.LEDBuffer.setRGB(i + strip2Start, 0, 0, 0);
+      }
+    }
+
+    if (bounceWaveIndex == 0) {
+      bounceWaveDirection = 1;
+    } else if (bounceWaveIndex == stripLength - bounceWaveLength) {
+      bounceWaveDirection = 0;
+    }
+
+    if (bounceWaveDirection == 1) {
+      bounceWaveIndex++;
+    } else {
+      bounceWaveIndex--;
+    }
+
+    currentColor = LEDColor.OFF;
+    this.LEDStrip.setData(this.LEDBuffer);
+  }
 
   public void rainbow() {
-    for (int i = 0; i < LEDBuffer.getLength(); i++) {
-      i %= LEDBuffer.getLength();
+    for (int i = 0; i < stripLength; i++) {
+      i %= stripLength;
 
-      final var hue = (rainbowStart + (i * 180 / LEDBuffer.getLength())) % 180;
-      LEDBuffer.setHSV(i, hue, 255, 128);
+      final var hue = (rainbowStart + (i * 180 / stripLength)) % 180;
+      LEDBuffer.setHSV(i, hue, 255, 128); // Strip 1
+      LEDBuffer.setHSV(i + strip2Start, hue, 255, 128); // Strip 2
     }
 
     currentColor = LEDColor.OFF;
@@ -128,6 +175,41 @@ public enum LEDMode {
 
   public LEDColor getCurrentColor() {
     return currentColor;
+  }
+
+  /* COMMAND FACTORIES */
+  public Command setColorCommand(LEDColor color) {
+    return new InstantCommand(() -> this.setColor(color));
+  }
+
+  public Command rainbowCommand() {
+    return Commands.run(this::rainbow, this);
+  }
+
+  public Command flashCommand(LEDColor color, double interval, int time) {
+    // return Commands.run(() -> this.pulse(color, interval));
+    return new ParallelDeadlineGroup(
+      new WaitCommand(time),
+      Commands.run(() -> this.pulse(color, interval))
+    );
+  }
+
+  public Command flashUntilCommand(LEDColor color, double interval, BooleanSupplier condition) {
+    // return Commands.run(() -> this.pulse(color, interval));
+    return new ParallelDeadlineGroup(
+      new WaitUntilCommand(condition),
+      Commands.run(() -> this.pulse(color, interval))
+    );
+  }
+
+  
+
+  public Command waveCommand(LEDColor color) {
+    return Commands.run(() -> this.wave(color), this);
+  }
+
+  public Command bounceWaveCommand(LEDColor color) {
+    return Commands.run(() -> this.bounceWave(color), this);
   }
 
   public void stop() {

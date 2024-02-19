@@ -100,12 +100,12 @@ public class Swerve extends SubsystemBase {
 
         field = new Field2d();
         odometryImpl = new OdometryImpl(this);
-        limelightFront = new Limelight(Constants.LimelightConstants.limelightFront);
-        limelightBack = new Limelight(Constants.LimelightConstants.limelightBack);
-        limelightChooser = new SendableChooser<>();
-        limelightChooser.setDefaultOption("None", null);
-        limelightChooser.addOption(limelightFront.getLimelightName(), limelightFront);
-        limelightChooser.addOption(limelightBack.getLimelightName(), limelightBack);
+        // limelightFront = new Limelight(Constants.LimelightConstants.limelightFront);
+        // limelightBack = new Limelight(Constants.LimelightConstants.limelightBack);
+        // limelightChooser = new SendableChooser<>();
+        // limelightChooser.setDefaultOption("None", null);
+        // limelightChooser.addOption(limelightFront.getLimelightName(), limelightFront);
+        // limelightChooser.addOption(limelightBack.getLimelightName(), limelightBack);
 
 
 
@@ -316,20 +316,20 @@ public class Swerve extends SubsystemBase {
         poseEstimator.update(getGyroYaw(), getModulePositions());
 
         // limelight and odometry classes are written so that adding additional limelights is easy 
-        limelightFront.setPipeline(LimelightConstants.limelightFrontTagPipeline);
-        limelightBack.setPipeline(LimelightConstants.limelightBackTagPipeline);
+        // limelightFront.setPipeline(LimelightConstants.limelightFrontTagPipeline);
+        // limelightBack.setPipeline(LimelightConstants.limelightBackTagPipeline);
 
-        Pose2d visionMeasurementLimelightFront = odometryImpl.getVisionMeasurementWithoutYaw(limelightFront); //changed from without yaw
-        if (visionMeasurementLimelightFront != null) {
-            poseEstimator.addVisionMeasurement(visionMeasurementLimelightFront, limelightFront.getLimelightLatency());
-        }
+        // Pose2d visionMeasurementLimelightFront = odometryImpl.getVisionMeasurementWithoutYaw(limelightFront); //changed from without yaw
+        // if (visionMeasurementLimelightFront != null) {
+        //     poseEstimator.addVisionMeasurement(visionMeasurementLimelightFront, limelightFront.getLimelightLatency());
+        // }
 
 
-        //newly added limelight automatically configured for odometry impl
-        Pose2d visionMeasurementLimelightBack = odometryImpl.getVisionMeasurementWithoutYaw(limelightBack); //changed from without yaw
-        if (visionMeasurementLimelightBack != null) {
-            poseEstimator.addVisionMeasurement(visionMeasurementLimelightBack, limelightBack.getLimelightLatency());
-        }
+        // //newly added limelight automatically configured for odometry impl
+        // Pose2d visionMeasurementLimelightBack = odometryImpl.getVisionMeasurementWithoutYaw(limelightBack); //changed from without yaw
+        // if (visionMeasurementLimelightBack != null) {
+        //     poseEstimator.addVisionMeasurement(visionMeasurementLimelightBack, limelightBack.getLimelightLatency());
+        // }
         
         
         field.setRobotPose(getPose());
@@ -346,7 +346,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("swerve/distance", odometryImpl.getDistance(Constants.BlueTeamPoses.blueSpeakerPose)); 
 
         SmartDashboard.putData("field", field);
-        SmartDashboard.putData("limelightChooser", limelightChooser);
+        // SmartDashboard.putData("limelightChooser", limelightChooser);
 
         
     }

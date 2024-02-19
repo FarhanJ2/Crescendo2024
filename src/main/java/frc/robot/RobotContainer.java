@@ -41,6 +41,7 @@ import frc.robot.commands.shooter.RampSpeaker;
 import frc.robot.commands.swerve.RotateToAngle;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.LED.LEDColor;
 import frc.robot.subsystems.LED.LEDMode;
 
 
@@ -129,7 +130,7 @@ public class RobotContainer {
     public static final Shooter s_Shooter = new Shooter();
     public static final Feeder s_Feeder = new Feeder();
     public static final Elevator s_Elevator = new Elevator();
-    public static final LED s_Led = new LED();
+    public static final LED s_Led = new LED(Constants.Led.port, Constants.Led.length);
 
     public static NoteStatus noteStatus = NoteStatus.NONE;
 
@@ -147,17 +148,14 @@ public class RobotContainer {
             )
         );
 
-        s_Shooter.setDefaultCommand(
-            new HomeCommand(
-                s_Shooter
-            )
-        );
+        // s_Shooter.setDefaultCommand(
+        //     new HomeCommand(
+        //         s_Shooter
+        //     )
+        // );
 
         s_Led.setDefaultCommand(
-            new LedCommand(
-                DriverStation.getAlliance().get() == Alliance.Blue ? LED.LEDColor.BLUE : LED.LEDColor.RED, 
-                LEDMode.WAVE
-            )
+            s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
         );
 
         // NamedCommands.registerCommand("ramp", new RampShooter(1000, 1000, 0.13));
@@ -165,7 +163,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("shoot", 
             new ParallelDeadlineGroup(
                 new WaitCommand(1.6),
-                new RampShooter(1000, 1000, 0.13),
+                new RampSpeaker(),
                 new SequentialCommandGroup(
                     new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
                     new InstantCommand(() -> System.out.println("READY TO SHOOT")),
@@ -234,6 +232,16 @@ public class RobotContainer {
         armManual = OperatorLock.LOCKED;
         shooterManual = OperatorLock.LOCKED;
         elevatorManual = OperatorLock.LOCKED;
+    }
+
+    private void configureLEDBindings() {
+
+        //Ready To Shoot
+        new Trigger(
+            () -> s_Shooter.isReadyToShoot()
+        ).onTrue(
+            s_Shooter.shooterReadyLEDCommand()
+        );
     }
 
     private void configureEndGameButtonBindings() {
@@ -418,11 +426,11 @@ public class RobotContainer {
                                 // System.out.println("LOCKED");
                                 s_Shooter.enable();
                                 s_Shooter.getDefaultCommand().cancel();
-                                s_Shooter.setDefaultCommand(
-                                    new HomeCommand(
-                                        s_Shooter
-                                    )
-                                );
+                                // s_Shooter.setDefaultCommand(
+                                //     new HomeCommand(
+                                //         s_Shooter
+                                //     )
+                                // );
                             }
                         }
                     )
