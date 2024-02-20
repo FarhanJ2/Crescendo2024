@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.sql.Driver;
+
 import com.fasterxml.jackson.core.sym.Name;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -136,7 +138,23 @@ public class RobotContainer {
 
     /* The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        alliance = DriverStation.getAlliance().get();
+
+        new Thread(() -> {
+            while(!DriverStation.waitForDsConnection(0)) {
+                DriverStation.reportWarning("SHET UP", false);
+            }
+            DriverStation.reportWarning("ME SHET UP???", false);
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {}
+            
+            alliance = DriverStation.getAlliance().get();
+        }).start();
+
+        // DriverStation.silenceJoystickConnectionWarning(true);
+
+        
+
 
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -180,6 +198,7 @@ public class RobotContainer {
         configureAbsoluteButtonBindings();
         configureNormalModeButtonBindings();
         configureEndGameButtonBindings();
+        configureSysIdButtonBindings();
     }
 
     private void configureAbsoluteButtonBindings() {
@@ -226,6 +245,7 @@ public class RobotContainer {
                     }
                 })
             );
+
     }
 
     private void lockManualControls() {
@@ -242,6 +262,28 @@ public class RobotContainer {
         ).onTrue(
             s_Shooter.shooterReadyLEDCommand()
         );
+    }
+
+    private void configureSysIdButtonBindings() {
+        sysidY  
+            .whileTrue(
+                s_Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+            );
+            
+        sysidA  
+            .whileTrue(
+                s_Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+            );
+        
+        sysidB  
+            .whileTrue(
+                s_Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward)
+            );
+
+        sysidX  
+            .whileTrue(
+                s_Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+            );
     }
 
     private void configureEndGameButtonBindings() {

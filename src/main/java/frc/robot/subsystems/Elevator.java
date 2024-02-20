@@ -157,6 +157,6 @@ public class Elevator extends ProfiledPIDSubsystem {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("elevator/cancoder", getCANCoder());
+        SmartDashboard.putNumber("elevator/cancoder", getCANCoder()); // 36 max top
     }
 }

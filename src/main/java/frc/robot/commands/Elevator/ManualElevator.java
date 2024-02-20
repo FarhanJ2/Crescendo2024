@@ -26,6 +26,11 @@ public class ManualElevator extends Command {
     if(this.isUp.get() != null) {
       RobotContainer.s_Elevator.moveElevator(this.isUp.get());  
     }
+    else {
+      RobotContainer.s_Elevator.stopElevator();
+    }
+
+  
   }
 
   @Override

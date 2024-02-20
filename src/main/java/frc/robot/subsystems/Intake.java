@@ -55,7 +55,7 @@ public class Intake extends SubsystemBase {
         m_intakeMotor.setInverted(false);
         m_forkMotor.setInverted(true);
 
-        m_intakeMotor.setNeutralMode(NeutralModeValue.Brake);
+        m_intakeMotor.setNeutralMode(NeutralModeValue.Coast);
         m_forkMotor.setNeutralMode(NeutralModeValue.Coast);
     }
 

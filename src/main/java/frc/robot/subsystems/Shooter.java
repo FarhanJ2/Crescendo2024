@@ -67,31 +67,31 @@ public class Shooter extends ProfiledPIDSubsystem {
     // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
     private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
 
-    // Create a new SysId routine for characterizing the shooter.
-//   private final SysIdRoutine m_sysIdRoutine =
-//       new SysIdRoutine(
-//           // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
-//           new SysIdRoutine.Config(),
-//           new SysIdRoutine.Mechanism(
-//               // Tell SysId how to plumb the driving voltage to the motor(s).
-//               (Measure<Voltage> volts) -> {
-//                 m_shooterTopMotor.setVoltage(volts.in(Volts));
-//               },
-//               // Tell SysId how to record a frame of data for each motor on the mechanism being
-//               // characterized.
-//               log -> {
-//                 // Record a frame for the shooter motor.
-//                 log.motor("top-shooter")
-//                     .voltage(
-//                         m_appliedVoltage.mut_replace(
-//                             m_shooterTopMotor.get() * RobotController.getBatteryVoltage(), Volts))
-//                     .angularPosition(m_angle.mut_replace(m_shooterTopMotor.getPosition().getValue(), Rotations))
-//                     .angularVelocity(
-//                         m_velocity.mut_replace(getShooterTopRPM(), RotationsPerSecond));
-//               },
-//               // Tell SysId to make generated commands require this subsystem, suffix test state in
-//               // WPILog with this subsystem's name ("shooter")
-//               this));
+    //Create a new SysId routine for characterizing the shooter.
+    private final SysIdRoutine m_sysIdRoutine =
+      new SysIdRoutine(
+          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+          new SysIdRoutine.Config(),
+          new SysIdRoutine.Mechanism(
+              // Tell SysId how to plumb the driving voltage to the motor(s).
+              (Measure<Voltage> volts) -> {
+                m_shooterTopMotor.setVoltage(volts.in(Volts));
+              },
+              // Tell SysId how to record a frame of data for each motor on the mechanism being
+              // characterized.
+              log -> {
+                // Record a frame for the shooter motor.
+                log.motor("top-shooter")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(
+                            m_shooterTopMotor.get() * RobotController.getBatteryVoltage(), Volts))
+                    .angularPosition(m_angle.mut_replace(m_shooterTopMotor.getPosition().getValue(), Rotations))
+                    .angularVelocity(
+                        m_velocity.mut_replace(m_shooterTopMotor.getVelocity().getValue(), RotationsPerSecond));
+              },
+              // Tell SysId to make generated commands require this subsystem, suffix test state in
+              // WPILog with this subsystem's name ("shooter")
+              this));
 
     private final PIDController bottomShooterPIDController = 
         new PIDController(
@@ -353,18 +353,18 @@ public class Shooter extends ProfiledPIDSubsystem {
      *
      * @param direction The direction (forward or reverse) to run the test in
      */
-    // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    //     return m_sysIdRoutine.quasistatic(direction);
-    // }
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.quasistatic(direction);
+    }
 
     /**
      * Returns a command that will execute a dynamic test in the given direction.
      *
      * @param direction The direction (forward or reverse) to run the test in
      */
-    // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    //     return m_sysIdRoutine.dynamic(direction);
-    // }
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.dynamic(direction);
+    }
 
     @Override
     public void periodic() {
