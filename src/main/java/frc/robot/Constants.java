@@ -230,11 +230,11 @@ public final class Constants {
         public static final double kI = 0;
         public static final double kD = 0;
 
-        public static final double kMaxVelocityRadPerSecond = 1;
-        public static final double kMaxAccelerationRadPerSecSquared = 1;
+        public static final double kMaxVelocityPerSecond = 1;
+        public static final double kMaxAccelerationPerSecSquared = 1;
 
         //TODO tune
-        public static final double tolerance = 0;
+        public static final double tolerance = 0.05;
 
         public static final double climbRotations = 5;
         public static final double ampRotations = 2;

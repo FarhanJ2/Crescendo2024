@@ -58,20 +58,16 @@ public class Elevator extends ProfiledPIDSubsystem {
                 Constants.Elevator.kI,
                 Constants.Elevator.kD,
                 new TrapezoidProfile.Constraints(
-                    Constants.Elevator.kMaxVelocityRadPerSecond,
-                    Constants.Elevator.kMaxAccelerationRadPerSecSquared)),
+                    Constants.Elevator.kMaxVelocityPerSecond,
+                    Constants.Elevator.kMaxAccelerationPerSecSquared)),
             0);
 
         getController().setTolerance(Constants.Elevator.tolerance);
 
-        // initialRotations = getEncoderRotations();
+        initialRotations = getEncoderRotations();
         
         configureMotors();
     }
-
-    // public double getEncoderRotations() {
-    //     return (m_cancoder.getPosition().getValue() - initialRotations) / 360;
-    // }
 
     // TODO get what limit is when it's pressed (true or false)
     // public boolean upperLimitPressed() {
@@ -111,9 +107,13 @@ public class Elevator extends ProfiledPIDSubsystem {
         return new InstantCommand(() -> setGoal(Level.TRAP.getRotations()));
     }
 
-    public double getCANCoder() {
-        return m_cancoder.getAbsolutePosition().getValueAsDouble() * 360;
+    public double getEncoderRotations() {
+        return (m_cancoder.getPosition().getValue() - initialRotations) / 360;
     }
+
+    // public double getCANCoder() {
+    //     return m_cancoder.getAbsolutePosition().getValueAsDouble() * 360;
+    // }
 
     // public void moveElevator() {
     //     m_motorOne.setVoltage(getMeasurement());
@@ -127,6 +127,10 @@ public class Elevator extends ProfiledPIDSubsystem {
         }
         m_leftMotor.set(speed);
         m_rightMotor.set(speed);
+    }
+
+    private void zeroCancoder() {
+        m_cancoder.setPosition(0);
     }
 
     public void stopElevator() {
@@ -151,12 +155,17 @@ public class Elevator extends ProfiledPIDSubsystem {
 
     @Override
     public double getMeasurement() {
-        // return getEncoderRotations();
-        return 0;
+        return getEncoderRotations();
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("elevator/cancoder", getCANCoder()); // 36 max top
+
+        if (m_enabled) {
+            useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
+        }
+
+        // SmartDashboard.putNumber("elevator/cancoder", getCANCoder()); // 36 max top
+        SmartDashboard.putNumber("elevator/cancoder", getEncoderRotations());
     }
 }
