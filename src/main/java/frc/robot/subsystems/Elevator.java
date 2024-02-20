@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -39,7 +40,7 @@ public class Elevator extends ProfiledPIDSubsystem {
     // private final DigitalInput m_upperLimitSwitch = new DigitalInput(Constants.Elevator.limitSwitchUpperChannel);
     // private final DigitalInput m_lowerLimitSwitch = new DigitalInput(Constants.Elevator.limitSwitchLowerChannel);
 
-    // private final CANcoder m_cancoder = new CANcoder(Constants.Elevator.canCoderID);
+    private final CANcoder m_cancoder = new CANcoder(Constants.Elevator.canCoderID);
 
     private double initialRotations;
 
@@ -110,6 +111,9 @@ public class Elevator extends ProfiledPIDSubsystem {
         return new InstantCommand(() -> setGoal(Level.TRAP.getRotations()));
     }
 
+    public double getCANCoder() {
+        return m_cancoder.getAbsolutePosition().getValueAsDouble() * 360;
+    }
 
     // public void moveElevator() {
     //     m_motorOne.setVoltage(getMeasurement());
@@ -149,5 +153,10 @@ public class Elevator extends ProfiledPIDSubsystem {
     public double getMeasurement() {
         // return getEncoderRotations();
         return 0;
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("elevator/cancoder", getCANCoder());
     }
 }

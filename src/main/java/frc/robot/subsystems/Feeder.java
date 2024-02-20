@@ -20,7 +20,7 @@ public class Feeder extends SubsystemBase {
     }
 
     public void feed() {
-        m_feederMotor.set(-Constants.Shooter.feedSpeed);
+        m_feederMotor.set(Constants.Shooter.feedSpeed);
     }
 
     public void stopFeed() {
@@ -28,7 +28,7 @@ public class Feeder extends SubsystemBase {
     }
 
     private void configureMotors() {
-        m_feederMotor.setInverted(true);
+        m_feederMotor.setInverted(false);
 
         m_feederMotor.setNeutralMode(NeutralModeValue.Coast);
     }

@@ -26,11 +26,8 @@ public class ManualArmPivot extends Command {
   public void execute() {
     // System.out.println(pivotingUp.get());
   
-    if(this.pivotingUp.get() != null) {
       RobotContainer.s_AmpArm.manualArmPivot(this.pivotingUp.get());
-    } else {
-      RobotContainer.s_AmpArm.stopArm();
-    }
+
   }
 
   @Override

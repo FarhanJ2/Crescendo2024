@@ -43,5 +43,6 @@ public class RampShooter extends Command {
     @Override
     public void end(boolean interrupted) {
         RobotContainer.s_Shooter.stopShooter();
+        //TODO Remove for Home Command
     }
 }

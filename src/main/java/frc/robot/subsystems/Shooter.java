@@ -142,6 +142,8 @@ public class Shooter extends ProfiledPIDSubsystem {
         topShooterPIDController.setTolerance(Constants.Shooter.shooterTolerance);
         bottomShooterPIDController.setTolerance(Constants.Shooter.shooterTolerance);
 
+        m_pivotMotor.setInverted(true);
+
         // isReadyToShoot = false;
 
         configureNeutralMode();
@@ -150,7 +152,7 @@ public class Shooter extends ProfiledPIDSubsystem {
     }
 
     public void goHome() {
-        setGoal(0.1);
+        setGoal(0.6);
     }
 
     public void rampShooter(double topRPM, double bottomRPM) {
@@ -214,6 +216,11 @@ public class Shooter extends ProfiledPIDSubsystem {
     public boolean topShooterAtSetpoint() {
         return topShooterPIDController.atSetpoint();
     }
+
+    public double getCANCoder() {
+        return m_cancoder.getAbsolutePosition().getValueAsDouble() * 360 - 90;
+    }
+
     
     // Just for shooter pivot
     @Override
@@ -227,8 +234,10 @@ public class Shooter extends ProfiledPIDSubsystem {
         setGoal(goal);
     }
 
+    @Override
     public double getMeasurement() {
-        return getPivotRadians();
+        return getCANCoder() * Math.PI / 180;
+        // return getPivotRadians();
     }
 
     public Command readyShootCommand(Supplier<Double> distanceSupplier/* , Supplier<Boolean> feed*/) {
@@ -302,15 +311,15 @@ public class Shooter extends ProfiledPIDSubsystem {
 
     public void manualShooterPivot(Boolean pivotingUp) {
         double speed = Constants.Shooter.manualShooterPivotSpeed;
-        double voltage = 0.4;
+        double voltage = 0.22;
         if(pivotingUp == null) {
             m_pivotMotor.setVoltage(voltage);
         }
         else {
             if(!pivotingUp) {
-                voltage -= 0.2;
+                voltage -= voltage / 2;
             } else {
-                voltage += 0.2;
+                voltage += voltage / 2;
             }
             m_pivotMotor.setVoltage(voltage);
         }
@@ -360,11 +369,14 @@ public class Shooter extends ProfiledPIDSubsystem {
     @Override
     public void periodic() {
 
+        SmartDashboard.putNumber("shooter/pivot cancoder radians", getMeasurement());
+        SmartDashboard.putNumber("shooter/pivot cancoder", getCANCoder());
         if(isReadyToShoot()) System.out.println("shooter is ready");
         // m_shooterTopMotor.set(1);
         // m_shooterBottomMotor.set(1);
 
         if (m_enabled) {
+            // this.disable();
             useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
             // System.out.println(m_controller.getSetpoint().position);
         } else {

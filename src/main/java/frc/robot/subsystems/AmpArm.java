@@ -44,9 +44,10 @@ public class AmpArm extends ProfiledPIDSubsystem {
     private final TalonFX m_pivotMotor = new TalonFX(Constants.AmpArm.pivotMotorID);
     private final TalonFX m_shootMotor = new TalonFX(Constants.AmpArm.shootMotorID);
 
+
     // private final DigitalInput m_limitSwitch = new DigitalInput(Constants.AmpArm.limitSwitchChannel);
 
-    // private final CANcoder m_cancoder = new CANcoder(Constants.AmpArm.canCoderID);
+    private final CANcoder m_cancoder = new CANcoder(Constants.AmpArm.canCoderID);
 
     private final ArmFeedforward m_feedforward =
       new ArmFeedforward(
@@ -99,18 +100,29 @@ public class AmpArm extends ProfiledPIDSubsystem {
         });
     }
 
+    public double getCANCoder() {
+        return m_cancoder.getAbsolutePosition().getValueAsDouble() * 360;
+    }
+
     @Override
     protected void useOutput(double output, TrapezoidProfile.State setpoint) {
         double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
         m_pivotMotor.setVoltage(output + feedforward);
     }
 
-    public void manualArmPivot(boolean pivotingUp) {
-        double speed = Constants.AmpArm.manualArmPivotSpeed;
-        if(!pivotingUp) {
-            speed = -speed;
+    public void manualArmPivot(Boolean pivotingUp) {
+        double voltage = 0.1;
+        if(pivotingUp == null) {
+            m_pivotMotor.setVoltage(voltage);
         }
-        m_pivotMotor.set(speed);
+        else {
+            if(!pivotingUp) {
+                voltage -= voltage / 2;
+            } else {
+                voltage += voltage / 2;
+            }
+            m_pivotMotor.setVoltage(voltage);
+        }
     }
 
     public void stopArm() {
@@ -173,6 +185,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
         //0.195 for w/o note; 0.22 for w/ note
         // m_pivotMotor.setVoltage(0.195); // stowing voltage TODO: make sure to include w/ vs w/o note
         if (m_enabled) {
+            this.disable();
             useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
             // System.out.println(m_controller.getSetpoint().position);
         }
@@ -183,5 +196,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
         SmartDashboard.putNumber("arm/rotations", m_pivotMotor.getPosition().getValueAsDouble());
         SmartDashboard.putNumber("arm/degrees", getPivotDegrees());
         SmartDashboard.putNumber("arm/radians", getMeasurement());
+
+        SmartDashboard.putNumber("arm/cancoder", getCANCoder());
     }
 }

@@ -274,7 +274,14 @@ public class Swerve extends SubsystemBase {
     }
 
     public void zeroHeading(){
-        poseEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
+        Pose2d zeroPose;
+        if(RobotContainer.alliance == DriverStation.Alliance.Blue) {
+            zeroPose = new Pose2d(getPose().getTranslation(), new Rotation2d());
+        }
+        else {
+            zeroPose = new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), Rotation2d.fromDegrees(180));
+        }
+        poseEstimator.resetPosition(getGyroYaw(), getModulePositions(), zeroPose);    
     }
 
     public Rotation2d getGyroYaw() {

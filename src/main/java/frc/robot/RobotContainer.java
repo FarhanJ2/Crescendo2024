@@ -148,11 +148,11 @@ public class RobotContainer {
             )
         );
 
-        // s_Shooter.setDefaultCommand(
-        //     new HomeCommand(
-        //         s_Shooter
-        //     )
-        // );
+        s_Shooter.setDefaultCommand(
+            new HomeCommand(
+                s_Shooter
+            )
+        );
 
         s_Led.setDefaultCommand(
             s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
@@ -426,11 +426,11 @@ public class RobotContainer {
                                 // System.out.println("LOCKED");
                                 s_Shooter.enable();
                                 s_Shooter.getDefaultCommand().cancel();
-                                // s_Shooter.setDefaultCommand(
-                                //     new HomeCommand(
-                                //         s_Shooter
-                                //     )
-                                // );
+                                s_Shooter.setDefaultCommand(
+                                    new HomeCommand(
+                                        s_Shooter
+                                    )
+                                );
                             }
                         }
                     )
@@ -461,7 +461,6 @@ public class RobotContainer {
                                 // System.out.println("LOCKED");
                                 // s_A%mpArm.enable();
                                 s_AmpArm.removeDefaultCommand();
-                                s_AmpArm.getDefaultCommand().cancel();
                             }
                         }
                     )

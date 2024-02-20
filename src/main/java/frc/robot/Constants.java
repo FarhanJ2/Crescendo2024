@@ -157,9 +157,9 @@ public final class Constants {
         public static final double forkVoltage = 7;
 
         // Manual Values
-        public static final double intakeSpeed = 0.6; // 1
-        public static final double forkSpeed = 0.41;
-        public static final double intakeFeedSpeed = 0.4; // for arm and shooter
+        public static final double intakeSpeed = 1; // 1
+        public static final double forkSpeed = 1;
+        public static final double intakeFeedSpeed = 1; // for arm and shooter
     }
 
     public static final class Shooter {
@@ -172,13 +172,13 @@ public final class Constants {
 
         public static final int canCoderID = 19;
 
-        public static final double pivotkS = 0.1;
-        public static final double pivotkG = 0;
-        public static final double pivotkV = 0;
+        public static final double pivotkS = 0.02;
+        public static final double pivotkG = 0.23;
+        public static final double pivotkV = 1.2;
 
-        public static final double pivotkP = 10;
-        public static final double pivotkI = 1;
-        public static final double pivotkD = 0.5;
+        public static final double pivotkP = 4; //10
+        public static final double pivotkI = 0; //1
+        public static final double pivotkD = 0; //0.5
 
         public static final double topShooterkS = 0.18;
         public static final double topShooterkV = 0.002; 
@@ -252,9 +252,9 @@ public final class Constants {
 
         public static final int limitSwitchChannel = 0;
         
-        public static final double pivotkS = 0.14; // 0.14
-        public static final double pivotkG = 0.2; // 0.2
-        public static final double pivotkV = 1.7; // 0.3
+        public static final double pivotkS = 0.1; // 0.14
+        public static final double pivotkG = 0; // 0.2
+        public static final double pivotkV = 0; // 1.7 // 0.3
 
         public static final double pivotkP = 3; // 10
         public static final double pivotkI = 0;
@@ -343,11 +343,11 @@ public final class Constants {
     }
 
     public static final class ShootingConstants {
-      public static final double podiumRPM = 1900;
-      public static final double podiumAngle = 0.15;
+      public static final double podiumRPM = 5000;
+      public static final double podiumAngle = 0.7;
 
-      public static final double speakerRPM = 1500;
-      public static final double speakerAngle = 0.6;
+      public static final double speakerRPM = 5000;
+      public static final double speakerAngle = 1.05;
       public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
       
   }
