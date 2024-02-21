@@ -64,6 +64,19 @@ public class RobotContainer {
         UNLOCKED,
         LOCKED,
     }
+   
+    private final Thread allianceGetter = new Thread(() -> {
+        while(!DriverStation.waitForDsConnection(0)) {
+            DriverStation.reportWarning("SHET UP", false);
+        }
+        DriverStation.reportWarning("ME SHET UP???", false);
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {}
+        
+        alliance = DriverStation.getAlliance().get();
+        s_Swerve.poseEstimatorInitializer.start();
+    });
 
     public static DriverStation.Alliance alliance;
 
@@ -125,6 +138,7 @@ public class RobotContainer {
     
     private final Trigger isNormalMode = new Trigger(() -> operatorMode == OperatorMode.NORMAL_MODE);
 
+    
     /* Subsystems */
     public static final Swerve s_Swerve = new Swerve();
     public static final AmpArm s_AmpArm = new AmpArm();
@@ -133,28 +147,15 @@ public class RobotContainer {
     public static final Feeder s_Feeder = new Feeder();
     public static final Elevator s_Elevator = new Elevator();
     public static final LED s_Led = new LED(Constants.Led.port, Constants.Led.length);
+    
 
     public static NoteStatus noteStatus = NoteStatus.NONE;
 
     /* The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-
-        new Thread(() -> {
-            while(!DriverStation.waitForDsConnection(0)) {
-                DriverStation.reportWarning("SHET UP", false);
-            }
-            DriverStation.reportWarning("ME SHET UP???", false);
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {}
-            
-            alliance = DriverStation.getAlliance().get();
-        }).start();
+        allianceGetter.start();
 
         // DriverStation.silenceJoystickConnectionWarning(true);
-
-        
-
 
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -172,6 +173,7 @@ public class RobotContainer {
             )
         );
 
+        //TODO CHECK IF IT WORKS
         s_Led.setDefaultCommand(
             s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
         );

@@ -85,6 +85,30 @@ public class Swerve extends SubsystemBase {
     private final Measure<Velocity<Voltage>> m_desiredRampRate = Velocity.combine(Volts, Second).of(1);
     private final Measure<Voltage> m_desiredStepVoltage = Volts.of(5);
 
+    public final Thread poseEstimatorInitializer = new Thread(() -> {
+        if (RobotContainer.alliance == DriverStation.Alliance.Blue) {
+            poseEstimator = new SwerveDrivePoseEstimator(
+            Constants.Swerve.swerveKinematics,
+            getGyroYaw(),
+            getModulePositions(),
+            Constants.BlueTeamPoses.blueOrigin,
+            odometryImpl.createStdDevs(PoseConfig.kPositionStdDevX, PoseConfig.kPositionStdDevY, PoseConfig.kPositionStdDevTheta),
+            odometryImpl.createStdDevs(PoseConfig.kVisionStdDevX, PoseConfig.kVisionStdDevY, PoseConfig.kVisionStdDevTheta)
+            );
+        }
+
+        else {
+            poseEstimator = new SwerveDrivePoseEstimator(
+            Constants.Swerve.swerveKinematics,
+            getGyroYaw(),
+            getModulePositions(),
+            Constants.RedTeamPoses.redOrigin,
+            odometryImpl.createStdDevs(PoseConfig.kPositionStdDevX, PoseConfig.kPositionStdDevY, PoseConfig.kPositionStdDevTheta),
+            odometryImpl.createStdDevs(PoseConfig.kVisionStdDevX, PoseConfig.kVisionStdDevY, PoseConfig.kVisionStdDevTheta)
+            );
+        }
+    });
+
     
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
@@ -109,28 +133,7 @@ public class Swerve extends SubsystemBase {
 
 
         //TODO FIXXXXXXXXXX plz
-        if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-            poseEstimator = new SwerveDrivePoseEstimator(
-            Constants.Swerve.swerveKinematics,
-            getGyroYaw(),
-            getModulePositions(),
-            Constants.BlueTeamPoses.blueOrigin,
-            odometryImpl.createStdDevs(PoseConfig.kPositionStdDevX, PoseConfig.kPositionStdDevY, PoseConfig.kPositionStdDevTheta),
-            odometryImpl.createStdDevs(PoseConfig.kVisionStdDevX, PoseConfig.kVisionStdDevY, PoseConfig.kVisionStdDevTheta)
-            );
-        }
-
-        else {
-            poseEstimator = new SwerveDrivePoseEstimator(
-            Constants.Swerve.swerveKinematics,
-            getGyroYaw(),
-            getModulePositions(),
-            Constants.RedTeamPoses.redOrigin,
-            odometryImpl.createStdDevs(PoseConfig.kPositionStdDevX, PoseConfig.kPositionStdDevY, PoseConfig.kPositionStdDevTheta),
-            odometryImpl.createStdDevs(PoseConfig.kVisionStdDevX, PoseConfig.kVisionStdDevY, PoseConfig.kVisionStdDevTheta)
-            );
-        }
-
+        
         m_frontLeftMotor = mSwerveMods[0].getDriveMotor();
         m_frontRightMotor = mSwerveMods[1].getDriveMotor();
         m_backLeftMotor = mSwerveMods[2].getDriveMotor();

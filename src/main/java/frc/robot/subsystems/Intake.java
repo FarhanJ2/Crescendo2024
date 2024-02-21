@@ -41,7 +41,8 @@ public class Intake extends SubsystemBase {
         if (direction == Direction.TO_SHOOTER) {
             m_forkMotor.set(Constants.Intake.forkSpeed);
             m_intakeMotor.set(-Constants.Intake.intakeFeedSpeed);
-        } else if (direction == Direction.TO_AMP_ARM) {
+        } 
+        else if (direction == Direction.TO_AMP_ARM) {
             m_forkMotor.set(-Constants.Intake.forkSpeed / 3.5);
             m_intakeMotor.set(-Constants.Intake.intakeFeedSpeed / 3.5);
         }
