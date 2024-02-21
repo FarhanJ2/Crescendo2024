@@ -9,11 +9,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.RobotContainer;
 
 public class LED extends SubsystemBase {
 
@@ -25,19 +23,18 @@ public class LED extends SubsystemBase {
   private int waveIndex = 0;
   private int rainbowStart = 0;
   private int bounceWaveIndex = 0;
-  private int bounceWaveDirection = 1; // 1 is forward, 0 is backward
+  private BounceWaveDirection bounceWaveDirection = BounceWaveDirection.FORWARD;
 
   private LEDColor currentColor = LEDColor.OFF;
 
   private static final int waveLength = 10;
   private static final int bounceWaveLength = 7;
 
-  private int strip1Start;
+  private double fadeMultiplier = 0;
+  private FadeDirection fadeDirection = FadeDirection.IN;
+
   private int strip2Start;
   private int stripLength;
-
-  // private int port;
-  // private int length;
 
   public enum LEDColor {
     PURPLE(70, 2, 115),
@@ -59,21 +56,26 @@ public class LED extends SubsystemBase {
         this.g = g;
         this.b = b;
     }
-}
+  }
 
-public enum LEDMode {
+  public enum LEDMode {
     STATIC,
     WAVE,
     RAINBOW,
     PULSE;
+  }
 
-    private LEDMode() {}
-}
+  public enum FadeDirection {
+    IN,
+    OUT;
+  }
+
+  public enum BounceWaveDirection {
+    FORWARD,
+    BACKWARD;
+  }
 
   public LED(int port, int length) {
-    // this.port = port;
-    // this.length = length;
-    strip1Start = 0;
     strip2Start = length / 2;
     stripLength = length / 2;
 
@@ -142,12 +144,12 @@ public enum LEDMode {
     }
 
     if (bounceWaveIndex == 0) {
-      bounceWaveDirection = 1;
+      bounceWaveDirection = BounceWaveDirection.FORWARD;
     } else if (bounceWaveIndex == stripLength - bounceWaveLength) {
-      bounceWaveDirection = 0;
+      bounceWaveDirection = BounceWaveDirection.BACKWARD;
     }
 
-    if (bounceWaveDirection == 1) {
+    if (bounceWaveDirection == BounceWaveDirection.FORWARD) {
       bounceWaveIndex++;
     } else {
       bounceWaveIndex--;
@@ -169,15 +171,39 @@ public enum LEDMode {
     currentColor = LEDColor.OFF;
     LEDStrip.setData(LEDBuffer);
 
-    rainbowStart += 3;
+    rainbowStart += 1;
     rainbowStart %= 180;
+  }
+
+  public void fade(LEDColor color) {
+    for(int i = 0; i < LEDBuffer.getLength(); i++){
+      LEDBuffer.setRGB(i, (int) (color.r * fadeMultiplier), (int) (color.g * fadeMultiplier), (int) (color.b * fadeMultiplier));
+    }
+
+    if (fadeMultiplier <= 0.02) {
+      fadeDirection = FadeDirection.IN;
+    } else if (fadeMultiplier >= 0.98) {
+      fadeDirection = FadeDirection.OUT;
+    }
+
+    if (fadeDirection == FadeDirection.IN) {
+      fadeMultiplier += 0.02;
+    } else if (fadeDirection == FadeDirection.OUT) {
+      fadeMultiplier -= 0.02;
+    }
+
+    currentColor = color;
+    LEDStrip.setData(LEDBuffer);
   }
 
   public LEDColor getCurrentColor() {
     return currentColor;
   }
 
+  ///////////////////////
   /* COMMAND FACTORIES */
+  ///////////////////////
+
   public Command setColorCommand(LEDColor color) {
     return new InstantCommand(() -> this.setColor(color));
   }
@@ -187,22 +213,18 @@ public enum LEDMode {
   }
 
   public Command flashCommand(LEDColor color, double interval, int time) {
-    // return Commands.run(() -> this.pulse(color, interval));
     return new ParallelDeadlineGroup(
       new WaitCommand(time),
-      Commands.run(() -> this.pulse(color, interval))
+      Commands.run(() -> this.pulse(color, interval), this)
     );
   }
 
   public Command flashUntilCommand(LEDColor color, double interval, BooleanSupplier condition) {
-    // return Commands.run(() -> this.pulse(color, interval));
     return new ParallelDeadlineGroup(
       new WaitUntilCommand(condition),
-      Commands.run(() -> this.pulse(color, interval))
+      Commands.run(() -> this.pulse(color, interval), this)
     );
   }
-
-  
 
   public Command waveCommand(LEDColor color) {
     return Commands.run(() -> this.wave(color), this);
@@ -210,6 +232,10 @@ public enum LEDMode {
 
   public Command bounceWaveCommand(LEDColor color) {
     return Commands.run(() -> this.bounceWave(color), this);
+  }
+
+  public Command fadeCommand(LEDColor color) {
+    return Commands.run(() -> this.fade(color), this);
   }
 
   public void stop() {
