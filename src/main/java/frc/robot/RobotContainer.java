@@ -173,6 +173,10 @@ public class RobotContainer {
             )
         );
 
+        s_AmpArm.setDefaultCommand(
+            s_AmpArm.getHomeCommand()
+        );
+
         //TODO CHECK IF IT WORKS
         s_Led.setDefaultCommand(
             s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
@@ -267,25 +271,25 @@ public class RobotContainer {
     }
 
     private void configureSysIdButtonBindings() {
-        sysidY  
-            .whileTrue(
-                s_Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-            );
+        // sysidY  
+        //     .whileTrue(
+        //         s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+        //     );
             
-        sysidA  
-            .whileTrue(
-                s_Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-            );
+        // sysidA  
+        //     .whileTrue(
+        //         s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+        //     );
         
-        sysidB  
-            .whileTrue(
-                s_Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward)
-            );
+        // sysidB  
+        //     .whileTrue(
+        //         s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kForward)
+        //     );
 
-        sysidX  
-            .whileTrue(
-                s_Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-            );
+        // sysidX  
+        //     .whileTrue(
+        //         s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+        //     );
     }
 
     private void configureEndGameButtonBindings() {
@@ -367,17 +371,22 @@ public class RobotContainer {
                         s_Intake
                     )
                 );
-        // Arm
+        // // Arm
+        // yButton_op
+        //     .and(isNormalMode)
+        //         .onTrue( // Handoff
+        //             new SequentialCommandGroup(
+        //                 s_AmpArm.getHomeCommand(),
+        //                 new WaitUntilCommand(
+        //                     () -> s_AmpArm.getController().atGoal()
+        //                 ),
+        //                 s_AmpArm.feedToArm()
+        //             )
+        //         );
         yButton_op
             .and(isNormalMode)
-                .onTrue( // Handoff
-                    new SequentialCommandGroup(
-                        s_AmpArm.getHomeCommand(),
-                        new WaitUntilCommand(
-                            () -> s_AmpArm.getController().atGoal()
-                        ),
-                        s_AmpArm.feedToArm()
-                    )
+                .whileTrue(
+                    s_AmpArm.feedToArm()
                 );
         xButton_op
             .and(isNormalMode)
@@ -417,9 +426,7 @@ public class RobotContainer {
         leftBumper_op
             .and(isNormalMode)
                 .whileTrue( // Speaker shot
-                    new ParallelCommandGroup(
-                        new RampSpeaker()
-                    )
+                    new RampSpeaker()
                 );
         //  TODO Maybe make it so you press once to ramp up, then press again to shoot
         rightTrigger_op

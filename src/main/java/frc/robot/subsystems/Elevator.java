@@ -42,7 +42,6 @@ public class Elevator extends ProfiledPIDSubsystem {
 
     private final CANcoder m_cancoder = new CANcoder(Constants.Elevator.canCoderID);
 
-    private double initialRotations;
 
     private final ElevatorFeedforward m_feedforward =
       new ElevatorFeedforward(
@@ -64,7 +63,7 @@ public class Elevator extends ProfiledPIDSubsystem {
 
         getController().setTolerance(Constants.Elevator.tolerance);
 
-        initialRotations = getEncoderRotations();
+        zeroCancoder();
         
         configureMotors();
     }
@@ -108,7 +107,7 @@ public class Elevator extends ProfiledPIDSubsystem {
     }
 
     public double getEncoderRotations() {
-        return (m_cancoder.getPosition().getValue() - initialRotations) / 360;
+        return (m_cancoder.getPosition().getValue()) / 360;
     }
 
     // public double getCANCoder() {
@@ -166,6 +165,7 @@ public class Elevator extends ProfiledPIDSubsystem {
         }
 
         // SmartDashboard.putNumber("elevator/cancoder", getCANCoder()); // 36 max top
-        SmartDashboard.putNumber("elevator/cancoder", getEncoderRotations());
+        SmartDashboard.putNumber("elevator/cancoder", m_cancoder.getPosition().getValue());
+        SmartDashboard.putNumber("elevator/rotations", getEncoderRotations());
     }
 }

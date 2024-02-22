@@ -4,6 +4,8 @@ import static edu.wpi.first.units.MutableMeasure.mutable;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -67,31 +69,11 @@ public class Shooter extends ProfiledPIDSubsystem {
     // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
     private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
 
+    private final Measure<Velocity<Voltage>> m_desiredRampRate = Volts.of(0.09).per(Seconds.of(1));
+    private final Measure<Voltage> m_desiredStepVoltage = Volts.of(0.5);
+
     //Create a new SysId routine for characterizing the shooter.
-    private final SysIdRoutine m_sysIdRoutine =
-      new SysIdRoutine(
-          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
-          new SysIdRoutine.Config(),
-          new SysIdRoutine.Mechanism(
-              // Tell SysId how to plumb the driving voltage to the motor(s).
-              (Measure<Voltage> volts) -> {
-                m_shooterTopMotor.setVoltage(volts.in(Volts));
-              },
-              // Tell SysId how to record a frame of data for each motor on the mechanism being
-              // characterized.
-              log -> {
-                // Record a frame for the shooter motor.
-                log.motor("top-shooter")
-                    .voltage(
-                        m_appliedVoltage.mut_replace(
-                            m_shooterTopMotor.get() * RobotController.getBatteryVoltage(), Volts))
-                    .angularPosition(m_angle.mut_replace(m_shooterTopMotor.getPosition().getValue(), Rotations))
-                    .angularVelocity(
-                        m_velocity.mut_replace(m_shooterTopMotor.getVelocity().getValue(), RotationsPerSecond));
-              },
-              // Tell SysId to make generated commands require this subsystem, suffix test state in
-              // WPILog with this subsystem's name ("shooter")
-              this));
+    
 
     private final PIDController bottomShooterPIDController = 
         new PIDController(
@@ -148,7 +130,7 @@ public class Shooter extends ProfiledPIDSubsystem {
 
         configureNeutralMode();
 
-        enable();
+        // enable();
     }
 
     public void goHome() {
@@ -225,6 +207,7 @@ public class Shooter extends ProfiledPIDSubsystem {
     // Just for shooter pivot
     @Override
     protected void useOutput(double output, TrapezoidProfile.State setpoint) {
+        System.out.println(setpoint.position + " " + setpoint.velocity);
         double feedforward = pivotFeedforward.calculate(setpoint.position, setpoint.velocity);
         // System.out.println(output + feedforward);
         m_pivotMotor.setVoltage(output + feedforward);
@@ -348,36 +331,36 @@ public class Shooter extends ProfiledPIDSubsystem {
         m_pivotMotor.setPosition(0);
     }
 
-    /**
-     * Returns a command that will execute a quasistatic test in the given direction.
-     *
-     * @param direction The direction (forward or reverse) to run the test in
-     */
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.quasistatic(direction);
-    }
+    // /**
+    //  * Returns a command that will execute a quasistatic test in the given direction.
+    //  *
+    //  * @param direction The direction (forward or reverse) to run the test in
+    //  */
+    // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    //     return m_sysIdRoutine.quasistatic(direction);
+    // }
 
-    /**
-     * Returns a command that will execute a dynamic test in the given direction.
-     *
-     * @param direction The direction (forward or reverse) to run the test in
-     */
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.dynamic(direction);
-    }
+    // /**
+    //  * Returns a command that will execute a dynamic test in the given direction.
+    //  *
+    //  * @param direction The direction (forward or reverse) to run the test in
+    //  */
+    // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    //     return m_sysIdRoutine.dynamic(direction);
+    // }
 
     @Override
     public void periodic() {
 
         SmartDashboard.putNumber("shooter/pivot cancoder radians", getMeasurement());
         SmartDashboard.putNumber("shooter/pivot cancoder", getCANCoder());
-        if(isReadyToShoot()) System.out.println("shooter is ready");
+        // if(isReadyToShoot()) System.out.println("shooter is ready");
         // m_shooterTopMotor.set(1);
         // m_shooterBottomMotor.set(1);
 
         if (m_enabled) {
-            // this.disable();
-            useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
+            this.disable();
+            // useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
             // System.out.println(m_controller.getSetpoint().position);
         } else {
             // m_pivotMotor.setVoltage(0.6);

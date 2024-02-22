@@ -14,7 +14,7 @@ public class HomeCommand extends Command {
 
     public void execute() {
         //TODO Test after getting CANCoder stuff
-        // s_Shooter.goHome();
+        s_Shooter.goHome();
     }
 
     public void end(boolean interrupted) {

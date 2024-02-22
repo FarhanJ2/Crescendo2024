@@ -172,25 +172,28 @@ public final class Constants {
 
         public static final int canCoderID = 19;
 
-        public static final double pivotkS = 0.02;
-        public static final double pivotkG = 0.23;
-        public static final double pivotkV = 1.2;
+        public static final double pivotkS = 0.13884; //0.13884
+        public static final double pivotkG = 0.28674;
+        public static final double pivotkV = 0.8; //5.6457
+        public static final double pivotkA = 1.7626; //1.7626
 
-        public static final double pivotkP = 4; //10
+        public static final double pivotkP = 5; //10
         public static final double pivotkI = 0; //1
         public static final double pivotkD = 0; //0.5
 
-        public static final double topShooterkS = 0.18;
-        public static final double topShooterkV = 0.002; 
+        public static final double topShooterkS = 0.19655; 
+        public static final double topShooterkV = 0.042517; //0.042517
+        public static final double topShooterkA = 0.015598; //0.015598
 
-        public static final double topShooterkP = 0;
+        public static final double topShooterkP = 0; //0.05423
         public static final double topShooterkI = 0;
-        public static final double topShooterkD = 0; //0.00001
+        public static final double topShooterkD = 0; //0
 
-        public static final double bottomShooterkS = 0.18;
-        public static final double bottomShooterkV = 0.0019;
+        public static final double bottomShooterkS = 0.13122;
+        public static final double bottomShooterkV = 0.039681; //0.039681
+        public static final double bottomShooterkA = 0.014353; //0.014353
 
-        public static final double bottomShooterkP = 0;
+        public static final double bottomShooterkP = 0; //0.035013
         public static final double bottomShooterkI = 0;
         public static final double bottomShooterkD = 0;
 
@@ -252,17 +255,18 @@ public final class Constants {
 
         public static final int limitSwitchChannel = 0;
         
-        public static final double pivotkS = 0.1; // 0.14
-        public static final double pivotkG = 0; // 0.2
-        public static final double pivotkV = 0; // 1.7 // 0.3
+        public static final double pivotkS = 0.065414; 
+        public static final double pivotkG = 0.31787; 
+        public static final double pivotkV = 1.7629; // 1.7 // 0.3
+        public static final double pivotkA = 0.63799;
 
-        public static final double pivotkP = 3; // 10
+        public static final double pivotkP = 1; // 10
         public static final double pivotkI = 0;
-        public static final double pivotkD = 0; // 0.06
+        public static final double pivotkD = 0.06; // 0.06
 
         public static final double integratorZone = 0;
 
-        public static final double pivotTolerance = 0.05;
+        public static final double pivotTolerance = 0.5;
 
         public static final double kMaxVelocityRadPerSecond = 4;
         public static final double kMaxAccelerationRadPerSecSquared = 4;
@@ -272,7 +276,7 @@ public final class Constants {
         // public static final double shootSpeed = 0;
 
         // Score positions in radians
-        public static final double homePosition = -2.4; // -2.37
+        public static final double homePosition = -2.1; // -2.37
         public static final double ampPosition = 1;
         public static final double trapPosition = 1.6;
 
@@ -343,10 +347,10 @@ public final class Constants {
     }
 
     public static final class ShootingConstants {
-      public static final double podiumRPM = 5000;
+      public static final double podiumRPM = 1500;
       public static final double podiumAngle = 0.7;
 
-      public static final double speakerRPM = 5000;
+      public static final double speakerRPM = 1500;
       public static final double speakerAngle = 1.05;
       public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
       

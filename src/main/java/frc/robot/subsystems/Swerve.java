@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.VoltsPerMeterPerSecond;
 
+import java.sql.Driver;
+
 import frc.robot.SwerveModule;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.PoseConfig;
@@ -86,6 +88,7 @@ public class Swerve extends SubsystemBase {
     private final Measure<Voltage> m_desiredStepVoltage = Volts.of(5);
 
     public final Thread poseEstimatorInitializer = new Thread(() -> {
+        DriverStation.reportWarning("ISAAC WONG", false);
         if (RobotContainer.alliance == DriverStation.Alliance.Blue) {
             poseEstimator = new SwerveDrivePoseEstimator(
             Constants.Swerve.swerveKinematics,
@@ -251,6 +254,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public Pose2d getPose() {
+        if(poseEstimator == null) return new Pose2d();
         return poseEstimator.getEstimatedPosition();
 
     }
@@ -323,7 +327,7 @@ public class Swerve extends SubsystemBase {
         // m_backRightMotor.setControl(new Follower(Constants.Swerve.Mod1.driveMotorID, false));
 
         // swerveOdometry.update(getGyroYaw(), getModulePositions());
-        poseEstimator.update(getGyroYaw(), getModulePositions());
+        if(poseEstimator != null) poseEstimator.update(getGyroYaw(), getModulePositions());
 
         // limelight and odometry classes are written so that adding additional limelights is easy 
         // limelightFront.setPipeline(LimelightConstants.limelightFrontTagPipeline);
