@@ -1,8 +1,11 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -38,9 +41,10 @@ public class Elevator extends ProfiledPIDSubsystem {
     private final TalonFX m_rightMotor = new TalonFX(Constants.Elevator.rightMotorID);
 
     // private final DigitalInput m_upperLimitSwitch = new DigitalInput(Constants.Elevator.limitSwitchUpperChannel);
-    // private final DigitalInput m_lowerLimitSwitch = new DigitalInput(Constants.Elevator.limitSwitchLowerChannel);
+    private final DigitalInput m_lowerLimitSwitch = new DigitalInput(Constants.Elevator.limitSwitchLowerChannel);
 
     private final CANcoder m_cancoder = new CANcoder(Constants.Elevator.canCoderID);
+
 
 
     private final ElevatorFeedforward m_feedforward =
@@ -62,6 +66,7 @@ public class Elevator extends ProfiledPIDSubsystem {
             0);
 
         getController().setTolerance(Constants.Elevator.tolerance);
+        m_cancoder.getConfigurator().apply(new CANcoderConfiguration().withMagnetSensor(new MagnetSensorConfigs().withSensorDirection(SensorDirectionValue.Clockwise_Positive)));
 
         zeroCancoder();
         
@@ -107,7 +112,7 @@ public class Elevator extends ProfiledPIDSubsystem {
     }
 
     public double getEncoderRotations() {
-        return (m_cancoder.getPosition().getValue()) / 360;
+        return (m_cancoder.getPosition().getValue());
     }
 
     // public double getCANCoder() {
@@ -121,7 +126,18 @@ public class Elevator extends ProfiledPIDSubsystem {
 
     public void moveElevator(boolean isUp) {
         double speed = Constants.Elevator.manualElevatorSpeed;
-        if(!isUp) {
+        if(isUp) {
+            if(getEncoderRotations() < 0.05) {
+                stopElevator();
+                return;
+            }
+            
+        }
+        else {
+            if(getEncoderRotations() > 2.8) {
+                stopElevator();
+                return;
+            }
             speed = -speed;
         }
         m_leftMotor.set(speed);
@@ -167,5 +183,6 @@ public class Elevator extends ProfiledPIDSubsystem {
         // SmartDashboard.putNumber("elevator/cancoder", getCANCoder()); // 36 max top
         SmartDashboard.putNumber("elevator/cancoder", m_cancoder.getPosition().getValue());
         SmartDashboard.putNumber("elevator/rotations", getEncoderRotations());
+        SmartDashboard.putBoolean("elevator/lower limit", m_lowerLimitSwitch.get());
     }
 }

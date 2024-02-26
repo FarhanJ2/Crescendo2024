@@ -87,6 +87,8 @@ public class Swerve extends SubsystemBase {
     private final Measure<Velocity<Voltage>> m_desiredRampRate = Velocity.combine(Volts, Second).of(1);
     private final Measure<Voltage> m_desiredStepVoltage = Volts.of(5);
 
+
+    //TODO CODE NOT CLEAN
     public final Thread poseEstimatorInitializer = new Thread(() -> {
         DriverStation.reportWarning("ISAAC WONG", false);
         if (RobotContainer.alliance == DriverStation.Alliance.Blue) {
@@ -254,12 +256,15 @@ public class Swerve extends SubsystemBase {
     }
 
     public Pose2d getPose() {
+        //TODO CODE NOT CLEAN
         if(poseEstimator == null) return new Pose2d();
         return poseEstimator.getEstimatedPosition();
 
     }
 
     public Pose2d getRelativePose() {
+        //TODO CODE NOT CLEAN
+        if(poseEstimator == null) return new Pose2d();
         if(RobotContainer.alliance == DriverStation.Alliance.Blue) {
             return poseEstimator.getEstimatedPosition();
         }
@@ -273,7 +278,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public Rotation2d getHeading(){
-        return getPose().getRotation();
+        return getRelativePose().getRotation();
     }
 
     public void setHeading(Rotation2d heading){

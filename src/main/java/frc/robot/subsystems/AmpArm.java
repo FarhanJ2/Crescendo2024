@@ -111,13 +111,14 @@ public class AmpArm extends ProfiledPIDSubsystem {
                 new TrapezoidProfile.Constraints(
                     Constants.AmpArm.kMaxVelocityRadPerSecond,
                     Constants.AmpArm.kMaxAccelerationRadPerSecSquared)),
-            0);
+            4.15);
 
         getController().setTolerance(Constants.AmpArm.pivotTolerance);
         getController().setIZone(Constants.AmpArm.integratorZone);
+        getController().enableContinuousInput(0, Math.PI * 2);
         // setGoal(Constants.AmpArm.armOffset);
 
-        // enable();
+        enable();
         configureMotors();
     }
 
@@ -173,8 +174,8 @@ public class AmpArm extends ProfiledPIDSubsystem {
     @Override
     protected void useOutput(double output, TrapezoidProfile.State setpoint) {
         // System.out.println(setpoint.position + " " + setpoint.velocity);
-        // double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
-        // m_pivotMotor.setVoltage(output + feedforward);
+        double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
+        m_pivotMotor.setVoltage(output + feedforward);
     }
 
     public void manualArmPivot(Boolean pivotingUp) {
@@ -245,7 +246,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
         // return getPivotRadians();
         // return m_pivotMotor.getPosition().getValueAsDouble();
 
-        return (getCANCoder() - 90) * Math.PI / 180;
+        return ((getCANCoder() + 110) % 360) * Math.PI / 180;
     }
 
     @Override
@@ -254,8 +255,8 @@ public class AmpArm extends ProfiledPIDSubsystem {
         //0.195 for w/o note; 0.22 for w/ note
         // m_pivotMotor.setVoltage(0.195); // stowing voltage TODO: make sure to include w/ vs w/o note
         if (m_enabled) {
-            this.disable();
-            // useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
+            // this.disable();
+            useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
             // System.out.println(m_controller.getSetpoint().position);
         }
 

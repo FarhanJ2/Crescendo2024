@@ -130,7 +130,7 @@ public class Shooter extends ProfiledPIDSubsystem {
 
         configureNeutralMode();
 
-        // enable();
+        enable();
     }
 
     public void goHome() {
@@ -359,8 +359,8 @@ public class Shooter extends ProfiledPIDSubsystem {
         // m_shooterBottomMotor.set(1);
 
         if (m_enabled) {
-            this.disable();
-            // useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
+            // this.disable();
+            useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
             // System.out.println(m_controller.getSetpoint().position);
         } else {
             // m_pivotMotor.setVoltage(0.6);
