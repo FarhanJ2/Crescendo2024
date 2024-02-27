@@ -275,8 +275,8 @@ public final class Constants {
         // Score positions in radians
         public static final double homePosition = -Math.PI / 2; // -2.37
         public static final double handoffPosition = -2.22;
-        public static final double ampPosition = 0;
-        public static final double trapPosition = 1.6;
+        public static final double ampPosition = 0.5;
+        public static final double trapPosition = 1.37;
 
         // Manual testing values
         public static final double manualArmPivotSpeed = 0.05;

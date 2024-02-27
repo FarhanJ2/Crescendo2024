@@ -191,10 +191,10 @@ public class RobotContainer {
             )
         );
 
-        // TODO put this back in
-        s_AmpArm.setDefaultCommand(
-            s_AmpArm.getAmpCommand()
-        );
+        // s_AmpArm.setDefaultCommand(
+        //     //s_AmpArm.getAmpCommand()
+        //     s_AmpArm.getHomeCommand()
+        // );
 
         //TODO CHECK IF IT WORKS
         s_Led.setDefaultCommand(
@@ -465,22 +465,22 @@ public class RobotContainer {
                     )
                 );
         // // Arm
-        // yButton_op
-        //     .and(isNormalMode)
-        //         .onTrue( // Handoff
-        //             new SequentialCommandGroup(
-        //                 s_AmpArm.getHomeCommand(),
-        //                 new WaitUntilCommand(
-        //                     () -> s_AmpArm.getController().atGoal()
-        //                 ),
-        //                 s_AmpArm.feedToArm()
-        //             )
-        //         );
         yButton_op
             .and(isNormalMode)
-                .whileTrue(
-                    s_AmpArm.feedToArm()
+                .onTrue( // Handoff
+                    new SequentialCommandGroup(
+                        s_AmpArm.getHandoffCommand(),
+                        new WaitUntilCommand(
+                            () -> s_AmpArm.getController().atGoal()
+                        ),
+                        s_AmpArm.feedToArm()
+                    )
                 );
+        // yButton_op
+        //     .and(isNormalMode)
+        //         .whileTrue(
+        //             s_AmpArm.feedToArm()
+        //         );
         xButton_op
             .and(isNormalMode)
                 .onTrue( // Amp position
