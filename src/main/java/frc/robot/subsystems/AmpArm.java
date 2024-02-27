@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
@@ -53,45 +55,45 @@ public class AmpArm extends ProfiledPIDSubsystem {
             return rotations;
         }
     }
-    // private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
-    // // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
-    // private final MutableMeasure<Angle> m_angle = mutable(Rotations.of(0));
-    // // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
-    // private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
+    private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+    // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+    private final MutableMeasure<Angle> m_angle = mutable(Radians.of(0));
+    // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+    private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RadiansPerSecond.of(0));
 
-    // private final Measure<Velocity<Voltage>> m_desiredRampRate = Volts.of(0.075).per(Seconds.of(1));
-    // private final Measure<Voltage> m_desiredStepVoltage = Volts.of(0.4);
-
-    
+    private final Measure<Velocity<Voltage>> m_desiredRampRate = Volts.of(0.075).per(Seconds.of(1));
+    private final Measure<Voltage> m_desiredStepVoltage = Volts.of(0.6);
 
     private final TalonFX m_pivotMotor = new TalonFX(Constants.AmpArm.pivotMotorID);
     private final TalonFX m_shootMotor = new TalonFX(Constants.AmpArm.shootMotorID);
 
-    // private final SysIdRoutine m_sysIdRoutine =
-    //   new SysIdRoutine(
-    //       // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
-    //       new  SysIdRoutine.Config(m_desiredRampRate, m_desiredStepVoltage, null),
-    //       new SysIdRoutine.Mechanism(
-    //           // Tell SysId how to plumb the driving voltage to the motor(s).
-    //           (Measure<Voltage> volts) -> {
-    //             m_pivotMotor.setVoltage(volts.in(Volts));
-    //           },
-    //           // Tell SysId how to record a frame of data for each motor on the mechanism being
-    //           // characterized.
-    //           log -> {
-    //             // Record a frame for the shooter motor.
-    //             log.motor("pivot-arm")
-    //                 .voltage(
-    //                     m_appliedVoltage.mut_replace(
-    //                         m_pivotMotor.get() * RobotController.getBatteryVoltage(), Volts))
-    //                 .angularPosition(m_angle.mut_replace(m_pivotMotor.getPosition().getValue() / 18.8888888888888, Rotations))
-    //                 .angularVelocity(
-    //                     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValue() / 18.8888888888888, RotationsPerSecond));
-    //           },
-    //           // Tell SysId to make generated commands require this subsystem, suffix test state in
-    //           // WPILog with this subsystem's name ("shooter")
-    //           this));
-    // private final DigitalInput m_limitSwitch = new DigitalInput(Constants.AmpArm.limitSwitchChannel);
+    private final SysIdRoutine m_sysIdRoutine =
+      new SysIdRoutine(
+          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+          new  SysIdRoutine.Config(m_desiredRampRate, m_desiredStepVoltage, null),
+          new SysIdRoutine.Mechanism(
+              // Tell SysId how to plumb the driving voltage to the motor(s).
+              (Measure<Voltage> volts) -> {
+                m_pivotMotor.setVoltage(volts.in(Volts));
+              },
+              // Tell SysId how to record a frame of data for each motor on the mechanism being
+              // characterized.
+              log -> {
+                // Record a frame for the shooter motor.
+                log.motor("pivot-arm")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(
+                            m_pivotMotor.get() * RobotController.getBatteryVoltage(), Volts))
+                    //.angularPosition(m_angle.mut_replace(m_pivotMotor.getPosition().getValue() / 18.8888888888888, Rotations))
+                    .angularPosition(m_angle.mut_replace(getMeasurement(), Radians))
+                    // .angularVelocity(
+                    //     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValue() / 18.8888888888888, RotationsPerSecond));
+                    .angularVelocity(
+                        m_velocity.mut_replace(getCANCoderVelocityRadians(), RadiansPerSecond));
+              },
+              // Tell SysId to make generated commands require this subsystem, suffix test state in
+              // WPILog with this subsystem's name ("shooter")
+              this));
 
     private final CANcoder m_cancoder = new CANcoder(Constants.AmpArm.canCoderID);
 
@@ -118,7 +120,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
         getController().enableContinuousInput(0, Math.PI * 2);
         // setGoal(Constants.AmpArm.armOffset);
 
-        enable();
+        // enable();
         configureMotors();
     }
 
@@ -138,18 +140,18 @@ public class AmpArm extends ProfiledPIDSubsystem {
      *
      * @param direction The direction (forward or reverse) to run the test in
      */
-    // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    //     return m_sysIdRoutine.quasistatic(direction);
-    // }
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.quasistatic(direction);
+    }
 
-    // /**
-    //  * Returns a command that will execute a dynamic test in the given direction.
-    //  *
-    //  * @param direction The direction (forward or reverse) to run the test in
-    //  */
-    // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    //     return m_sysIdRoutine.dynamic(direction);
-    // }
+    /**
+     * Returns a command that will execute a dynamic test in the given direction.
+     *
+     * @param direction The direction (forward or reverse) to run the test in
+     */
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.dynamic(direction);
+    }
 
     public Command getAmpCommand() {
         return new InstantCommand(() -> setGoal(Position.AMP.getRotations()));
@@ -166,8 +168,17 @@ public class AmpArm extends ProfiledPIDSubsystem {
         }, this);
     }
 
-    public double getCANCoder() {
+    // In degrees
+    public double getCANCoderPosition() {
         return m_cancoder.getAbsolutePosition().getValueAsDouble() * 360;
+    }
+
+    public double getCANCoderVelocityDegrees() {
+        return m_cancoder.getVelocity().getValueAsDouble() * 360;
+    }
+
+    public double getCANCoderVelocityRadians() {
+        return m_cancoder.getVelocity().getValueAsDouble() * 2 * Math.PI;
     }
 
 
@@ -246,17 +257,16 @@ public class AmpArm extends ProfiledPIDSubsystem {
         // return getPivotRadians();
         // return m_pivotMotor.getPosition().getValueAsDouble();
 
-        return ((getCANCoder() + 110) % 360) * Math.PI / 180;
+        return ((getCANCoderPosition() + 110) % 360) * Math.PI / 180;
     }
 
     @Override
     public void periodic() {
         
-        //0.195 for w/o note; 0.22 for w/ note
-        // m_pivotMotor.setVoltage(0.195); // stowing voltage TODO: make sure to include w/ vs w/o note
+        
         if (m_enabled) {
             // this.disable();
-            useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
+            // useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
             // System.out.println(m_controller.getSetpoint().position);
         }
 
@@ -267,6 +277,8 @@ public class AmpArm extends ProfiledPIDSubsystem {
         SmartDashboard.putNumber("arm/degrees", getPivotDegrees());
         SmartDashboard.putNumber("arm/radians", getMeasurement());
 
-        SmartDashboard.putNumber("arm/cancoder", getCANCoder());
+        SmartDashboard.putNumber("arm/cancoder", getCANCoderPosition());
+
+        SmartDashboard.putNumber("arm/velocity", getCANCoderVelocityRadians());
     }
 }

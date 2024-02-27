@@ -6,8 +6,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.LED.LEDColor;
 
 public class Intake extends SubsystemBase {
 
@@ -50,6 +53,10 @@ public class Intake extends SubsystemBase {
             m_forkMotor.set(Constants.Intake.forkSpeed);
             m_intakeMotor.set(Constants.Intake.intakeFeedSpeed / 3.5);
         }
+    }
+
+    public Command intakeLedCommand() {
+        return RobotContainer.s_Led.flashCommand(LEDColor.GREEN, 0.1, 0.5);
     }
 
     private void configureMotors() {

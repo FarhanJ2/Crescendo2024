@@ -212,7 +212,7 @@ public class LED extends SubsystemBase {
     return Commands.run(this::rainbow, this);
   }
 
-  public Command flashCommand(LEDColor color, double interval, int time) {
+  public Command flashCommand(LEDColor color, double interval, double time) {
     return new ParallelDeadlineGroup(
       new WaitCommand(time),
       Commands.run(() -> this.pulse(color, interval), this)

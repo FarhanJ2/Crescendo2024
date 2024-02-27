@@ -207,7 +207,7 @@ public class Shooter extends ProfiledPIDSubsystem {
     // Just for shooter pivot
     @Override
     protected void useOutput(double output, TrapezoidProfile.State setpoint) {
-        System.out.println(setpoint.position + " " + setpoint.velocity);
+        // System.out.println(setpoint.position + " " + setpoint.velocity);
         double feedforward = pivotFeedforward.calculate(setpoint.position, setpoint.velocity);
         // System.out.println(output + feedforward);
         m_pivotMotor.setVoltage(output + feedforward);

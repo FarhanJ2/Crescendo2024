@@ -8,6 +8,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -86,7 +88,7 @@ public class RobotContainer {
     private OperatorLock elevatorManual = OperatorLock.LOCKED;
 
     /* Controllers */
-    private final Joystick driver = new Joystick(0);
+    private final CommandXboxController driver = new CommandXboxController(0);
     private final Joystick operator = new Joystick(1);
     private final Joystick sysIDJoystick = new Joystick(2);
 
@@ -96,16 +98,26 @@ public class RobotContainer {
     private final int rotationAxis = 2;
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, 3); // B
-    private final JoystickButton robotCentric = new JoystickButton(driver, 5); // LB
-    private final JoystickButton slowMode = new JoystickButton(driver, 8); // RT
-    private final JoystickButton flashButton = new JoystickButton(driver, 1); // X
+    // private final JoystickButton zeroGyro = new JoystickButton(driver, 3); // B
+    // private final JoystickButton robotCentric = new JoystickButton(driver, 5); // LB
+    // private final JoystickButton slowMode = new JoystickButton(driver, 8); // RT
+    // private final JoystickButton flashButton = new JoystickButton(driver, 1); // X
+
+    //XBox Controller
+    private final Trigger zeroGyro = driver.b(); // B
+    private final Trigger robotCentric = driver.leftBumper(); // LB
+    private final Trigger slowMode = driver.rightTrigger(); // RT
+    private final Trigger flashButton = driver.x(); // X
+    private final Trigger alignSpeakerButton = driver.leftTrigger(); // LT
+    private final Trigger intakeButton = driver.rightBumper(); // RB
+
+
     // private final JoystickButton trackApriltag = new JoystickButton(driver, 1); // X
-    private final JoystickButton alignSpeakerButton = new JoystickButton(driver, 7); // LT
-    private final POVButton leftPOV = new POVButton(driver, 270);
-    private final POVButton rightPOV = new POVButton(driver, 90);
-    private final POVButton upPOV = new POVButton(driver, 0);
-    private final POVButton downPOV = new POVButton(driver, 180);
+    // private final JoystickButton alignSpeakerButton = new JoystickButton(driver, 7); // LT
+    // private final POVButton leftPOV = new POVButton(driver, 270);
+    // private final POVButton rightPOV = new POVButton(driver, 90);
+    // private final POVButton upPOV = new POVButton(driver, 0);
+    // private final POVButton downPOV = new POVButton(driver, 180);
 
     /* Operator Buttons */
     private final int manualShootAxis = 1;
@@ -153,6 +165,7 @@ public class RobotContainer {
 
     /* The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+
         allianceGetter.start();
 
         // DriverStation.silenceJoystickConnectionWarning(true);
@@ -160,10 +173,10 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis), 
-                () -> -driver.getRawAxis(strafeAxis), 
-                () -> -driver.getRawAxis(rotationAxis), 
-                () -> robotCentric.getAsBoolean()
+                () -> -driver.getLeftY(),
+                () -> -driver.getLeftX(),
+                () -> -driver.getRightX(),
+                robotCentric
             )
         );
 
@@ -173,9 +186,10 @@ public class RobotContainer {
             )
         );
 
-        s_AmpArm.setDefaultCommand(
-            s_AmpArm.getHomeCommand()
-        );
+        // TODO put this back in
+        // s_AmpArm.setDefaultCommand(
+        //     s_AmpArm.getHomeCommand()
+        // );
 
         //TODO CHECK IF IT WORKS
         s_Led.setDefaultCommand(
@@ -205,6 +219,7 @@ public class RobotContainer {
         configureNormalModeButtonBindings();
         configureEndGameButtonBindings();
         configureSysIdButtonBindings();
+        configureLEDBindings();
     }
 
     private void configureAbsoluteButtonBindings() {
@@ -237,6 +252,10 @@ public class RobotContainer {
             )
         );
 
+        intakeButton.whileTrue(
+            new IntakeCommand()
+        );
+
         startButton_op
         .and(backButton_op)
             .onTrue(
@@ -266,30 +285,69 @@ public class RobotContainer {
         new Trigger(
             () -> s_Shooter.isReadyToShoot()
         ).onTrue(
-            s_Shooter.shooterReadyLEDCommand()
+            /*s_Shooter.shooterReadyLEDCommand()*/
+            new InstantCommand(() -> System.out.println("n"))
+        );
+
+        new Trigger(
+            () -> RobotContainer.s_Intake.intakeBeamBroken()
+        ).onTrue(
+            // Commands.sequence(
+            //     Commands.run(() -> {
+            //         driver.getHID().setRumble(RumbleType.kBothRumble, 0.7);
+            //     }).alongWith(
+            //         /*s_Intake.intakeLedCommand()*/
+            //     ).withTimeout(1),
+            //     new WaitCommand(1),
+            //     Commands.run(() -> {
+            //         driver.getHID().setRumble(RumbleType.kBothRumble, 0);
+            //     })
+            // )
+            new SequentialCommandGroup(
+                new ParallelDeadlineGroup(
+                    new WaitCommand(0.5),
+                    new InstantCommand(() -> driver.getHID().setRumble(RumbleType.kBothRumble, 0.7))
+                ),
+                new WaitCommand(0.5),
+                new InstantCommand(() -> driver.getHID().setRumble(RumbleType.kBothRumble, 0))
+            )
+
+            // Commands.run(
+            //     () -> {
+            //         driver.getHID().setRumble(RumbleType.kBothRumble, 0.7);
+            //     }
+            // ).withTimeout(1)
+            // .andThen(
+            //     Commands.run(
+            //         () -> {
+            //             driver.getHID().setRumble(RumbleType.kBothRumble, 0);
+            //         }
+            //     ).withTimeout(1)
+            // )
+
         );
     }
 
     private void configureSysIdButtonBindings() {
-        // sysidY  
-        //     .whileTrue(
-        //         s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-        //     );
+        sysidY  
+            .whileTrue(
+                s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+            );
             
-        // sysidA  
-        //     .whileTrue(
-        //         s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-        //     );
+        sysidA  
+            .whileTrue(
+                s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+            );
         
-        // sysidB  
-        //     .whileTrue(
-        //         s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kForward)
-        //     );
+        sysidB  
+            .whileTrue(
+                s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kForward)
+            );
 
-        // sysidX  
-        //     .whileTrue(
-        //         s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-        //     );
+        sysidX  
+            .whileTrue(
+                s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+            );
     }
 
     private void configureEndGameButtonBindings() {
@@ -450,6 +508,7 @@ public class RobotContainer {
           );
 
         // Locks
+        // TODO don't change default commands, just disable the controller
         leftThumbstick_op
             .and(isNormalMode)
                 .onTrue(
