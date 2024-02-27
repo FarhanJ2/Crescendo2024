@@ -303,28 +303,45 @@ public class RobotContainer {
             //         driver.getHID().setRumble(RumbleType.kBothRumble, 0);
             //     })
             // )
-            new SequentialCommandGroup(
-                new ParallelDeadlineGroup(
-                    new WaitCommand(0.5),
-                    new InstantCommand(() -> driver.getHID().setRumble(RumbleType.kBothRumble, 0.7))
-                ),
-                new WaitCommand(0.5),
-                new InstantCommand(() -> driver.getHID().setRumble(RumbleType.kBothRumble, 0))
-            )
 
-            // Commands.run(
+
+
+            // new SequentialCommandGroup(
+            //     new ParallelDeadlineGroup(
+            //         new WaitCommand(0.5),
+            //         new InstantCommand(() -> driver.getHID().setRumble(RumbleType.kBothRumble, 0.7))
+            //     ),
+            //     new WaitCommand(0.5),
+            //     new InstantCommand(() -> driver.getHID().setRumble(RumbleType.kBothRumble, 0))
+            // )
+
+
+
+            Commands.run(
+                () -> {
+                    driver.getHID().setRumble(RumbleType.kBothRumble, 0.7);
+                }
+            )
+            .withTimeout(1)
+            .andThen(
+                Commands.runOnce(
+                    () -> driver.getHID().setRumble(RumbleType.kBothRumble, 0)
+                )
+            )
+            .andThen(new InstantCommand(() -> System.out.println("finish vibrate")))
+
+
+            // TODO do this after led works
+            // s_Intake.intakeLedCommand()
+            //     .deadlineWith(Commands.run(
             //     () -> {
             //         driver.getHID().setRumble(RumbleType.kBothRumble, 0.7);
             //     }
-            // ).withTimeout(1)
+            // ))
             // .andThen(
-            //     Commands.run(
-            //         () -> {
-            //             driver.getHID().setRumble(RumbleType.kBothRumble, 0);
-            //         }
-            //     ).withTimeout(1)
+            //     Commands.runOnce(() -> driver.getHID().setRumble(RumbleType.kBothRumble, 0))
             // )
-
+            // .andThen(new InstantCommand(() -> System.out.println("intake done")))
         );
     }
 
