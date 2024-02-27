@@ -252,29 +252,30 @@ public final class Constants {
         public static final int shootMotorID = 23;
 
         public static final int canCoderID = 24;        
-        public static final double pivotkS = 0.065414; //0.065414
-        public static final double pivotkG = 0.12; //0.31787
-        public static final double pivotkV = 1.7629; // 1.7 // 0.3
-        public static final double pivotkA = 0.63799;
+        public static final double pivotkS = 0.14; //0.065414
+        public static final double pivotkG = 0.095; //0.31787
+        public static final double pivotkV = 0.46; //0.47222222222 // 1.7629 // 1.7 // 0.3
+        // public static final double pivotkA = 0.3;
 
-        public static final double pivotkP = 5; // 10
+        public static final double pivotkP = 1; // 10
         public static final double pivotkI = 0;
-        public static final double pivotkD = 0; // 0.06
+        public static final double pivotkD = 0.00001; // 0.06
 
         public static final double integratorZone = 0;
 
-        public static final double pivotTolerance = 0.5;
+        public static final double pivotTolerance = 0.05;
 
         public static final double kMaxVelocityRadPerSecond = 4;
-        public static final double kMaxAccelerationRadPerSecSquared = 4;
+        public static final double kMaxAccelerationRadPerSecSquared = 8;
 
         public static final double armOffset = -Math.PI / 2; // -2.13
 
         // public static final double shootSpeed = 0;
 
         // Score positions in radians
-        public static final double homePosition = Math.PI * 2 - 4.15; // -2.37
-        public static final double ampPosition = 1;
+        public static final double homePosition = -Math.PI / 2; // -2.37
+        public static final double handoffPosition = -2.22;
+        public static final double ampPosition = 0;
         public static final double trapPosition = 1.6;
 
         // Manual testing values

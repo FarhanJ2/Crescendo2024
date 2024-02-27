@@ -147,6 +147,11 @@ public class RobotContainer {
     private final JoystickButton sysidA = new JoystickButton(sysIDJoystick, 2);
     private final JoystickButton sysidB = new JoystickButton(sysIDJoystick, 3);
     private final JoystickButton sysidY = new JoystickButton(sysIDJoystick, 4);
+    private final JoystickButton sysidLeftBumper = new JoystickButton(sysIDJoystick, 5);
+    private final JoystickButton sysidRightBumper = new JoystickButton(sysIDJoystick, 6);
+    private final JoystickButton sysidLeftTrigger = new JoystickButton(sysIDJoystick, 7);
+
+
     
     private final Trigger isNormalMode = new Trigger(() -> operatorMode == OperatorMode.NORMAL_MODE);
 
@@ -187,9 +192,9 @@ public class RobotContainer {
         );
 
         // TODO put this back in
-        // s_AmpArm.setDefaultCommand(
-        //     s_AmpArm.getHomeCommand()
-        // );
+        s_AmpArm.setDefaultCommand(
+            s_AmpArm.getAmpCommand()
+        );
 
         //TODO CHECK IF IT WORKS
         s_Led.setDefaultCommand(
@@ -315,8 +320,6 @@ public class RobotContainer {
             //     new InstantCommand(() -> driver.getHID().setRumble(RumbleType.kBothRumble, 0))
             // )
 
-
-
             Commands.run(
                 () -> {
                     driver.getHID().setRumble(RumbleType.kBothRumble, 0.7);
@@ -346,24 +349,39 @@ public class RobotContainer {
     }
 
     private void configureSysIdButtonBindings() {
-        sysidY  
+        sysidY
             .whileTrue(
                 s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
             );
             
-        sysidA  
+        sysidA
             .whileTrue(
                 s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
             );
         
-        sysidB  
+        sysidB
             .whileTrue(
                 s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kForward)
             );
 
-        sysidX  
+        sysidX
             .whileTrue(
                 s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+            );
+        
+        sysidLeftBumper
+            .whileTrue(
+                s_AmpArm.applykS()
+            );
+
+        sysidRightBumper
+            .whileTrue(
+                s_AmpArm.applykG()
+            );
+        
+        sysidLeftTrigger
+            .whileTrue(
+                s_AmpArm.applykV()
             );
     }
 

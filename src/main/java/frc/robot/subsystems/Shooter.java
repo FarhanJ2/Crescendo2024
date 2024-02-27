@@ -352,6 +352,7 @@ public class Shooter extends ProfiledPIDSubsystem {
     @Override
     public void periodic() {
 
+        
         SmartDashboard.putNumber("shooter/pivot cancoder radians", getMeasurement());
         SmartDashboard.putNumber("shooter/pivot cancoder", getCANCoder());
         // if(isReadyToShoot()) System.out.println("shooter is ready");

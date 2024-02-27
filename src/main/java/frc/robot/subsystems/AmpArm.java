@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -42,6 +43,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
 
     public static enum Position {
         HOME(Constants.AmpArm.homePosition),
+        HANDOFF(Constants.AmpArm.handoffPosition),
         AMP(Constants.AmpArm.ampPosition),
         TRAP(Constants.AmpArm.trapPosition);
 
@@ -113,14 +115,14 @@ public class AmpArm extends ProfiledPIDSubsystem {
                 new TrapezoidProfile.Constraints(
                     Constants.AmpArm.kMaxVelocityRadPerSecond,
                     Constants.AmpArm.kMaxAccelerationRadPerSecSquared)),
-            4.15);
+            -Math.PI / 2);
 
         getController().setTolerance(Constants.AmpArm.pivotTolerance);
         getController().setIZone(Constants.AmpArm.integratorZone);
         getController().enableContinuousInput(0, Math.PI * 2);
         // setGoal(Constants.AmpArm.armOffset);
 
-        // enable();
+        enable();
         configureMotors();
     }
 
@@ -152,13 +154,34 @@ public class AmpArm extends ProfiledPIDSubsystem {
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutine.dynamic(direction);
     }
+    
+    public Command applykS() {
+        return Commands.runEnd(
+            () -> m_pivotMotor.setVoltage(Constants.AmpArm.pivotkS),
+            () -> m_pivotMotor.stopMotor()
+        );
+    }
+
+    public Command applykG() {
+        return Commands.runEnd(
+            () -> m_pivotMotor.setVoltage(Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.AmpArm.pivotkS + Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG),
+            () -> m_pivotMotor.stopMotor()
+        );
+    }
+
+    public Command applykV() {
+        return Commands.runEnd(
+            () -> m_pivotMotor.setVoltage(Constants.AmpArm.pivotkV + Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.AmpArm.pivotkS + Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG),
+            () -> m_pivotMotor.stopMotor()
+        );
+    }
 
     public Command getAmpCommand() {
-        return new InstantCommand(() -> setGoal(Position.AMP.getRotations()));
+        return new InstantCommand(() -> setGoal(Position.AMP.getRotations()), this);
     }
 
     public Command getTrapCommand() {
-        return new InstantCommand(() -> setGoal(Position.TRAP.getRotations()));
+        return new InstantCommand(() -> setGoal(Position.TRAP.getRotations()), this);
     }
 
     public Command getHomeCommand() {
@@ -168,9 +191,16 @@ public class AmpArm extends ProfiledPIDSubsystem {
         }, this);
     }
 
-    // In degrees
-    public double getCANCoderPosition() {
-        return m_cancoder.getAbsolutePosition().getValueAsDouble() * 360;
+    public Command getHandoffCommand() {
+        return new InstantCommand(() -> setGoal(Position.HANDOFF.getRotations()), this);
+    }
+
+    public double getCANCoderPositionDegrees() {
+        return (m_cancoder.getAbsolutePosition().getValueAsDouble() * 360 + 360) % 360;
+    }
+
+    public double getCANCoderPositionRadians() {
+        return m_cancoder.getAbsolutePosition().getValueAsDouble();
     }
 
     public double getCANCoderVelocityDegrees() {
@@ -257,27 +287,32 @@ public class AmpArm extends ProfiledPIDSubsystem {
         // return getPivotRadians();
         // return m_pivotMotor.getPosition().getValueAsDouble();
 
-        return ((getCANCoderPosition() + 110) % 360) * Math.PI / 180;
+        return convert360To180(((getCANCoderPositionDegrees() + 110)) % 360) * Math.PI / 180;
+    }
+    
+    private double convert360To180(double angle) {
+        return (angle + 180) % 360 - 180;
     }
 
     @Override
     public void periodic() {
         
+        SmartDashboard.putNumber("arm/Voltage", m_pivotMotor.getMotorVoltage().getValueAsDouble());
         
         if (m_enabled) {
             // this.disable();
-            // useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
+            useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
             // System.out.println(m_controller.getSetpoint().position);
         }
 
         // SmartDashboard.putNumber("testNum", 0);
         // System.out.println(SmartDashboard.getNumber("testNum", 0));
         
-        SmartDashboard.putNumber("arm/rotations", m_pivotMotor.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("arm/degrees", getPivotDegrees());
-        SmartDashboard.putNumber("arm/radians", getMeasurement());
+        SmartDashboard.putNumber("arm/motor rotations", m_pivotMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("arm/motor degrees", getPivotDegrees());
+        SmartDashboard.putNumber("arm/cancoder radians", getMeasurement());
 
-        SmartDashboard.putNumber("arm/cancoder", getCANCoderPosition());
+        SmartDashboard.putNumber("arm/cancoder degrees", getCANCoderPositionDegrees());
 
         SmartDashboard.putNumber("arm/velocity", getCANCoderVelocityRadians());
     }
