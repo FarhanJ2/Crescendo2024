@@ -174,7 +174,7 @@ public final class Constants {
 
         public static final double pivotkS = 0.13884; //0.13884
         public static final double pivotkG = 0.28674;
-        public static final double pivotkV = 0.8; //5.6457
+        public static final double pivotkV = 0.85; //5.6457
         public static final double pivotkA = 1.7626; //1.7626
 
         public static final double pivotkP = 5; //10
@@ -182,16 +182,17 @@ public final class Constants {
         public static final double pivotkD = 0; //0.5
 
         public static final double topShooterkS = 0.19655; 
-        public static final double topShooterkV = 0.042517; //0.042517
-        public static final double topShooterkA = 0.015598; //0.015598
+        public static final double topShooterkV = 0.00212586; //0.042517
+        public static final double topShooterkA = 0.00025997; //0.015598
+
 
         public static final double topShooterkP = 0; //0.05423
         public static final double topShooterkI = 0;
         public static final double topShooterkD = 0; //0
 
         public static final double bottomShooterkS = 0.13122;
-        public static final double bottomShooterkV = 0.039681; //0.039681
-        public static final double bottomShooterkA = 0.014353; //0.014353
+        public static final double bottomShooterkV = 0.00066135; //0.039681
+        public static final double bottomShooterkA = 0.00071765; //0.014353
 
         public static final double bottomShooterkP = 0; //0.035013
         public static final double bottomShooterkI = 0;
@@ -200,6 +201,7 @@ public final class Constants {
         public static final double pivotTolerance = 0.01; // <1 degree
         public static final double shooterTolerance = 100; // 20 rpm for teleop  ---- 250 rpm for auton
 
+        public static final double homePosition = 1.05;
 
         public static final double feedSpeed = 0.85;
 
@@ -233,8 +235,8 @@ public final class Constants {
         public static final double kI = 0;
         public static final double kD = 0;
 
-        public static final double kMaxVelocityPerSecond = 1;
-        public static final double kMaxAccelerationPerSecSquared = 1;
+        public static final double kMaxVelocityPerSecond = 5;
+        public static final double kMaxAccelerationPerSecSquared = 8;
 
         //TODO tune
         public static final double tolerance = 0.05;
@@ -349,7 +351,7 @@ public final class Constants {
       public static final double podiumAngle = 0.7;
 
       public static final double speakerRPM = 1500;
-      public static final double speakerAngle = 1.05;
+      public static final double speakerAngle = 1; //1.05
       public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
       
   }

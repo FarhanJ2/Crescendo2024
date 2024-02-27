@@ -134,7 +134,7 @@ public class Shooter extends ProfiledPIDSubsystem {
     }
 
     public void goHome() {
-        setGoal(0.6);
+        setGoal(Constants.Shooter.homePosition);
     }
 
     public void rampShooter(double topRPM, double bottomRPM) {
