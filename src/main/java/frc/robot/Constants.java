@@ -150,7 +150,7 @@ public final class Constants {
         public static final int forkMotorID = 14;
 
         public static final int beamBreakerIntake = 0;
-        public static final int beamBrakerShooter = 2;
+        // public static final int beamBrakerShooter = 2;
         public static final int beamBreakerArm = 3;
 
         public static final double intakeVoltage = 7;
@@ -222,29 +222,29 @@ public final class Constants {
         public static final int leftMotorID = 20;
         public static final int rightMotorID = 21;
 
-        public static final int limitSwitchUpperChannel = 2;
-        public static final int limitSwitchLowerChannel = 1;
+        // public static final int limitSwitchUpperChannel = 2;
+        public static final int limitSwitchLowerChannel = 2;
 
         public static final int canCoderID = 22; //TODO NO CANCODER YET
 
-        public static final double kS = 0;
+        public static final double kS = 0.15; // 0.15
         public static final double kG = 0;
-        public static final double kV = 0;
+        public static final double kV = 3; // 3
 
         public static final double kP = 0;
         public static final double kI = 0;
         public static final double kD = 0;
 
-        public static final double kMaxVelocityPerSecond = 5;
-        public static final double kMaxAccelerationPerSecSquared = 8;
+        public static final double kMaxVelocityPerSecond = 1;
+        public static final double kMaxAccelerationPerSecSquared = 1;
 
         //TODO tune
         public static final double tolerance = 0.05;
 
-        public static final double climbRotations = 5;
-        public static final double ampRotations = 2;
+        public static final double climbRotations = 2.5;
+        public static final double ampRotations = 1;
         public static final double homeRotations = 0;
-        public static final double trapRotations = 4;
+        public static final double trapRotations = 1.5;
 
         public static final double manualElevatorSpeed = 0.3;
     }

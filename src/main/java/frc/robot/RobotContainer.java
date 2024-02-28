@@ -150,6 +150,9 @@ public class RobotContainer {
     private final JoystickButton sysidLeftBumper = new JoystickButton(sysIDJoystick, 5);
     private final JoystickButton sysidRightBumper = new JoystickButton(sysIDJoystick, 6);
     private final JoystickButton sysidLeftTrigger = new JoystickButton(sysIDJoystick, 7);
+    private final JoystickButton sysidLeftStick = new JoystickButton(sysIDJoystick, 11);
+    private final JoystickButton sysidRightStick = new JoystickButton(sysIDJoystick, 12);
+
 
 
     
@@ -349,29 +352,46 @@ public class RobotContainer {
     }
 
     private void configureSysIdButtonBindings() {
-        sysidY
-            .whileTrue(
-                s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-            );
+        // sysidY
+        //     .whileTrue(
+        //         s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+        //     );
             
-        sysidA
-            .whileTrue(
-                s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-            );
+        // sysidA
+        //     .whileTrue(
+        //         s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+        //     );
         
-        sysidB
-            .whileTrue(
-                s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kForward)
-            );
+        // sysidB
+        //     .whileTrue(
+        //         s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kForward)
+        //     );
 
-        sysidX
-            .whileTrue(
-                s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-            );
+        // sysidX
+        //     .whileTrue(
+        //         s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+        //     );
+
+        // sysidY.onTrue(
+        //     s_Elevator.getTrapCommand()
+        // );
+
+        sysidY.onTrue(
+            new InstantCommand(() -> {System.out.println("running"); s_Elevator.setGoal(1.5); s_Elevator.enable();})
+        );
+        // sysidY.onTrue(new InstantCommand(() -> System.out.println("running")));
+
+        sysidA.onTrue(
+            s_Elevator.getHomeCommand()
+        );
+
+        sysidX.onTrue(
+            new InstantCommand(() -> s_Elevator.disable())
+        );
         
         sysidLeftBumper
             .whileTrue(
-                s_AmpArm.applykS()
+                s_Elevator.applykS()
             );
 
         sysidRightBumper
@@ -382,6 +402,24 @@ public class RobotContainer {
         sysidLeftTrigger
             .whileTrue(
                 s_AmpArm.applykV()
+            );
+
+        sysidLeftStick
+            .whileTrue(
+                Commands.runEnd(
+                    () -> s_Elevator.moveElevator(true), 
+                    () -> s_Elevator.stopElevator(), 
+                    s_Elevator
+                )
+            );
+
+        sysidRightStick
+            .whileTrue(
+                Commands.runEnd(
+                    () -> s_Elevator.moveElevator(false), 
+                    () -> s_Elevator.stopElevator(), 
+                    s_Elevator
+                )
             );
     }
 

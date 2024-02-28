@@ -13,6 +13,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
@@ -49,9 +50,9 @@ public class Elevator extends ProfiledPIDSubsystem {
 
     private final ElevatorFeedforward m_feedforward =
       new ElevatorFeedforward(
-          Constants.AmpArm.pivotkS, 
-          Constants.AmpArm.pivotkG,
-          Constants.AmpArm.pivotkV
+          Constants.Elevator.kS, 
+          Constants.Elevator.kG,
+          Constants.Elevator.kV
     );
     
     public Elevator() {
@@ -71,6 +72,21 @@ public class Elevator extends ProfiledPIDSubsystem {
         zeroCancoder();
         
         configureMotors();
+
+        enable();
+    }
+
+    public Command applykS() {
+        return Commands.runEnd(
+            () -> {
+                m_rightMotor.setVoltage(-Constants.Elevator.kS);
+                m_leftMotor.setVoltage(-Constants.Elevator.kS);
+            },
+            () -> {
+                m_rightMotor.stopMotor();
+                m_leftMotor.stopMotor();
+            }
+        );
     }
 
     // TODO get what limit is when it's pressed (true or false)
@@ -108,7 +124,10 @@ public class Elevator extends ProfiledPIDSubsystem {
     }
 
     public Command getTrapCommand() {
-        return new InstantCommand(() -> setGoal(Level.TRAP.getRotations()));
+        return new InstantCommand(() -> {
+            setGoal(Level.TRAP.getRotations());
+            System.out.println("running elevator");
+        });
     }
 
     public double getEncoderRotations() {
@@ -163,9 +182,15 @@ public class Elevator extends ProfiledPIDSubsystem {
 
     @Override
     protected void useOutput(double output, TrapezoidProfile.State setpoint) {
+
+        // if (!m_lowerLimitSwitch.get() || getEncoderRotations() >= 2.8) return;
+        // System.out.println("v: " + setpoint.velocity);
+
         double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
-        m_leftMotor.setVoltage(output + feedforward);
-        m_rightMotor.setVoltage(output + feedforward);
+        // System.out.println(feedforward);
+
+        m_leftMotor.setVoltage(-(output + feedforward));
+        m_rightMotor.setVoltage(-(output + feedforward));
     }
 
     @Override
@@ -182,7 +207,9 @@ public class Elevator extends ProfiledPIDSubsystem {
 
         // SmartDashboard.putNumber("elevator/cancoder", getCANCoder()); // 36 max top
         SmartDashboard.putNumber("elevator/cancoder", m_cancoder.getPosition().getValue());
+        SmartDashboard.putNumber("elevator/actual measurement", getMeasurement());
         SmartDashboard.putNumber("elevator/rotations", getEncoderRotations());
         SmartDashboard.putBoolean("elevator/lower limit", m_lowerLimitSwitch.get());
+        SmartDashboard.putNumber("elevator/velocity", m_cancoder.getVelocity().getValueAsDouble());
     }
 }
