@@ -557,13 +557,16 @@ public class RobotContainer {
         xButton_op
             .and(isNormalMode)
                 .onTrue( // Amp position
-                    s_AmpArm.getAmpCommand()
+                    s_AmpArm.getAmpSlamCommand()
                         .alongWith(s_Elevator.getAmpCommand())
                 );
         bButton_op
             .and(isNormalMode)
+                .onTrue(
+                    s_AmpArm.getAmpShootCommand()
+                )
                 .whileTrue( // Shoot
-                    new ArmShot()
+                    new ArmShot().onlyIf(() -> s_AmpArm.getController().atGoal())
                 );
         aButton_op
             .and(isNormalMode)

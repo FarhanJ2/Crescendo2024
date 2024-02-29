@@ -44,7 +44,8 @@ public class AmpArm extends ProfiledPIDSubsystem {
     public static enum Position {
         HOME(Constants.AmpArm.homePosition),
         HANDOFF(Constants.AmpArm.handoffPosition),
-        AMP(Constants.AmpArm.ampPosition),
+        AMP_SLAM(Constants.AmpArm.ampSlamPosition),
+        AMP_SHOOT(Constants.AmpArm.ampShootPosition),
         TRAP(Constants.AmpArm.trapPosition);
 
         private double rotations;
@@ -176,8 +177,12 @@ public class AmpArm extends ProfiledPIDSubsystem {
         );
     }
 
-    public Command getAmpCommand() {
-        return new InstantCommand(() -> setGoal(Position.AMP.getRotations()), this);
+    public Command getAmpSlamCommand() {
+        return new InstantCommand(() -> setGoal(Position.AMP_SLAM.getRotations()), this);
+    }
+
+    public Command getAmpShootCommand() {
+        return new InstantCommand(() -> setGoal(Position.AMP_SHOOT.getRotations()), this);
     }
 
     public Command getTrapCommand() {
