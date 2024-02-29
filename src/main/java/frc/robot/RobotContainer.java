@@ -517,12 +517,12 @@ public class RobotContainer {
     private void configureNormalModeButtonBindings() {
         // Normal Mode
         
-        // Intake
-        rightBumper_op
-            .and(isNormalMode)
-                .whileTrue(
-                    new IntakeCommand()
-                ); // Intake
+        // Intake old intake code
+        // rightBumper_op
+        //     .and(isNormalMode)
+        //         .whileTrue(
+        //             new IntakeCommand()
+        //         ); // Intake
         downPOV_op
             .and(isNormalMode)
                 .whileTrue(
@@ -558,6 +558,7 @@ public class RobotContainer {
             .and(isNormalMode)
                 .onTrue( // Amp position
                     s_AmpArm.getAmpCommand()
+                        .alongWith(s_Elevator.getAmpCommand())
                 );
         bButton_op
             .and(isNormalMode)
@@ -568,12 +569,13 @@ public class RobotContainer {
             .and(isNormalMode)
                 .onTrue( // Home
                     s_AmpArm.getHomeCommand()
+                        .alongWith(s_Elevator.getHomeCommand())
                 );
         leftPOV_op
             .and(isNormalMode)
                 .onTrue( // Arm to intake
                     new SequentialCommandGroup(
-                        s_AmpArm.getHomeCommand(),
+                        s_AmpArm.getHandoffCommand(),
                         new WaitUntilCommand(
                             () -> s_AmpArm.getController().atGoal()
                         ),
@@ -594,7 +596,6 @@ public class RobotContainer {
                 .whileTrue( // Speaker shot
                     new RampSpeaker()
                 );
-        //  TODO Maybe make it so you press once to ramp up, then press again to shoot
         rightTrigger_op
             .and(isNormalMode)
                 .whileTrue( // Auto shoot ---- shoot from anywhere

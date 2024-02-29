@@ -191,7 +191,7 @@ public final class Constants {
         public static final double topShooterkD = 0; //0
 
         public static final double bottomShooterkS = 0.13122;
-        public static final double bottomShooterkV = 0.00066135; //0.039681
+        public static final double bottomShooterkV = 0.00198405; //0.00066135 //0.039681
         public static final double bottomShooterkA = 0.00071765; //0.014353
 
         public static final double bottomShooterkP = 0; //0.035013
@@ -239,8 +239,8 @@ public final class Constants {
 
         public static final double tolerance = 0.05;
 
-        public static final double climbRotations = 2.7;
-        public static final double ampRotations = 1;
+        public static final double climbRotations = 2.8;
+        public static final double ampRotations = 2.3;
         public static final double homeRotations = 0;
         public static final double trapRotations = 1.5;
 
@@ -275,7 +275,7 @@ public final class Constants {
         // Score positions in radians
         public static final double homePosition = -Math.PI / 2; // -2.37
         public static final double handoffPosition = -2.22;
-        public static final double ampPosition = 0.5;
+        public static final double ampPosition = -0.75; // 0.5
         public static final double trapPosition = 1.37;
 
         // Manual testing values
@@ -349,7 +349,7 @@ public final class Constants {
       public static final double podiumAngle = 0.7;
 
       public static final double speakerRPM = 1500;
-      public static final double speakerAngle = 1; //1.05
+      public static final double speakerAngle = 1.17; // 1
       public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
       
   }
