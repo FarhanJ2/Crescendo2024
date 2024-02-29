@@ -229,14 +229,14 @@ public final class Constants {
 
         public static final double kS = 0.15; // 0.15
         public static final double kG = 0;
-        public static final double kV = 3; // 3
+        public static final double kV = 5.65; // 5.65
 
-        public static final double kP = 0;
+        public static final double kP = 4;
         public static final double kI = 0;
         public static final double kD = 0;
 
-        public static final double kMaxVelocityPerSecond = 1;
-        public static final double kMaxAccelerationPerSecSquared = 1;
+        public static final double kMaxVelocityPerSecond = 2;
+        public static final double kMaxAccelerationPerSecSquared = 6;
 
         //TODO tune
         public static final double tolerance = 0.05;

@@ -77,6 +77,7 @@ public class RobotContainer {
         } catch (Exception e) {}
         
         alliance = DriverStation.getAlliance().get();
+        DriverStation.silenceJoystickConnectionWarning(true);
         s_Swerve.poseEstimatorInitializer.start();
     });
 
@@ -372,6 +373,28 @@ public class RobotContainer {
         //         s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kReverse)
         //     );
 
+
+
+        // sysidY
+        //     .whileTrue(
+        //         s_Elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+        //     );
+            
+        // sysidA
+        //     .whileTrue(
+        //         s_Elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+        //     );
+        
+        // sysidB
+        //     .whileTrue(
+        //         s_Elevator.sysIdDynamic(SysIdRoutine.Direction.kForward)
+        //     );
+
+        // sysidX
+        //     .whileTrue(
+        //         s_Elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+        //     );
+
         // sysidY.onTrue(
         //     s_Elevator.getTrapCommand()
         // );
@@ -470,7 +493,8 @@ public class RobotContainer {
                                 );
                             } else {
                                 elevatorManual = OperatorLock.LOCKED;
-                                // s_Elevator.enable();
+                                s_Elevator.enable();
+                                s_Elevator.getDefaultCommand().cancel();
                                 s_Elevator.removeDefaultCommand();
                             }
                         }

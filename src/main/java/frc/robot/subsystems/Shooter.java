@@ -118,7 +118,8 @@ public class Shooter extends ProfiledPIDSubsystem {
             new TrapezoidProfile.Constraints(
                 Constants.Shooter.kMaxVelocityRadPerSecond,
                 Constants.Shooter.kMaxAccelerationRadPerSecSquared)
-            )
+            ),
+            Constants.Shooter.homePosition
         );
         getController().setTolerance(Constants.Shooter.pivotTolerance);
         topShooterPIDController.setTolerance(Constants.Shooter.shooterTolerance);

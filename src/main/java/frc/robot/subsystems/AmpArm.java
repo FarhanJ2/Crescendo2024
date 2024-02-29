@@ -232,6 +232,16 @@ public class AmpArm extends ProfiledPIDSubsystem {
         //     }
         //     m_pivotMotor.setVoltage(voltage);
         // }
+        if(pivotingUp == null) {
+            m_pivotMotor.setVoltage(Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.AmpArm.pivotkS + Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG);
+        }
+        else if(pivotingUp) {
+            m_pivotMotor.setVoltage(0.5 + Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.AmpArm.pivotkS + Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG);
+        }
+        else if(!pivotingUp) {
+            m_pivotMotor.setVoltage(-0.5 + Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.AmpArm.pivotkS + Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG);
+
+        }
     }
 
     public void stopArm() {
