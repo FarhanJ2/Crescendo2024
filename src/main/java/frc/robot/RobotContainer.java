@@ -451,7 +451,15 @@ public class RobotContainer {
         leftTrigger_op 
             .and(isNormalMode.negate())
                 .onTrue( // Trap Position
-                    s_AmpArm.getTrapCommand()
+                    Commands.parallel(
+                        s_Elevator.getTrapCommand(),
+                        s_AmpArm.getTrapCommand()
+                    )
+                    // new InstantCommand(() -> {
+                    //     System.out.println("doing");
+                    //     s_Elevator.getTrapCommand();
+                    //     s_AmpArm.getTrapCommand();
+                    // })
                 );
 
         rightTrigger_op
@@ -469,7 +477,10 @@ public class RobotContainer {
         aButton_op
             .and(isNormalMode.negate())
                 .onTrue(
-                    s_Elevator.getHomeCommand()
+                    Commands.parallel(
+                        s_Elevator.getHomeCommand(),
+                        s_AmpArm.getHomeCommand()
+                    )
                 );
 
         leftThumbstick_op
@@ -493,7 +504,7 @@ public class RobotContainer {
                                 );
                             } else {
                                 elevatorManual = OperatorLock.LOCKED;
-                                s_Elevator.enable();
+                                // s_Elevator.enable();
                                 s_Elevator.getDefaultCommand().cancel();
                                 s_Elevator.removeDefaultCommand();
                             }

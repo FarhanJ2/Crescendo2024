@@ -182,22 +182,35 @@ public class Elevator extends ProfiledPIDSubsystem {
     // }
 
     public Command getHomeCommand() {
-        //TODO add limit switch
-        return new InstantCommand(() -> setGoal(Level.HOME.getRotations()));
+        // return new InstantCommand(() -> setGoal(Level.HOME.getRotations()));
+        return Commands.runOnce(this::disable)
+        .andThen(
+            Commands.run(
+                () -> moveElevator(true),
+                this
+        ).until(this::limitPressed)
+        .andThen(Commands.runOnce(this::stopElevator)));
     }
 
     public Command getAmpCommand() {
-        return new InstantCommand(() -> setGoal(Level.AMP.getRotations()));
+        return new InstantCommand(() -> {
+            setGoal(Level.AMP.getRotations());
+            enable();
+        });
     }
 
     public Command getClimbCommand() {
-        return new InstantCommand(() -> setGoal(Level.CLIMB.getRotations()));
+        return new InstantCommand(() -> {
+            setGoal(Level.CLIMB.getRotations());
+            enable();
+        });
     }
 
     public Command getTrapCommand() {
         return new InstantCommand(() -> {
-            setGoal(Level.TRAP.getRotations());
             System.out.println("running elevator");
+            setGoal(Level.TRAP.getRotations());
+            enable();
         });
     }
 
@@ -262,12 +275,20 @@ public class Elevator extends ProfiledPIDSubsystem {
         // if (!m_lowerLimitSwitch.get() || getEncoderRotations() >= 2.8) return;
         // System.out.println("position: " + setpoint.position);
 
+        if (limitPressed()) {
+            zeroCancoder();
+        }
+
         double feedforward = m_feedforward.calculate(setpoint.velocity);
 
         // System.out.println(feedforward);
 
         m_leftMotor.setVoltage(-(output + feedforward));
         m_rightMotor.setVoltage(-(output + feedforward));
+    }
+
+    private boolean limitPressed() {
+        return !m_lowerLimitSwitch.get();
     }
 
     @Override

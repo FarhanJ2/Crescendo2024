@@ -222,14 +222,13 @@ public final class Constants {
         public static final int leftMotorID = 20;
         public static final int rightMotorID = 21;
 
-        // public static final int limitSwitchUpperChannel = 2;
         public static final int limitSwitchLowerChannel = 2;
 
-        public static final int canCoderID = 22; //TODO NO CANCODER YET
+        public static final int canCoderID = 22;
 
-        public static final double kS = 0.15; // 0.15
+        public static final double kS = 0.15;
         public static final double kG = 0;
-        public static final double kV = 5.65; // 5.65
+        public static final double kV = 5.65;
 
         public static final double kP = 4;
         public static final double kI = 0;
@@ -238,15 +237,14 @@ public final class Constants {
         public static final double kMaxVelocityPerSecond = 2;
         public static final double kMaxAccelerationPerSecSquared = 6;
 
-        //TODO tune
         public static final double tolerance = 0.05;
 
-        public static final double climbRotations = 2.5;
+        public static final double climbRotations = 2.7;
         public static final double ampRotations = 1;
         public static final double homeRotations = 0;
         public static final double trapRotations = 1.5;
 
-        public static final double manualElevatorSpeed = 0.3;
+        public static final double manualElevatorSpeed = 0.8;
     }
 
     public static final class AmpArm {
