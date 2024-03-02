@@ -64,7 +64,7 @@ public class Swerve extends SubsystemBase {
 
     public Field2d field;
 
-    public Limelight limelightFront;
+    public Limelight limelightShooter;
     public Limelight limelightBack;
 
     private SendableChooser limelightChooser; 
@@ -129,11 +129,11 @@ public class Swerve extends SubsystemBase {
 
         field = new Field2d();
         odometryImpl = new OdometryImpl(this);
-        // limelightFront = new Limelight(Constants.LimelightConstants.limelightFront);
+        limelightShooter = new Limelight(Constants.LimelightConstants.limelightShooter);
         // limelightBack = new Limelight(Constants.LimelightConstants.limelightBack);
-        // limelightChooser = new SendableChooser<>();
-        // limelightChooser.setDefaultOption("None", null);
-        // limelightChooser.addOption(limelightFront.getLimelightName(), limelightFront);
+        limelightChooser = new SendableChooser<>();
+        limelightChooser.setDefaultOption("None", null);
+        limelightChooser.addOption(limelightShooter.getLimelightName(), limelightShooter);
         // limelightChooser.addOption(limelightBack.getLimelightName(), limelightBack);
 
 
@@ -338,10 +338,10 @@ public class Swerve extends SubsystemBase {
         // limelightFront.setPipeline(LimelightConstants.limelightFrontTagPipeline);
         // limelightBack.setPipeline(LimelightConstants.limelightBackTagPipeline);
 
-        // Pose2d visionMeasurementLimelightFront = odometryImpl.getVisionMeasurementWithoutYaw(limelightFront); //changed from without yaw
-        // if (visionMeasurementLimelightFront != null) {
-        //     poseEstimator.addVisionMeasurement(visionMeasurementLimelightFront, limelightFront.getLimelightLatency());
-        // }
+        Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurementWithoutYaw(limelightShooter); //changed from without yaw
+        if (visionMeasurementLimelightShooter != null) {
+            poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
+        }
 
 
         // //newly added limelight automatically configured for odometry impl
@@ -365,7 +365,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("swerve/distance", odometryImpl.getDistance(Constants.BlueTeamPoses.blueSpeakerPose)); 
 
         SmartDashboard.putData("field", field);
-        // SmartDashboard.putData("limelightChooser", limelightChooser);
+        SmartDashboard.putData("limelightChooser", limelightChooser);
 
         
     }

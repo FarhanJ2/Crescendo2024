@@ -233,10 +233,13 @@ public class Shooter extends ProfiledPIDSubsystem {
         // return Commands.run(() -> {
         //     System.out.println(getPivotSetpointFromRegression(distanceSupplier.get()) + ", " + getShooterSetpointFromRegression(distanceSupplier.get()));
         // });
-        return Commands.run(() -> {
-            rampShooter(getShooterSetpointFromRegression(distanceSupplier.get()), getShooterSetpointFromRegression(distanceSupplier.get()));
-            setPivot(getPivotSetpointFromRegression(distanceSupplier.get()));
-        });
+        return Commands.runEnd(
+            () -> {
+                rampShooter(getShooterSetpointFromRegression(distanceSupplier.get()), getShooterSetpointFromRegression(distanceSupplier.get()));
+                setPivot(getPivotSetpointFromRegression(distanceSupplier.get()));
+            },
+            () -> stopShooter()
+        );
         // return new RampShooter(rpm, rpm, pivotAngle); // TODO fix
 
         // return new ParallelCommandGroup(
@@ -356,6 +359,7 @@ public class Shooter extends ProfiledPIDSubsystem {
         
         SmartDashboard.putNumber("shooter/pivot cancoder radians", getMeasurement());
         SmartDashboard.putNumber("shooter/pivot cancoder", getCANCoder());
+        SmartDashboard.putNumber("shooter/pivot voltage", m_pivotMotor.getMotorVoltage().getValueAsDouble());
         // if(isReadyToShoot()) System.out.println("shooter is ready");
         // m_shooterTopMotor.set(1);
         // m_shooterBottomMotor.set(1);

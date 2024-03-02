@@ -22,7 +22,8 @@ private boolean isFlashing = false;
    
   public Limelight(String limelightName) { 
       this.limelightName = limelightName;
-      limelightArray.add(this);
+      limelightArray.add(this); //adds limelight object's memory address 
+
   }
 
   //For debugging and startup purposes
@@ -76,7 +77,7 @@ private boolean isFlashing = false;
   }
 
   public Pose2d getVisionPredictedRobotPose() {
-      LimelightHelpers.getLatestResults(this.limelightName);
+    //   LimelightHelpers.getLatestResults(this.limelightName);
       if (LimelightHelpers.getTV(this.limelightName)) {
           return LimelightHelpers.getBotPose2d_wpiBlue(this.limelightName);
       } 
@@ -91,7 +92,7 @@ private boolean isFlashing = false;
     // This method will be called once per scheduler run
     SmartDashboard.putNumber(this.limelightName + " Number of Tags in View", this.getNumberOfTagsInView());
     SmartDashboard.putNumber(this.limelightName + " Latency", this.getLimelightLatency());
-    SmartDashboard.putNumber(this.limelightName + " current pipeline", this.getPipeline()); 
+    SmartDashboard.putNumber(this.limelightName + " current pipeline", this.getPipeline());
     SmartDashboard.putString("Limelights in Use", getLimelightsInUse().toString());
       
   }

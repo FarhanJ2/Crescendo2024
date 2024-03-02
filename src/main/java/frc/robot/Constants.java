@@ -185,8 +185,7 @@ public final class Constants {
         public static final double topShooterkV = 0.00212586; //0.042517
         public static final double topShooterkA = 0.00025997; //0.015598
 
-
-        public static final double topShooterkP = 0; //0.05423
+        public static final double topShooterkP = 0.01; //0.05423
         public static final double topShooterkI = 0;
         public static final double topShooterkD = 0; //0
 
@@ -194,12 +193,12 @@ public final class Constants {
         public static final double bottomShooterkV = 0.00198405; //0.00066135 //0.039681
         public static final double bottomShooterkA = 0.00071765; //0.014353
 
-        public static final double bottomShooterkP = 0; //0.035013
+        public static final double bottomShooterkP = 0.01; //0.035013
         public static final double bottomShooterkI = 0;
         public static final double bottomShooterkD = 0;
 
         public static final double pivotTolerance = 0.01; // <1 degree
-        public static final double shooterTolerance = 100; // 20 rpm for teleop  ---- 250 rpm for auton
+        public static final double shooterTolerance = 50; // 20 rpm for teleop  ---- 250 rpm for auton
 
         public static final double homePosition = 1.05;
 
@@ -252,20 +251,20 @@ public final class Constants {
         public static final int shootMotorID = 23;
 
         public static final int canCoderID = 24;        
-        public static final double pivotkS = 0.14; //0.065414
-        public static final double pivotkG = 0.095; //0.31787
-        public static final double pivotkV = 0.46; //0.47222222222 // 1.7629 // 1.7 // 0.3
+        public static final double pivotkS = 0.14; //0.14 //0.065414
+        public static final double pivotkG = 0.095; //0.095
+        public static final double pivotkV = 0.46; //0.46
         // public static final double pivotkA = 0.3;
 
-        public static final double pivotkP = 1; // 10
+        public static final double pivotkP = 0; // 1 // 10
         public static final double pivotkI = 0;
-        public static final double pivotkD = 0.00001; // 0.06
+        public static final double pivotkD = 0; //0.000001 // 0.06
 
         public static final double integratorZone = 0;
 
-        public static final double pivotTolerance = 0.05;
+        public static final double pivotTolerance = 0.01;
 
-        public static final double kMaxVelocityRadPerSecond = 4;
+        public static final double kMaxVelocityRadPerSecond = 1;
         public static final double kMaxAccelerationRadPerSecSquared = 8;
 
         public static final double armOffset = -Math.PI / 2; // -2.13
@@ -275,7 +274,7 @@ public final class Constants {
         // Score positions in radians
         public static final double homePosition = -Math.PI / 2; // -2.37
         public static final double handoffPosition = -2.22;
-        public static final double ampSlamPosition = -0.75; // 0.5
+        public static final double ampSlamPosition = -0.20; // 0.75
         public static final double ampShootPosition = -0.6;
         public static final double trapPosition = 1.37;
 
@@ -302,7 +301,7 @@ public final class Constants {
 
     public static class LimelightConstants {
         // All limelights on the robot
-        public static final String limelightFront = "limelight-front";
+        public static final String limelightShooter = "limelight-shooter";
         public static final String limelightBack = "limelight-back";
 
         // Tracking constants
@@ -310,7 +309,7 @@ public final class Constants {
         public static final double maxVisionPoseError = 0.5;
 
         // Pipeline IDS 
-        public static final int limelightFrontTagPipeline = 0;
+        public static final int limelightShooterTagPipeline = 0;
         public static final int limelightBackTagPipeline = 0;
 
     }
@@ -346,7 +345,7 @@ public final class Constants {
     }
 
     public static final class ShootingConstants {
-      public static final double podiumRPM = 1500;
+      public static final double podiumRPM = 3000; // 1500
       public static final double podiumAngle = 0.7;
 
       public static final double speakerRPM = 1500;

@@ -58,45 +58,45 @@ public class AmpArm extends ProfiledPIDSubsystem {
             return rotations;
         }
     }
-    private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
-    // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
-    private final MutableMeasure<Angle> m_angle = mutable(Radians.of(0));
-    // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
-    private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RadiansPerSecond.of(0));
+    // private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+    // // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+    // private final MutableMeasure<Angle> m_angle = mutable(Radians.of(0));
+    // // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+    // private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RadiansPerSecond.of(0));
 
-    private final Measure<Velocity<Voltage>> m_desiredRampRate = Volts.of(0.075).per(Seconds.of(1));
-    private final Measure<Voltage> m_desiredStepVoltage = Volts.of(0.6);
+    // private final Measure<Velocity<Voltage>> m_desiredRampRate = Volts.of(0.075).per(Seconds.of(1));
+    // private final Measure<Voltage> m_desiredStepVoltage = Volts.of(0.6);
 
     private final TalonFX m_pivotMotor = new TalonFX(Constants.AmpArm.pivotMotorID);
     private final TalonFX m_shootMotor = new TalonFX(Constants.AmpArm.shootMotorID);
 
-    private final SysIdRoutine m_sysIdRoutine =
-      new SysIdRoutine(
-          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
-          new  SysIdRoutine.Config(m_desiredRampRate, m_desiredStepVoltage, null),
-          new SysIdRoutine.Mechanism(
-              // Tell SysId how to plumb the driving voltage to the motor(s).
-              (Measure<Voltage> volts) -> {
-                m_pivotMotor.setVoltage(volts.in(Volts));
-              },
-              // Tell SysId how to record a frame of data for each motor on the mechanism being
-              // characterized.
-              log -> {
-                // Record a frame for the shooter motor.
-                log.motor("pivot-arm")
-                    .voltage(
-                        m_appliedVoltage.mut_replace(
-                            m_pivotMotor.get() * RobotController.getBatteryVoltage(), Volts))
-                    //.angularPosition(m_angle.mut_replace(m_pivotMotor.getPosition().getValue() / 18.8888888888888, Rotations))
-                    .angularPosition(m_angle.mut_replace(getMeasurement(), Radians))
-                    // .angularVelocity(
-                    //     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValue() / 18.8888888888888, RotationsPerSecond));
-                    .angularVelocity(
-                        m_velocity.mut_replace(getCANCoderVelocityRadians(), RadiansPerSecond));
-              },
-              // Tell SysId to make generated commands require this subsystem, suffix test state in
-              // WPILog with this subsystem's name ("shooter")
-              this));
+    // private final SysIdRoutine m_sysIdRoutine =
+    //   new SysIdRoutine(
+    //       // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+    //       new  SysIdRoutine.Config(m_desiredRampRate, m_desiredStepVoltage, null),
+    //       new SysIdRoutine.Mechanism(
+    //           // Tell SysId how to plumb the driving voltage to the motor(s).
+    //           (Measure<Voltage> volts) -> {
+    //             m_pivotMotor.setVoltage(volts.in(Volts));
+    //           },
+    //           // Tell SysId how to record a frame of data for each motor on the mechanism being
+    //           // characterized.
+    //           log -> {
+    //             // Record a frame for the shooter motor.
+    //             log.motor("pivot-arm")
+    //                 .voltage(
+    //                     m_appliedVoltage.mut_replace(
+    //                         m_pivotMotor.get() * RobotController.getBatteryVoltage(), Volts))
+    //                 //.angularPosition(m_angle.mut_replace(m_pivotMotor.getPosition().getValue() / 18.8888888888888, Rotations))
+    //                 .angularPosition(m_angle.mut_replace(getMeasurement(), Radians))
+    //                 // .angularVelocity(
+    //                 //     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValue() / 18.8888888888888, RotationsPerSecond));
+    //                 .angularVelocity(
+    //                     m_velocity.mut_replace(getCANCoderVelocityRadians(), RadiansPerSecond));
+    //           },
+    //           // Tell SysId to make generated commands require this subsystem, suffix test state in
+    //           // WPILog with this subsystem's name ("shooter")
+    //           this));
 
     private final CANcoder m_cancoder = new CANcoder(Constants.AmpArm.canCoderID);
 
@@ -138,23 +138,23 @@ public class AmpArm extends ProfiledPIDSubsystem {
     //     );
     // }
 
-    /**
-     * Returns a command that will execute a quasistatic test in the given direction.
-     *
-     * @param direction The direction (forward or reverse) to run the test in
-     */
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.quasistatic(direction);
-    }
+    // /**
+    //  * Returns a command that will execute a quasistatic test in the given direction.
+    //  *
+    //  * @param direction The direction (forward or reverse) to run the test in
+    //  */
+    // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    //     return m_sysIdRoutine.quasistatic(direction);
+    // }
 
-    /**
-     * Returns a command that will execute a dynamic test in the given direction.
-     *
-     * @param direction The direction (forward or reverse) to run the test in
-     */
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.dynamic(direction);
-    }
+    // /**
+    //  * Returns a command that will execute a dynamic test in the given direction.
+    //  *
+    //  * @param direction The direction (forward or reverse) to run the test in
+    //  */
+    // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    //     return m_sysIdRoutine.dynamic(direction);
+    // }
     
     public Command applykS() {
         return Commands.runEnd(
@@ -178,7 +178,10 @@ public class AmpArm extends ProfiledPIDSubsystem {
     }
 
     public Command getAmpSlamCommand() {
-        return new InstantCommand(() -> setGoal(Position.AMP_SLAM.getRotations()), this);
+        return new InstantCommand(() -> {
+            setGoal(Position.AMP_SLAM.getRotations());
+            this.enable();
+        }, this);
     }
 
     public Command getAmpShootCommand() {

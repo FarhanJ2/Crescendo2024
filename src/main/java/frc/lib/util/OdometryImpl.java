@@ -9,8 +9,11 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.subsystems.Swerve;
 
@@ -26,6 +29,16 @@ public class OdometryImpl extends SubsystemBase {
       double distance = s_Swerve.getPose().getTranslation().getDistance(target.getTranslation());
       return distance;
   }
+
+//   public double getPivotAngle(DriverStation.Alliance alliance) {
+//     double base;
+//     double height;
+    
+//     if (alliance == DriverStation.Alliance.Red) {
+//         base = getDistance(Constants.RedTeamPoses.redSpeakerPose)
+//         + Constants.RobotConstants.DistanceToShooterPivot;
+//     }
+//   }
 
   //This is assuming that the robot is directly facing the target object
   public double getTurnAngle(Pose2d target, double robotAngle) {
@@ -99,7 +112,7 @@ public class OdometryImpl extends SubsystemBase {
   public void periodic() {
       // This method will be called once per scheduler run
       // newly added
-      SmartDashboard.putNumber("Vision Pose Error Limelight Front", getVisionPoseError(s_Swerve.limelightFront));
+      SmartDashboard.putNumber("Vision Pose Error Limelight Front", getVisionPoseError(s_Swerve.limelightShooter));
       SmartDashboard.putNumber("Vision Pose Error Limelight Back", getVisionPoseError(s_Swerve.limelightBack));
    }
 }
