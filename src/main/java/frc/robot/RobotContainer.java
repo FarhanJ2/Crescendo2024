@@ -309,12 +309,12 @@ public class RobotContainer {
             () -> s_Shooter.isReadyToShoot()
         ).onTrue(
             /*s_Shooter.shooterReadyLEDCommand()*/
-            Commands.run(
+            Commands.runOnce(
                 () -> {
                     operator.getHID().setRumble(RumbleType.kBothRumble, 1);
                 }
         )).onFalse(
-            Commands.run(
+            Commands.runOnce(
                 () -> {
                     operator.getHID().setRumble(RumbleType.kBothRumble, 0);
                 }

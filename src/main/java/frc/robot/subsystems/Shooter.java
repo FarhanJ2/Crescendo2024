@@ -189,15 +189,18 @@ public class Shooter extends ProfiledPIDSubsystem {
     }
 
     public boolean pivotAtSetpoint() {
-        return getController().atGoal();
+        // return getController().atGoal();
+        return Math.abs(getMeasurement() - getController().getGoal().position) <= Constants.Shooter.pivotTolerance * 5;
     }
 
     public boolean bottomShooterAtSetpoint() {
-        return bottomShooterPIDController.atSetpoint();
+        return Math.abs(getShooterBottomRPM() - bottomShooterPIDController.getSetpoint()) <= Constants.Shooter.shooterTolerance * 3;
     }
 
     public boolean topShooterAtSetpoint() {
-        return topShooterPIDController.atSetpoint();
+        // return topShooterPIDController.getSetpoint() >= 100 
+        return Math.abs(getShooterTopRPM() - topShooterPIDController.getSetpoint()) <= Constants.Shooter.shooterTolerance * 3;
+        // return topShooterPIDController.atSetpoint();
     }
 
     public double getCANCoder() {
@@ -286,10 +289,10 @@ public class Shooter extends ProfiledPIDSubsystem {
     }
 
     public boolean isReadyToShoot() {
-        return topShooterAtSetpoint() 
-        && bottomShooterAtSetpoint() 
-        && pivotAtSetpoint() 
-        && isShooting;
+        return topShooterAtSetpoint()
+        && bottomShooterAtSetpoint()
+        && pivotAtSetpoint();
+        // && isShooting;
     }
 
     public Command shooterReadyLEDCommand() {
@@ -382,6 +385,10 @@ public class Shooter extends ProfiledPIDSubsystem {
         SmartDashboard.putNumber("shooter/top rpm ", getShooterTopRPM());   
         SmartDashboard.putNumber("shooter/pivot deg", getPivotDegrees());
         SmartDashboard.putNumber("shooter/pivot rad", getPivotRadians());
+
+        SmartDashboard.putBoolean("shooter/is ramped", isReadyToShoot());
+        SmartDashboard.putNumber("shooter/top setpoint", topShooterPIDController.getSetpoint());
+        SmartDashboard.putNumber("shooter/top error", topShooterPIDController.getPositionError());
     }   
 
 }

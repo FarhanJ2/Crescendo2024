@@ -338,10 +338,10 @@ public class Swerve extends SubsystemBase {
         // limelightFront.setPipeline(LimelightConstants.limelightFrontTagPipeline);
         // limelightBack.setPipeline(LimelightConstants.limelightBackTagPipeline);
 
-        Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurementWithoutYaw(limelightShooter); //changed from without yaw
-        if (visionMeasurementLimelightShooter != null) {
-            poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
-        }
+        // Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurementWithoutYaw(limelightShooter); //changed from without yaw
+        // if (visionMeasurementLimelightShooter != null) {
+        //     poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
+        // }
 
 
         // //newly added limelight automatically configured for odometry impl
