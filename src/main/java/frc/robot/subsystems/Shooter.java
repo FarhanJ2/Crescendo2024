@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
@@ -69,11 +71,37 @@ public class Shooter extends ProfiledPIDSubsystem {
     // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
     private final MutableMeasure<Velocity<Angle>> m_velocity = mutable(RotationsPerSecond.of(0));
 
-    private final Measure<Velocity<Voltage>> m_desiredRampRate = Volts.of(0.09).per(Seconds.of(1));
-    private final Measure<Voltage> m_desiredStepVoltage = Volts.of(0.5);
+    private final Measure<Velocity<Voltage>> m_desiredRampRate = Volts.of(0.3).per(Seconds.of(1));
+    private final Measure<Voltage> m_desiredStepVoltage = Volts.of(1);
 
     //Create a new SysId routine for characterizing the shooter.
-    
+    private final SysIdRoutine m_sysIdRoutine =
+      new SysIdRoutine(
+          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+          new  SysIdRoutine.Config(m_desiredRampRate, m_desiredStepVoltage, null),
+          new SysIdRoutine.Mechanism(
+              // Tell SysId how to plumb the driving voltage to the motor(s).
+              (Measure<Voltage> volts) -> {
+                m_pivotMotor.setVoltage(volts.in(Volts));
+              },
+              // Tell SysId how to record a frame of data for each motor on the mechanism being
+              // characterized.
+              log -> {
+                // Record a frame for the shooter motor.
+                log.motor("shooter")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(
+                            m_pivotMotor.get() * RobotController.getBatteryVoltage(), Volts))
+                    //.angularPosition(m_angle.mut_replace(m_pivotMotor.getPosition().getValue() / 18.8888888888888, Rotations))
+                    .angularPosition(m_angle.mut_replace(getMeasurement(), Radians))
+                    // .angularVelocity(
+                    //     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValue() / 18.8888888888888, RotationsPerSecond));
+                    .angularVelocity(
+                        m_velocity.mut_replace(m_pivotMotor.getVelocity().getValueAsDouble() / 111.51515151515151 * 2 * Math.PI, RadiansPerSecond));
+              },
+              // Tell SysId to make generated commands require this subsystem, suffix test state in
+              // WPILog with this subsystem's name ("shooter")
+              this));
 
     private final PIDController bottomShooterPIDController = 
         new PIDController(
@@ -134,6 +162,24 @@ public class Shooter extends ProfiledPIDSubsystem {
         enable();
     }
 
+    /**
+     * Returns a command that will execute a quasistatic test in the given direction.
+     *
+     * @param direction The direction (forward or reverse) to run the test in
+     */
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.quasistatic(direction);
+    }
+
+    /**
+     * Returns a command that will execute a dynamic test in the given direction.
+     *
+     * @param direction The direction (forward or reverse) to run the test in
+     */
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.dynamic(direction);
+    }
+
     public void goHome() {
         setGoal(Constants.Shooter.homePosition);
     }
@@ -188,6 +234,27 @@ public class Shooter extends ProfiledPIDSubsystem {
         }
     }
 
+    public Command applykS() {
+        return Commands.runEnd(
+            () -> m_pivotMotor.setVoltage(Constants.Shooter.pivotkS),
+            () -> m_pivotMotor.stopMotor()
+        );
+    }
+
+    public Command applykG() {
+        return Commands.runEnd(
+            () -> m_pivotMotor.setVoltage(Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.Shooter.pivotkS + Math.cos(getMeasurement()) * Constants.Shooter.pivotkG),
+            () -> m_pivotMotor.stopMotor()
+        );
+    }
+
+    public Command applykV() {
+        return Commands.runEnd(
+            () -> m_pivotMotor.setVoltage(Constants.Shooter.pivotkV + Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.Shooter.pivotkS + Math.cos(getMeasurement()) * Constants.Shooter.pivotkG),
+            () -> m_pivotMotor.stopMotor()
+        );
+    }
+
     public boolean pivotAtSetpoint() {
         // return getController().atGoal();
         return Math.abs(getMeasurement() - getController().getGoal().position) <= Constants.Shooter.pivotTolerance * 5;
@@ -204,7 +271,11 @@ public class Shooter extends ProfiledPIDSubsystem {
     }
 
     public double getCANCoder() {
-        return m_cancoder.getAbsolutePosition().getValueAsDouble() * 360 - 90;
+        return m_cancoder.getAbsolutePosition().getValueAsDouble() * 360 - 90 + 71 - 5.7;
+    }
+
+    public double getCANCoderVelocityRadians() {
+        return m_cancoder.getVelocity().getValueAsDouble() * 2 * Math.PI;
     }
 
     
@@ -225,6 +296,10 @@ public class Shooter extends ProfiledPIDSubsystem {
     public double getMeasurement() {
         return getCANCoder() * Math.PI / 180;
         // return getPivotRadians();
+    }
+
+    private double getPivotVelocity() {
+        return m_cancoder.getVelocity().getValueAsDouble() * 360 * Math.PI / 180;
     }
 
     public Command readyShootCommand(Supplier<Double> distanceSupplier/* , Supplier<Boolean> feed*/) {
@@ -385,6 +460,7 @@ public class Shooter extends ProfiledPIDSubsystem {
         SmartDashboard.putNumber("shooter/top rpm ", getShooterTopRPM());   
         SmartDashboard.putNumber("shooter/pivot deg", getPivotDegrees());
         SmartDashboard.putNumber("shooter/pivot rad", getPivotRadians());
+        SmartDashboard.putNumber("shooter/pivot velocity", getCANCoderVelocityRadians());
 
         SmartDashboard.putBoolean("shooter/is ramped", isReadyToShoot());
         SmartDashboard.putNumber("shooter/top setpoint", topShooterPIDController.getSetpoint());

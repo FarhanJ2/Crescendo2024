@@ -65,7 +65,7 @@ public class Swerve extends SubsystemBase {
     public Field2d field;
 
     public Limelight limelightShooter;
-    public Limelight limelightBack;
+    public Limelight limelightArm;
 
     private SendableChooser limelightChooser; 
 
@@ -130,12 +130,14 @@ public class Swerve extends SubsystemBase {
         field = new Field2d();
         odometryImpl = new OdometryImpl(this);
         limelightShooter = new Limelight(Constants.LimelightConstants.limelightShooter);
-        // limelightBack = new Limelight(Constants.LimelightConstants.limelightBack);
+        limelightArm = new Limelight(Constants.LimelightConstants.limelightArm);
         limelightChooser = new SendableChooser<>();
         limelightChooser.setDefaultOption("None", null);
         limelightChooser.addOption(limelightShooter.getLimelightName(), limelightShooter);
         // limelightChooser.addOption(limelightBack.getLimelightName(), limelightBack);
 
+        limelightShooter.setPipeline(LimelightConstants.limelightShooterTagPipeline);
+        //limelightArm.setPipeline(LimelightConstants.limelightShooterTagPipeline);
 
         //TODO FIXXXXXXXXXX plz
         
@@ -278,7 +280,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public Rotation2d getHeading(){
-        return getRelativePose().getRotation();
+        return getPose().getRotation();
     }
 
     public void setHeading(Rotation2d heading){
@@ -335,20 +337,18 @@ public class Swerve extends SubsystemBase {
         if(poseEstimator != null) poseEstimator.update(getGyroYaw(), getModulePositions());
 
         // limelight and odometry classes are written so that adding additional limelights is easy 
-        // limelightFront.setPipeline(LimelightConstants.limelightFrontTagPipeline);
-        // limelightBack.setPipeline(LimelightConstants.limelightBackTagPipeline);
-
-        // Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurementWithoutYaw(limelightShooter); //changed from without yaw
-        // if (visionMeasurementLimelightShooter != null) {
-        //     poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
-        // }
+    
+        Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurementWithoutYaw(limelightShooter); //changed from without yaw
+        if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
+            poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
+        }
 
 
-        // //newly added limelight automatically configured for odometry impl
-        // Pose2d visionMeasurementLimelightBack = odometryImpl.getVisionMeasurementWithoutYaw(limelightBack); //changed from without yaw
-        // if (visionMeasurementLimelightBack != null) {
-        //     poseEstimator.addVisionMeasurement(visionMeasurementLimelightBack, limelightBack.getLimelightLatency());
-        // }
+        // // //newly added limelight automatically configured for odometry impl
+        Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurementWithoutYaw(limelightArm); //changed from without yaw
+        if (visionMeasurementLimelightArm != null && poseEstimator != null) {
+            poseEstimator.addVisionMeasurement(visionMeasurementLimelightArm, limelightArm.getLimelightLatency());
+        }
         
         
         field.setRobotPose(getPose());

@@ -1,25 +1,20 @@
 package frc.robot;
 
-import java.sql.Driver;
-
-import com.fasterxml.jackson.core.sym.Name;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PS5Controller;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -50,13 +45,6 @@ import frc.robot.subsystems.*;
 import frc.robot.subsystems.LED.LEDColor;
 import frc.robot.subsystems.LED.LEDMode;
 
-
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
 
     private static enum OperatorMode {
@@ -96,68 +84,31 @@ public class RobotContainer {
     private final Joystick sysIDJoystick = new Joystick(2);
 
     /* Drive Controls */
-    // private final int translationAxis = 1;
-    // private final int strafeAxis = 0;
-    // private final int rotationAxis = 2;
-
-    // private final Trigger robotCentricButton = driver.L1();
-    // private final Trigger intakeButton = driver.R1();
-    // private final Trigger slowModeButton = driver.R2();
-    // private final Trigger alignSpeakerButton = driver.L2();
-    // private final Trigger zeroGyroButton = driver.circle();
-
     private final Trigger robotCentricButton = driver.leftBumper();
     private final Trigger intakeButton = driver.rightBumper();
     private final Trigger slowModeButton = driver.rightTrigger();
     private final Trigger alignSpeakerButton = driver.leftTrigger();
     private final Trigger zeroGyroButton = driver.b();
 
-    /* Driver Buttons */
-    // private final JoystickButton zeroGyro = new JoystickButton(driver, 3); // B
-    // private final JoystickButton robotCentric = new JoystickButton(driver, 5); // LB
-    // private final JoystickButton slowMode = new JoystickButton(driver, 8); // RT
-    // private final JoystickButton flashButton = new JoystickButton(driver, 1); // X
-
-    //XBox Controller
-    // private final Trigger zeroGyro = driver.b(); // B
-    // private final Trigger robotCentric = driver.leftBumper(); // LB
-    // private final Trigger slowMode = driver.rightTrigger(); // RT
-    // private final Trigger flashButton = driver.x(); // X
-    // private final Trigger alignSpeakerButton = driver.leftTrigger(); // LT
-    // private final Trigger intakeButton = driver.rightBumper(); // RB
-
-
-    // private final JoystickButton trackApriltag = new JoystickButton(driver, 1); // X
-    // private final JoystickButton alignSpeakerButton = new JoystickButton(driver, 7); // LT
-    // private final POVButton leftPOV = new POVButton(driver, 270);
-    // private final POVButton rightPOV = new POVButton(driver, 90);
-    // private final POVButton upPOV = new POVButton(driver, 0);
-    // private final POVButton downPOV = new POVButton(driver, 180);
-
     /* Operator Buttons */
     private final int manualShootAxis = 1;
     private final int manualArmAxis = 5;
     private final int manualElevatorAxis = 1;
 
-    // private final JoystickButton xButton_op = new JoystickButton(operator, 1);
-    // private final JoystickButton aButton_op = new JoystickButton(operator, 2);
-    // private final JoystickButton bButton_op = new JoystickButton(operator, 3);
-    // private final JoystickButton yButton_op = new JoystickButton(operator, 4);
-    // private final JoystickButton leftBumper_op = new JoystickButton(operator, 5);
-    // private final JoystickButton rightBumper_op = new JoystickButton(operator, 6);
-    // private final JoystickButton leftTrigger_op = new JoystickButton(operator, 7);
-    // private final JoystickButton rightTrigger_op = new JoystickButton(operator, 8);
-    // private final JoystickButton backButton_op = new JoystickButton(operator, 9);
-    // private final JoystickButton startButton_op = new JoystickButton(operator, 10);
-    // private final JoystickButton leftThumbstick_op = new JoystickButton(operator, 11);
-    // private final JoystickButton rightThumbstick_op = new JoystickButton(operator, 12);
+    private final Trigger isNormalMode = new Trigger(() -> operatorMode == OperatorMode.NORMAL_MODE);
 
-    // private final POVButton upPOV_op = new POVButton(operator, 0);
-    // private final POVButton leftPOV_op = new POVButton(operator, 270);
-    // private final POVButton rightPOV_op = new POVButton(operator, 90);
-    // private final POVButton downPOV_op = new POVButton(operator, 180);
+    /* Auton selector */
+    public static final DigitalInput zero = new DigitalInput(10);
+    private static final DigitalInput one = new DigitalInput(11);
+    private static final DigitalInput two = new DigitalInput(12);
+    private static final DigitalInput three = new DigitalInput(13);
+    private static final DigitalInput four = new DigitalInput(18);
+    private static final DigitalInput five = new DigitalInput(19);
+    private static final DigitalInput six = new DigitalInput(20);
+    private static final DigitalInput seven = new DigitalInput(21);
+    public static final DigitalInput eight = new DigitalInput(22);
 
-
+    /* Sysid Tuning Controller */
     private final JoystickButton sysidX = new JoystickButton(sysIDJoystick, 1);
     private final JoystickButton sysidA = new JoystickButton(sysIDJoystick, 2);
     private final JoystickButton sysidB = new JoystickButton(sysIDJoystick, 3);
@@ -167,12 +118,6 @@ public class RobotContainer {
     private final JoystickButton sysidLeftTrigger = new JoystickButton(sysIDJoystick, 7);
     private final JoystickButton sysidLeftStick = new JoystickButton(sysIDJoystick, 11);
     private final JoystickButton sysidRightStick = new JoystickButton(sysIDJoystick, 12);
-
-
-
-    
-    private final Trigger isNormalMode = new Trigger(() -> operatorMode == OperatorMode.NORMAL_MODE);
-
     
     /* Subsystems */
     public static final Swerve s_Swerve = new Swerve();
@@ -183,10 +128,6 @@ public class RobotContainer {
     public static final Elevator s_Elevator = new Elevator();
     public static final LED s_Led = new LED(Constants.Led.port, Constants.Led.length);
     
-
-    public static NoteStatus noteStatus = NoteStatus.NONE;
-
-    /* The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
 
         allianceGetter.start();
@@ -284,22 +225,44 @@ public class RobotContainer {
             .onTrue(
                 new InstantCommand(() -> {
                     if (operatorMode == OperatorMode.NORMAL_MODE) {
+                        // lockManualControls();
                         operatorMode = OperatorMode.END_GAME_MODE;
-                        lockManualControls();
 
                     } else {
+                        // lockManualControls();
                         operatorMode = OperatorMode.NORMAL_MODE;
-                        lockManualControls();
                     }
                 })
             );
-
     }
 
+    // TODO need to make this remove the default command if it's the manual command
     private void lockManualControls() {
+        // clearDefaultCommands();
+
+        s_Shooter.setDefaultCommand(
+            new HomeCommand(
+                s_Shooter
+            )
+        );
+
         armManual = OperatorLock.LOCKED;
         shooterManual = OperatorLock.LOCKED;
         elevatorManual = OperatorLock.LOCKED;
+    }
+
+    private void clearDefaultCommands() {
+        s_AmpArm.disable();
+        s_AmpArm.getDefaultCommand().cancel();
+        s_AmpArm.removeDefaultCommand();
+
+        s_Shooter.disable();
+        s_Shooter.getDefaultCommand().cancel();
+        s_Shooter.removeDefaultCommand();
+
+        s_Elevator.disable();
+        s_Elevator.getDefaultCommand().cancel();
+        s_Elevator.removeDefaultCommand();
     }
 
     private void configureLEDBindings() {
@@ -307,7 +270,9 @@ public class RobotContainer {
         //Ready To Shoot
         new Trigger(
             () -> s_Shooter.isReadyToShoot()
-        ).onTrue(
+        )
+        .and(operator.leftBumper().or(operator.leftTrigger().or(operator.rightTrigger())))
+        .onTrue(
             /*s_Shooter.shooterReadyLEDCommand()*/
             Commands.runOnce(
                 () -> {
@@ -351,6 +316,37 @@ public class RobotContainer {
     }
 
     private void configureSysIdButtonBindings() {
+        // sysidY.onTrue(
+        //     Commands.runOnce(() -> s_Shooter.setGoal(1))
+        // );
+
+        // sysidB.onTrue(
+        //     Commands.runOnce(() -> s_Shooter.setGoal(0))
+        // );
+        // sysidX.whileTrue(
+        //     s_Shooter.applykV()
+        // );
+
+        // sysidY
+        //     .whileTrue(
+        //         s_Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+        //     );
+            
+        // sysidA
+        //     .whileTrue(
+        //         s_Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+        //     );
+        
+        // sysidB
+        //     .whileTrue(
+        //         s_Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward)
+        //     );
+
+        // sysidX
+        //     .whileTrue(
+        //         s_Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+        //     );
+
         // sysidY
         //     .whileTrue(
         //         s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
@@ -397,32 +393,46 @@ public class RobotContainer {
         //     s_Elevator.getTrapCommand()
         // );
 
-        sysidY.onTrue(
-            new InstantCommand(() -> {System.out.println("running"); s_Elevator.setGoal(1.5); s_Elevator.enable();})
-        );
-        // sysidY.onTrue(new InstantCommand(() -> System.out.println("running")));
+        // sysidY.onTrue(
+        //     new InstantCommand(() -> {System.out.println("running"); s_Elevator.setGoal(1.5); s_Elevator.enable();})
+        // );
 
-        sysidA.onTrue(
-            s_Elevator.getHomeCommand()
-        );
+        // sysidA.onTrue(
+        //     s_Elevator.getHomeCommand()
+        // );
 
-        sysidX.onTrue(
-            new InstantCommand(() -> s_Elevator.disable())
-        );
+        // sysidX.onTrue(
+        //     new InstantCommand(() -> s_Elevator.disable())
+        // );
         
+        // sysidLeftBumper
+        //     .whileTrue(
+        //         s_AmpArm.applykS()
+        //     );
+
+        // sysidRightBumper
+        //     .whileTrue(
+        //         s_AmpArm.applykG()
+        //     );
+        
+        // sysidLeftTrigger
+        //     .whileTrue(
+        //         s_AmpArm.applykV()
+        //     );
+
         sysidLeftBumper
             .whileTrue(
-                s_Elevator.applykS()
+                s_Shooter.applykS()
             );
 
         sysidRightBumper
             .whileTrue(
-                s_AmpArm.applykG()
+                s_Shooter.applykG()
             );
         
         sysidLeftTrigger
             .whileTrue(
-                s_AmpArm.applykV()
+                s_Shooter.applykV()
             );
 
         sysidLeftStick
@@ -487,7 +497,7 @@ public class RobotContainer {
                                 s_Elevator.setDefaultCommand(
                                     new ManualElevator(
                                         () -> {
-                                            if(Math.abs(operator.getRawAxis(manualElevatorAxis)) < Constants.stickDeadband) { //deadband for joystick
+                                            if(isNormalMode.getAsBoolean() || Math.abs(operator.getRawAxis(manualElevatorAxis)) < Constants.stickDeadband) { //deadband for joystick
                                                 return null;
                                             } else {
                                                 return Math.signum(operator.getRawAxis(manualElevatorAxis)) > 0;
@@ -505,7 +515,6 @@ public class RobotContainer {
                     )
                 );
     }
-
 
     private void configureNormalModeButtonBindings() {
         // Normal Mode
@@ -614,13 +623,12 @@ public class RobotContainer {
                         () -> {
                             if(shooterManual == OperatorLock.LOCKED) {
                                 shooterManual = OperatorLock.UNLOCKED;
-                                // System.out.println("UNLOCKED");
                                 s_Shooter.disable();
                                 s_Shooter.getDefaultCommand().cancel();
                                 s_Shooter.setDefaultCommand(
                                     new ManualShooterPivot(
                                         () -> {
-                                            if(Math.abs(operator.getRawAxis(manualShootAxis)) < Constants.stickDeadband) { //deadband for joystick
+                                            if(!isNormalMode.getAsBoolean() || Math.abs(operator.getRawAxis(manualShootAxis)) < Constants.stickDeadband) { //deadband for joystick
                                                 return null;
                                             } else {
                                                 return Math.signum(-operator.getRawAxis(manualShootAxis)) > 0;
@@ -631,7 +639,6 @@ public class RobotContainer {
                                 
                             } else {
                                 shooterManual = OperatorLock.LOCKED;
-                                // System.out.println("LOCKED");
                                 s_Shooter.enable();
                                 s_Shooter.getDefaultCommand().cancel();
                                 s_Shooter.setDefaultCommand(
@@ -656,7 +663,7 @@ public class RobotContainer {
                                 s_AmpArm.setDefaultCommand(
                                     new ManualArmPivot(
                                         () -> {
-                                            if(Math.abs(operator.getRawAxis(manualArmAxis)) < Constants.stickDeadband) { //deadband for joystick
+                                            if(!isNormalMode.getAsBoolean() || Math.abs(operator.getRawAxis(manualArmAxis)) < Constants.stickDeadband) { //deadband for joystick
                                                 return null;
                                             } else {
                                                 return Math.signum(-operator.getRawAxis(manualArmAxis)) > 0;
@@ -667,7 +674,7 @@ public class RobotContainer {
                             } else {
                                 armManual = OperatorLock.LOCKED;
                                 // System.out.println("LOCKED");
-                                // s_A%mpArm.enable();
+                                s_AmpArm.enable();
                                 s_AmpArm.getDefaultCommand().cancel();
                                 s_AmpArm.removeDefaultCommand();
                             }
@@ -676,8 +683,6 @@ public class RobotContainer {
                 );
     }
 
-    
-    
     public Command getAutonomousCommand() {
         return new PathPlannerAuto("Auto 1");
     }

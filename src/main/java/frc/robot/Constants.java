@@ -172,20 +172,20 @@ public final class Constants {
 
         public static final int canCoderID = 19;
 
-        public static final double pivotkS = 0.13884; //0.13884
-        public static final double pivotkG = 0.28674;
-        public static final double pivotkV = 0.85; //5.6457
-        public static final double pivotkA = 1.7626; //1.7626
+        public static final double pivotkS = 0.09256; //0.13884
+        public static final double pivotkG = 0.15116; // 0.28674
+        public static final double pivotkV = 1.275; // 0.85
+        public static final double pivotkA = 0; //1.7626
 
-        public static final double pivotkP = 5; //10
-        public static final double pivotkI = 0; //1
-        public static final double pivotkD = 0; //0.5
+        public static final double pivotkP = 5; // 5
+        public static final double pivotkI = 0;
+        public static final double pivotkD = 0;
 
         public static final double topShooterkS = 0.19655; 
         public static final double topShooterkV = 0.00212586; //0.042517
         public static final double topShooterkA = 0.00025997; //0.015598
 
-        public static final double topShooterkP = 0.01; //0.05423
+        public static final double topShooterkP = 0.01; //0.01
         public static final double topShooterkI = 0;
         public static final double topShooterkD = 0; //0
 
@@ -200,7 +200,7 @@ public final class Constants {
         public static final double pivotTolerance = 0.01; // <1 degree
         public static final double shooterTolerance = 50; // 20 rpm for teleop  ---- 250 rpm for auton
 
-        public static final double homePosition = 1.05;
+        public static final double homePosition = 1.05; // 1.05
 
         public static final double feedSpeed = 0.85;
 
@@ -213,8 +213,8 @@ public final class Constants {
         public static final double topShooterMaxRPM = 4500; 
         public static final double bottomShooterMaxRPM = 4800;
 
-        public static final double kMaxVelocityRadPerSecond = 2;
-        public static final double kMaxAccelerationRadPerSecSquared = 2;
+        public static final double kMaxVelocityRadPerSecond = 6;
+        public static final double kMaxAccelerationRadPerSecSquared = 8;
     }
 
     public static final class Elevator {
@@ -256,7 +256,7 @@ public final class Constants {
         public static final double pivotkV = 0.46; //0.46
         // public static final double pivotkA = 0.3;
 
-        public static final double pivotkP = 0; // 1 // 10
+        public static final double pivotkP = 1; // 1 // 10
         public static final double pivotkI = 0;
         public static final double pivotkD = 0; //0.000001 // 0.06
 
@@ -302,7 +302,7 @@ public final class Constants {
     public static class LimelightConstants {
         // All limelights on the robot
         public static final String limelightShooter = "limelight-shooter";
-        public static final String limelightBack = "limelight-back";
+        public static final String limelightArm = "limelight-arm";
 
         // Tracking constants
         public static final double minAreaOfTag = .1;
@@ -310,7 +310,7 @@ public final class Constants {
 
         // Pipeline IDS 
         public static final int limelightShooterTagPipeline = 0;
-        public static final int limelightBackTagPipeline = 0;
+        public static final int limelightArmTagPipeline = 0;
 
     }
 
@@ -345,11 +345,11 @@ public final class Constants {
     }
 
     public static final class ShootingConstants {
-      public static final double podiumRPM = 3000; // 1500
-      public static final double podiumAngle = 0.7;
+      public static final double podiumRPM = 0; // 3000
+      public static final double podiumAngle = 0; // 0.7
 
-      public static final double speakerRPM = 1500;
-      public static final double speakerAngle = 1.17; // 1
+      public static final double speakerRPM = 0; // 1500
+      public static final double speakerAngle = 1.17;
       public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
       
   }

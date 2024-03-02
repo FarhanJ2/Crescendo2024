@@ -113,6 +113,6 @@ public class OdometryImpl extends SubsystemBase {
       // This method will be called once per scheduler run
       // newly added
       SmartDashboard.putNumber("Vision Pose Error Limelight Front", getVisionPoseError(s_Swerve.limelightShooter));
-      SmartDashboard.putNumber("Vision Pose Error Limelight Back", getVisionPoseError(s_Swerve.limelightBack));
+      SmartDashboard.putNumber("Vision Pose Error Limelight Back", getVisionPoseError(s_Swerve.limelightArm));
    }
 }
