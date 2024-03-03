@@ -170,7 +170,7 @@ public class RobotContainer {
                     new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
                     new InstantCommand(() -> System.out.println("READY TO SHOOT")),
                     new ParallelDeadlineGroup(
-                        new WaitCommand(0.5),   
+                        new WaitCommand(0.3),   
                         s_Shooter.feedToShooter()
                     )
                 )
@@ -684,6 +684,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("3 piece");
+        return new PathPlannerAuto("4 piece");
     }
 }

@@ -154,7 +154,7 @@ public class Swerve extends SubsystemBase {
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                         new PIDConstants(10, 0, 0), // Translation PID constants
                         new PIDConstants(0.095, 0.0009, 0.01), // (p 0.85), (p 0.6 d 0.3),  
-                        4, // Max module speed, in m/s
+                        4.3, // Max module speed, in m/s
                         Constants.Swerve.trackWidth, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),

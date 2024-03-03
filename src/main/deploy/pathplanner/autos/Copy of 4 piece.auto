@@ -43,7 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Subwoofer to stage"
+                  "pathName": "Copy of Subwoofer to stage"
                 }
               }
             ]
@@ -52,7 +52,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Stage to subwoofer"
+            "pathName": "Copy of Stage to subwoofer"
           }
         },
         {
@@ -97,6 +97,50 @@
           "type": "path",
           "data": {
             "pathName": "Mid note to subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "subwoofer shot"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intake"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 3.0
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Copy of Subwoofer to top note"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Top note to subwoofer"
           }
         },
         {
