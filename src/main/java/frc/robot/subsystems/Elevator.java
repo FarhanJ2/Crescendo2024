@@ -242,7 +242,7 @@ public class Elevator extends ProfiledPIDSubsystem {
             
         }
         else {
-            if(getEncoderRotations() > 2.8) {
+            if(elevatorAtMax()) {
                 stopElevator();
                 return;
             }
@@ -250,6 +250,10 @@ public class Elevator extends ProfiledPIDSubsystem {
         }
         m_leftMotor.set(speed);
         m_rightMotor.set(speed);
+    }
+
+    private boolean elevatorAtMax() {
+        return getEncoderRotations() >= Constants.Elevator.maxRotations;
     }
 
     private void zeroCancoder() {
@@ -283,8 +287,15 @@ public class Elevator extends ProfiledPIDSubsystem {
 
         // System.out.println(feedforward);
 
-        m_leftMotor.setVoltage(-(output + feedforward));
-        m_rightMotor.setVoltage(-(output + feedforward));
+        double volts = -(output + feedforward);
+
+        if ((limitPressed() && volts >= 0) || (elevatorAtMax() && volts <= 0)) {
+            stopElevator();
+            return;
+        }
+
+        m_leftMotor.setVoltage(volts);
+        m_rightMotor.setVoltage(volts);
     }
 
     private boolean limitPressed() {

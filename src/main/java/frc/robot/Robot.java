@@ -25,6 +25,13 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  public enum State {
+    TELEOP,
+    AUTON
+  }
+
+  public static State state = State.AUTON;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -65,6 +72,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    state = State.AUTON;
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -86,6 +94,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    state = State.TELEOP;
   }
 
   /** This function is called periodically during operator control. */

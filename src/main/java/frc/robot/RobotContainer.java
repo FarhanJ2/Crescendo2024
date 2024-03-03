@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.sql.Driver;
+
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
@@ -12,6 +14,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -39,6 +42,7 @@ import frc.robot.commands.shooter.Pivot;
 import frc.robot.commands.shooter.RampPodium;
 import frc.robot.commands.shooter.RampShooter;
 import frc.robot.commands.shooter.RampSpeaker;
+import frc.robot.commands.shooter.RampStartLine;
 import frc.robot.commands.swerve.RotateToAngle;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
@@ -89,6 +93,7 @@ public class RobotContainer {
     private final Trigger slowModeButton = driver.rightTrigger();
     private final Trigger alignSpeakerButton = driver.leftTrigger();
     private final Trigger zeroGyroButton = driver.b();
+    private final Trigger pivotToAngleButton = driver.a(); 
 
     /* Operator Buttons */
     private final int manualShootAxis = 1;
@@ -119,6 +124,8 @@ public class RobotContainer {
     private final JoystickButton sysidLeftStick = new JoystickButton(sysIDJoystick, 11);
     private final JoystickButton sysidRightStick = new JoystickButton(sysIDJoystick, 12);
     
+
+
     /* Subsystems */
     public static final Swerve s_Swerve = new Swerve();
     public static final AmpArm s_AmpArm = new AmpArm();
@@ -145,10 +152,17 @@ public class RobotContainer {
         );
 
         s_Shooter.setDefaultCommand(
-            new HomeCommand(
-                s_Shooter
-            )
+            new HomeCommand(s_Shooter)
         );
+        // s_Shooter.setDefaultCommand(
+        //     new ConditionalCommand(
+        //         new RampShooter(500, 500, 1.05),
+        //         new HomeCommand(
+        //             s_Shooter
+        //         ), 
+        //         () -> Robot.state == Robot.State.AUTON
+        //     )
+        // );
 
         // s_AmpArm.setDefaultCommand(
         //     //s_AmpArm.getAmpCommand()
@@ -170,7 +184,7 @@ public class RobotContainer {
                     new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
                     new InstantCommand(() -> System.out.println("READY TO SHOOT")),
                     new ParallelDeadlineGroup(
-                        new WaitCommand(0.3),   
+                        new WaitCommand(0.3),
                         s_Shooter.feedToShooter()
                     )
                 )
@@ -190,6 +204,12 @@ public class RobotContainer {
         zeroGyroButton.onTrue(
             new InstantCommand(
                 () -> s_Swerve.zeroHeading()
+            )
+        );
+
+        pivotToAngleButton.onTrue(
+            new InstantCommand(
+                () -> s_Shooter.setPivot(RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance))
             )
         );
         
@@ -316,6 +336,34 @@ public class RobotContainer {
     }
 
     private void configureSysIdButtonBindings() {
+        // sysidY
+        //     .whileTrue(
+        //         s_Swerve.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+        //     );
+            
+        // sysidA
+        //     .whileTrue(
+        //         s_Swerve.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+        //     );
+        
+        // sysidB
+        //     .whileTrue(
+        //         s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kForward)
+        //     );
+
+        // sysidX
+        //     .whileTrue(
+        //         s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+        //     );
+
+
+        // sysidX.whileTrue(
+        //     s_AmpArm.applykS()
+        // );
+
+        // sysidY.whileTrue(
+        //     s_AmpArm.applykG()
+        // );
         // sysidY.onTrue(
         //     Commands.runOnce(() -> s_Shooter.setGoal(1))
         // );
@@ -602,17 +650,24 @@ public class RobotContainer {
                 .whileTrue(
                     s_Shooter.feedToShooter()
                 );
+        
+        // TODO SHOOT FROM ANYWHERE, PUT BACK
+        // operator.rightBumper()
+        // .and(isNormalMode)
+        //         .whileTrue( // Auto shoot ---- shoot from anywhere
+        //             s_Shooter.readyShootCommand(
+        //                 () -> s_Swerve.odometryImpl.getDistance(
+        //                     RobotContainer.alliance == DriverStation.Alliance.Blue ? 
+        //                     Constants.BlueTeamPoses.blueSpeakerPose : 
+        //                     Constants.RedTeamPoses.redSpeakerPose
+        //                 )
+        //             )
+        //         );
         operator.rightBumper()
         .and(isNormalMode)
-                .whileTrue( // Auto shoot ---- shoot from anywhere
-                    s_Shooter.readyShootCommand(
-                        () -> s_Swerve.odometryImpl.getDistance(
-                            RobotContainer.alliance == DriverStation.Alliance.Blue ? 
-                            Constants.BlueTeamPoses.blueSpeakerPose : 
-                            Constants.RedTeamPoses.redSpeakerPose
-                        )
-                    )
-                );
+            .whileTrue(
+                new RampStartLine()
+            );
 
         // Locks
         // TODO don't change default commands, just disable the controller
@@ -684,6 +739,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("4 piece");
+        // Copy of 4 piece
+        return new PathPlannerAuto("Center line");
     }
 }

@@ -73,9 +73,9 @@ public final class Constants {
         public static final double driveKF = 0.0;
 
         /* Drive Motor Characterization Values From SYSID */
-        public static final double driveKS = 0.05;
-        public static final double driveKV = 2.35;
-        public static final double driveKA = 0.17;
+        public static final double driveKS = 0.078838; //0.05
+        public static final double driveKV = 2.5819; //2.35
+        public static final double driveKA = 0.23783; //0.17
 
         /* Swerve Profiling Values */
         /** Meters per Second */
@@ -84,7 +84,7 @@ public final class Constants {
         public static final double maxAngularVelocity = 10.0;
 
         /* Neutral Modes */
-        public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
+        public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Brake;
         public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
         /* Module Specific Constants */
@@ -233,15 +233,16 @@ public final class Constants {
         public static final double kI = 0;
         public static final double kD = 0;
 
-        public static final double kMaxVelocityPerSecond = 2;
+        public static final double kMaxVelocityPerSecond = 1.3;
         public static final double kMaxAccelerationPerSecSquared = 6;
 
         public static final double tolerance = 0.05;
 
-        public static final double climbRotations = 2.8;
+        public static final double climbRotations = 2.9;
         public static final double ampRotations = 2.3;
         public static final double homeRotations = 0;
         public static final double trapRotations = 1.5;
+        public static final double maxRotations = 2.9;
 
         public static final double manualElevatorSpeed = 0.8;
     }
@@ -252,11 +253,11 @@ public final class Constants {
 
         public static final int canCoderID = 24;        
         public static final double pivotkS = 0.14; //0.14 //0.065414
-        public static final double pivotkG = 0.095; //0.095
-        public static final double pivotkV = 0.46; //0.46
+        public static final double pivotkG = 0.0; //0.095
+        public static final double pivotkV = 0; //0.46
         // public static final double pivotkA = 0.3;
 
-        public static final double pivotkP = 1; // 1 // 10
+        public static final double pivotkP = 0; // 1 this one // 10
         public static final double pivotkI = 0;
         public static final double pivotkD = 0; //0.000001 // 0.06
 
@@ -346,12 +347,18 @@ public final class Constants {
 
     public static final class ShootingConstants {
       public static final double podiumRPM = 3000; // 3000
-      public static final double podiumAngle = 0.7; // 0.7
+      public static final double podiumAngle = 0.65; // 0.7
 
       public static final double speakerRPM = 1500; // 1500
       public static final double speakerAngle = 1.05;
       public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
       
-  }
+      public static final double startLineRPM = 1300; // 3000
+      public static final double startLineAngle = 0.9; // 0.7
+    }
+
+    public static final class StructureConstants {
+        public static final double speakerHeight = Units.inchesToMeters(78);
+    }
 
 }

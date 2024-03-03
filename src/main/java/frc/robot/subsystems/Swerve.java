@@ -16,6 +16,7 @@ import frc.robot.Constants.PoseConfig;
 import frc.lib.util.Limelight;
 import frc.lib.util.OdometryImpl;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -36,6 +37,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
@@ -66,6 +68,8 @@ public class Swerve extends SubsystemBase {
 
     public Limelight limelightShooter;
     public Limelight limelightArm;
+
+    public DriverStation.Alliance alliance; 
 
     private SendableChooser limelightChooser; 
 
@@ -114,7 +118,10 @@ public class Swerve extends SubsystemBase {
         }
     });
 
-    
+
+
+    // private final SysIdRoutine sysID;
+
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
@@ -134,7 +141,7 @@ public class Swerve extends SubsystemBase {
         limelightChooser = new SendableChooser<>();
         limelightChooser.setDefaultOption("None", null);
         limelightChooser.addOption(limelightShooter.getLimelightName(), limelightShooter);
-        // limelightChooser.addOption(limelightBack.getLimelightName(), limelightBack);
+        limelightChooser.addOption(limelightArm.getLimelightName(), limelightArm);
 
         limelightShooter.setPipeline(LimelightConstants.limelightShooterTagPipeline);
         //limelightArm.setPipeline(LimelightConstants.limelightShooterTagPipeline);
@@ -146,13 +153,43 @@ public class Swerve extends SubsystemBase {
         m_backLeftMotor = mSwerveMods[2].getDriveMotor();
         m_backRightMotor = mSwerveMods[3].getDriveMotor();
 
+
+   
+
+        // sysID = new SysIdRoutine(
+        //     new SysIdRoutine.Config(
+        //         null,
+        //         null,
+        //         null),
+                // (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+            // new SysIdRoutine.Mechanism(
+            //     (Measure<Voltage> volts) -> {
+            //         m_frontLeftMotor.setVoltage(volts.in(Volts));
+            //         m_frontRightMotor.setVoltage(volts.in(Volts));
+            //         m_backLeftMotor.setVoltage(-volts.in(Volts));
+            //         m_backRightMotor.setVoltage(-volts.in(Volts));
+            //     },
+            //     log -> {
+            //         log.motor("swerve")
+            //         .voltage(
+            //             m_appliedVoltage.mut_replace(
+            //                 m_frontLeftMotor.get() * RobotController.getBatteryVoltage(), Volts))
+            //         //.angularPosition(m_angle.mut_replace(m_pivotMotor.getPosition().getValue() / 18.8888888888888, Rotations))
+            //         .linearPosition(m_distance.mut_replace(m_frontLeftMotor.getPosition().getValueAsDouble() * Math.PI * 0.1016, Meters))
+            //         // .angularVelocity(
+            //         //     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValue() / 18.8888888888888, RotationsPerSecond));
+            //         .linearVelocity(
+            //             m_velocity.mut_replace(m_frontLeftMotor.getVelocity().getValueAsDouble() * Math.PI * 0.1016, MetersPerSecond));
+            //     },
+            //     this));
+
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
                 this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(10, 0, 0), // Translation PID constants
+                        new PIDConstants(1, 0, 0), // Translation PID constants
                         new PIDConstants(0.095, 0.0009, 0.01), // (p 0.85), (p 0.6 d 0.3),  
                         4.3, // Max module speed, in m/s
                         Constants.Swerve.trackWidth, // Drive base radius in meters. Distance from robot center to furthest module.
@@ -173,6 +210,8 @@ public class Swerve extends SubsystemBase {
         );
 
     }
+
+
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =
@@ -313,15 +352,15 @@ public class Swerve extends SubsystemBase {
         return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return null;
-        // return m_sysIdRoutine.quasistatic(direction);
-    }
+    // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    //     // return null;
+    //     return sysID.quasistatic(direction);
+    // }
 
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return null;
-        // return m_sysIdRoutine.dynamic(direction);
-    }
+    // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    //     // return null;
+    //     return sysID.dynamic(direction);
+    // }
 
     public Limelight getFlashedLimelight() {
         return (Limelight) limelightChooser.getSelected(); 
@@ -334,24 +373,30 @@ public class Swerve extends SubsystemBase {
         // m_backRightMotor.setControl(new Follower(Constants.Swerve.Mod1.driveMotorID, false));
 
         // swerveOdometry.update(getGyroYaw(), getModulePositions());
-        if(poseEstimator != null) poseEstimator.update(getGyroYaw(), getModulePositions());
+        if (poseEstimator != null) poseEstimator.update(getGyroYaw(), getModulePositions());
 
         // limelight and odometry classes are written so that adding additional limelights is easy 
     
-        Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter); //changed from without yaw
-        if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
-            poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
-        }
+        if (Robot.state != Robot.State.AUTON) {
+            Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter); //changed from without yaw
+            if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
+                poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
+            }
 
 
-        // // //newly added limelight automatically configured for odometry impl
-        Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurement(limelightArm); //changed from without yaw
-        if (visionMeasurementLimelightArm != null && poseEstimator != null) {
-            poseEstimator.addVisionMeasurement(visionMeasurementLimelightArm, limelightArm.getLimelightLatency());
+            // //newly added limelight automatically configured for odometry impl
+            Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurement(limelightArm); //changed from without yaw
+            if (visionMeasurementLimelightArm != null && poseEstimator != null) {
+                poseEstimator.addVisionMeasurement(visionMeasurementLimelightArm, limelightArm.getLimelightLatency());
+            }
+        }
+
+        else {
+            // System.out.println("TELEOP"); 
         }
         
-        
-        field.setRobotPose(getPose());
+        // limelights computes the correct pose but it's placed incorrectly on glass (offsetted by 1 meter)
+        field.setRobotPose(new Pose2d(getPose().getX() - 1, getPose().getY(), getPose().getRotation()));
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
@@ -363,7 +408,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("swerve/yaw", gyro.getYaw().getValue());
 
         // TODO need to change depending on the team your're on
-        SmartDashboard.putNumber("swerve/distance", odometryImpl.getDistance(Constants.BlueTeamPoses.blueSpeakerPose)); 
+        SmartDashboard.putNumber("swerve/distance", odometryImpl.getDistance(Constants.RedTeamPoses.redSpeakerPose)); 
 
         SmartDashboard.putData("field", field);
         SmartDashboard.putData("limelightChooser", limelightChooser);

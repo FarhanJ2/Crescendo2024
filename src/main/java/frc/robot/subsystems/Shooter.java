@@ -257,7 +257,7 @@ public class Shooter extends ProfiledPIDSubsystem {
 
     public boolean pivotAtSetpoint() {
         // return getController().atGoal();
-        return Math.abs(getMeasurement() - getController().getGoal().position) <= Constants.Shooter.pivotTolerance * 5;
+        return Math.abs(getMeasurement() - getController().getGoal().position) <= Constants.Shooter.pivotTolerance * 3;
     }
 
     public boolean bottomShooterAtSetpoint() {
@@ -366,8 +366,8 @@ public class Shooter extends ProfiledPIDSubsystem {
     public boolean isReadyToShoot() {
         return topShooterAtSetpoint()
         && bottomShooterAtSetpoint()
-        && pivotAtSetpoint();
-        // && isShooting;
+        && pivotAtSetpoint()
+        && isShooting;
     }
 
     public Command shooterReadyLEDCommand() {

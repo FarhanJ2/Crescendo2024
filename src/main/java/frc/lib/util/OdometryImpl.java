@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.subsystems.Swerve;
 
@@ -26,19 +27,27 @@ public class OdometryImpl extends SubsystemBase {
   }
  
   public double getDistance(Pose2d target) {
-      double distance = s_Swerve.getPose().getTranslation().getDistance(target.getTranslation());
+      double distance = s_Swerve.getRelativePose().getTranslation().getDistance(target.getTranslation());
       return distance;
   }
 
-//   public double getPivotAngle(DriverStation.Alliance alliance) {
-//     double base;
-//     double height;
-    
-//     if (alliance == DriverStation.Alliance.Red) {
-//         base = getDistance(Constants.RedTeamPoses.redSpeakerPose)
-//         + Constants.RobotConstants.DistanceToShooterPivot;
-//     }
-//   }
+  public double getPivotAngle(DriverStation.Alliance alliance) {
+    double base;
+    double height = Constants.StructureConstants.speakerHeight;
+       
+    if (alliance == DriverStation.Alliance.Red) {
+        base = getDistance(Constants.RedTeamPoses.redSpeakerPose);
+ 
+    }
+
+    else {
+        base = getDistance(Constants.BlueTeamPoses.blueSpeakerPose);
+    }
+        
+    return Math.atan(height / base); 
+
+
+  }
 
   //This is assuming that the robot is directly facing the target object
   public double getTurnAngle(Pose2d target, double robotAngle) {
@@ -114,5 +123,12 @@ public class OdometryImpl extends SubsystemBase {
       // newly added
       SmartDashboard.putNumber("Vision Pose Error Limelight Front", getVisionPoseError(s_Swerve.limelightShooter));
       SmartDashboard.putNumber("Vision Pose Error Limelight Back", getVisionPoseError(s_Swerve.limelightArm));
-   }
+
+      SmartDashboard.putNumber(
+        (RobotContainer.alliance == DriverStation.Alliance.Red) ? "Red speaker distance" : "Blue speaker distance", 
+        ((RobotContainer.alliance == DriverStation.Alliance.Red) ? getDistance(Constants.RedTeamPoses.redSpeakerPose) : getDistance(Constants.BlueTeamPoses.blueSpeakerPose))
+      );
+
+      SmartDashboard.putNumber("Calculated Angle from Odometry", getPivotAngle(RobotContainer.s_Swerve.alliance));
+    }
 }

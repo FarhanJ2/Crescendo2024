@@ -123,7 +123,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
         getController().enableContinuousInput(0, Math.PI * 2);
         // setGoal(Constants.AmpArm.armOffset);
 
-        enable();
+        // enable();
         configureMotors();
     }
 
@@ -319,7 +319,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
         
         if (m_enabled) {
             // this.disable();
-            useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
+            // useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
             // System.out.println(m_controller.getSetpoint().position);
         }
 
