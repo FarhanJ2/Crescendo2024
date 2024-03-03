@@ -162,7 +162,7 @@ public class RobotContainer {
 
         // NamedCommands.registerCommand("ramp", new RampShooter(1000, 1000, 0.13));
         //TODO CHANGE BASED ON WHERE WE'RE SHOOTING
-        NamedCommands.registerCommand("shoot", 
+        NamedCommands.registerCommand("subwoofer shot", 
             new ParallelDeadlineGroup(
                 new WaitCommand(1.6),
                 new RampSpeaker(),
@@ -684,6 +684,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("Auto 1");
+        return new PathPlannerAuto("2 piece");
     }
 }

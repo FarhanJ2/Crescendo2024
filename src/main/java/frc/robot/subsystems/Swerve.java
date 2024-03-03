@@ -279,8 +279,8 @@ public class Swerve extends SubsystemBase {
         poseEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
 
-    public Rotation2d getHeading(){
-        return getPose().getRotation();
+    public Rotation2d getHeading() {
+        return getRelativePose().getRotation();
     }
 
     public void setHeading(Rotation2d heading){
@@ -338,14 +338,14 @@ public class Swerve extends SubsystemBase {
 
         // limelight and odometry classes are written so that adding additional limelights is easy 
     
-        Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurementWithoutYaw(limelightShooter); //changed from without yaw
+        Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter); //changed from without yaw
         if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
             poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
         }
 
 
         // // //newly added limelight automatically configured for odometry impl
-        Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurementWithoutYaw(limelightArm); //changed from without yaw
+        Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurement(limelightArm); //changed from without yaw
         if (visionMeasurementLimelightArm != null && poseEstimator != null) {
             poseEstimator.addVisionMeasurement(visionMeasurementLimelightArm, limelightArm.getLimelightLatency());
         }
@@ -356,7 +356,8 @@ public class Swerve extends SubsystemBase {
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
+            SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond); 
+            SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Voltage", mod.getVoltage());
         }
 
         SmartDashboard.putNumber("swerve/yaw", gyro.getYaw().getValue());

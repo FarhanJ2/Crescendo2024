@@ -76,6 +76,10 @@ public class SwerveModule {
         mAngleMotor.setPosition(absolutePosition);
     }
 
+    public double getVoltage() {
+        return mDriveMotor.getMotorVoltage().getValueAsDouble();
+    }
+
     public SwerveModuleState getState(){
         return new SwerveModuleState(
             Conversions.RPSToMPS(mDriveMotor.getVelocity().getValue(), Constants.Swerve.wheelCircumference), 

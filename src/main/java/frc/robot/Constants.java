@@ -295,8 +295,8 @@ public final class Constants {
     }
 
     public static final class Led {
-        public static final int port = 0;
-        public static final int length = 60;
+        public static final int port = 8;
+        public static final int length = 106;
     }
 
     public static class LimelightConstants {
@@ -345,11 +345,11 @@ public final class Constants {
     }
 
     public static final class ShootingConstants {
-      public static final double podiumRPM = 0; // 3000
-      public static final double podiumAngle = 0; // 0.7
+      public static final double podiumRPM = 3000; // 3000
+      public static final double podiumAngle = 0.7; // 0.7
 
-      public static final double speakerRPM = 0; // 1500
-      public static final double speakerAngle = 1.17;
+      public static final double speakerRPM = 1500; // 1500
+      public static final double speakerAngle = 1.05;
       public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
       
   }
