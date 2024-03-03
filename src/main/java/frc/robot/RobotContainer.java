@@ -684,6 +684,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("2 piece");
+        return new PathPlannerAuto("3 piece");
     }
 }
