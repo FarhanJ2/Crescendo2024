@@ -23,6 +23,14 @@ public class Feeder extends SubsystemBase {
         m_feederMotor.set(Constants.Shooter.feedSpeed);
     }
 
+    public void feedAmp() {
+        m_feederMotor.set(Constants.Shooter.ampFeedSpeed);
+    }
+
+    public void feedToIntake() {
+        m_feederMotor.set(Constants.Shooter.feedToIntakeSpeed);
+    }
+
     public void stopFeed() {
         m_feederMotor.stopMotor();
     }

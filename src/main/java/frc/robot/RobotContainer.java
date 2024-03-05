@@ -1,6 +1,7 @@
 package frc.robot;
 
 import java.sql.Driver;
+import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -39,6 +40,7 @@ import frc.robot.commands.shooter.HomeCommand;
 import frc.robot.commands.shooter.ManualShooterPivot;
 import frc.robot.commands.shooter.ManualShot;
 import frc.robot.commands.shooter.Pivot;
+import frc.robot.commands.shooter.RampAmp;
 import frc.robot.commands.shooter.RampPodium;
 import frc.robot.commands.shooter.RampShooter;
 import frc.robot.commands.shooter.RampSpeaker;
@@ -292,10 +294,11 @@ public class RobotContainer {
             () -> s_Shooter.isReadyToShoot()
         )
         .and(operator.leftBumper()
-            .or(operator.leftTrigger()
-            .or(operator.rightTrigger()
+            .or(operator.leftTrigger())
+            .or(operator.rightTrigger())
             .or(operator.rightBumper())
-        )))
+            .or(operator.povRight())
+        )
         .onTrue(
             /*s_Shooter.shooterReadyLEDCommand()*/
             Commands.runOnce(
@@ -312,30 +315,30 @@ public class RobotContainer {
         new Trigger(
             () -> RobotContainer.s_Intake.intakeBeamBroken()
         ).onTrue(
-            Commands.run(
-                () -> {
-                    driver.getHID().setRumble(RumbleType.kBothRumble, 1);
-                }
-            )
-            .withTimeout(1)
-            .andThen(
-                Commands.runOnce(
-                    () -> driver.getHID().setRumble(RumbleType.kBothRumble, 0)
-                )
-            )
-            .andThen(new InstantCommand(() -> System.out.println("finish vibrate")))
+            // Commands.run(
+            //     () -> {
+            //         driver.getHID().setRumble(RumbleType.kBothRumble, 1);
+            //     }
+            // )
+            // .withTimeout(1)
+            // .andThen(
+            //     Commands.runOnce(
+            //         () -> driver.getHID().setRumble(RumbleType.kBothRumble, 0)
+            //     )
+            // )
+            // .andThen(new InstantCommand(() -> System.out.println("finish vibrate")))
 
             // TODO do this after led works
-            // s_Intake.intakeLedCommand()
-            //     .deadlineWith(Commands.run(
-            //     () -> {
-            //         driver.getHID().setRumble(RumbleType.kBothRumble, 0.7);
-            //     }
-            // ))
-            // .andThen(
-            //     Commands.runOnce(() -> driver.getHID().setRumble(RumbleType.kBothRumble, 0))
-            // )
-            // .andThen(new InstantCommand(() -> System.out.println("intake done")))
+            s_Intake.intakeLedCommand()
+                .deadlineWith(Commands.run(
+                () -> {
+                    driver.getHID().setRumble(RumbleType.kBothRumble, 0.7);
+                }
+            ))
+            .andThen(
+                Commands.runOnce(() -> driver.getHID().setRumble(RumbleType.kBothRumble, 0))
+            )
+            .andThen(new InstantCommand(() -> System.out.println("intake done")))
         );
     }
 
@@ -632,16 +635,21 @@ public class RobotContainer {
                     s_AmpArm.getHomeCommand()
                         .alongWith(s_Elevator.getHomeCommand())
                 );
+        // operator.povLeft()
+        //     .and(isNormalMode)
+        //         .onTrue( // Arm to intake
+        //             new SequentialCommandGroup(
+        //                 s_AmpArm.getHandoffCommand(),
+        //                 new WaitUntilCommand(
+        //                     () -> s_AmpArm.getController().atGoal()
+        //                 ),
+        //                 s_AmpArm.armToIntake()
+        //             )
+        //         );
         operator.povLeft()
             .and(isNormalMode)
-                .onTrue( // Arm to intake
-                    new SequentialCommandGroup(
-                        s_AmpArm.getHandoffCommand(),
-                        new WaitUntilCommand(
-                            () -> s_AmpArm.getController().atGoal()
-                        ),
-                        s_AmpArm.armToIntake()
-                    )
+                .whileTrue(
+                    s_Shooter.feedToIntakeFromShooter()
                 );
 
         // Shooter
@@ -657,11 +665,22 @@ public class RobotContainer {
                 .whileTrue( // Speaker shot
                     new RampSpeaker()
                 );
+
+
+        //shooting speaker and amp
         operator.rightTrigger()
             .and(isNormalMode)
-                .whileTrue(
-                    s_Shooter.feedToShooter()
-                );
+                .and(() -> !s_Shooter.isScoringAmp)
+                    .whileTrue(
+                        s_Shooter.feedToShooter()
+                    );
+
+        operator.rightTrigger()
+            .and(isNormalMode)
+                .and(() -> s_Shooter.isScoringAmp)
+                    .whileTrue(
+                        s_Shooter.feedToShooterAmp()
+                    );
         
         // TODO SHOOT FROM ANYWHERE, PUT BACK
         // operator.rightBumper()
@@ -676,10 +695,17 @@ public class RobotContainer {
         //             )
         //         );
         operator.rightBumper()
-        .and(isNormalMode)
-            .whileTrue(
-                new RampStartLine()
-            );
+            .and(isNormalMode)
+                .whileTrue(
+                    new RampStartLine()
+                );
+
+        
+        operator.povRight()
+            .and(isNormalMode)
+                .whileTrue(
+                    new RampAmp()
+                );
 
         // Locks
         // TODO don't change default commands, just disable the controller
@@ -717,6 +743,7 @@ public class RobotContainer {
                         }
                     )
                 );
+
 
         operator.rightStick()
             .and(isNormalMode)

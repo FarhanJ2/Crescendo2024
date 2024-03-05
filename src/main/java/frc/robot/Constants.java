@@ -204,10 +204,20 @@ public final class Constants {
 
         public static final double feedSpeed = 0.85;
 
+        public static final double feedToIntakeSpeed = -0.5;
+        public static final double forkToIntakeSpeed = -0.5;
+        public static final double shooterIntakeAngle = 0.95;
+        public static final double shooterIntakeSpeed = -0.1;
+
         // Manual testing values
         public static final double topShooterSpeed = 0.4; // 1
         public static final double bottomShooterSpeed = 0.4; // 1
         public static final double manualShooterPivotSpeed = 0.05;
+
+        public static final double manualShooterPivotVoltage = 0.75;
+
+        public static final double ampForkSpeed = 0.4;
+        public static final double ampFeedSpeed = 0.4;
 
         //TODO find max rpm
         public static final double topShooterMaxRPM = 4500; 
@@ -296,7 +306,7 @@ public final class Constants {
     }
 
     public static final class Led {
-        public static final int port = 8;
+        public static final int port = 0;
         public static final int length = 106;
     }
 
@@ -355,6 +365,10 @@ public final class Constants {
       
       public static final double startLineRPM = 1300; // 3000
       public static final double startLineAngle = 0.9; // 0.7
+
+      public static final double ampTopRPM = 300;
+      public static final double ampBottomRPM = 200;
+      public static final double ampAngle = 1.15;
     }
 
     public static final class StructureConstants {

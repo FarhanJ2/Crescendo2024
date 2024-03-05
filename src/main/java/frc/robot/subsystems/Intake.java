@@ -27,6 +27,8 @@ public class Intake extends SubsystemBase {
     // private final DigitalInput shooterBeam = new DigitalInput(Constants.Intake.beamBrakerShooter);
     private final DigitalInput armBeam = new DigitalInput(Constants.Intake.beamBreakerArm);
 
+    private boolean prevBeamBroken = false;
+
     public Intake() {
         configureMotors();
     }
@@ -55,8 +57,18 @@ public class Intake extends SubsystemBase {
         }
     }
 
+    public void runForkAmp() {
+        m_forkMotor.set(Constants.Shooter.ampForkSpeed);
+        m_intakeMotor.set(-Constants.Shooter.ampForkSpeed);
+    }
+
+    public void runForkToIntake() {
+        m_forkMotor.set(Constants.Shooter.forkToIntakeSpeed);
+        m_intakeMotor.set(Constants.Intake.intakeSpeed / 2);
+    }
+
     public Command intakeLedCommand() {
-        return RobotContainer.s_Led.flashCommand(LEDColor.GREEN, 0.1, 0.5);
+        return RobotContainer.s_Led.flashCommand(LEDColor.GREEN, 0.1, 1);
     }
 
     private void configureMotors() {
@@ -65,6 +77,21 @@ public class Intake extends SubsystemBase {
 
         m_intakeMotor.setNeutralMode(NeutralModeValue.Coast);
         m_forkMotor.setNeutralMode(NeutralModeValue.Coast);
+    }
+
+    public boolean intakeChangeFromBrokenToUnbroken() {
+        if(intakeBeamBroken()) {
+            prevBeamBroken = true;
+            return false;
+        } else {
+            if(prevBeamBroken) {
+                prevBeamBroken = false;
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
     }
 
     public boolean intakeBeamBroken() {

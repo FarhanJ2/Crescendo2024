@@ -44,10 +44,15 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.SwerveModule;
 import frc.robot.commands.feeder.Feed;
+import frc.robot.commands.feeder.FeedAmp;
+import frc.robot.commands.feeder.FeedtoIntake;
+import frc.robot.commands.intake.AmpForkCommand;
 import frc.robot.commands.intake.ForkCommand;
+import frc.robot.commands.intake.ForktoIntakeCommand;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.shooter.ManualShot;
 import frc.robot.commands.shooter.Pivot;
+import frc.robot.commands.shooter.RampAmp;
 import frc.robot.commands.shooter.RampShooter;
 import frc.robot.regression.ShooterInterpolator;
 import frc.robot.subsystems.Intake;
@@ -63,6 +68,7 @@ public class Shooter extends ProfiledPIDSubsystem {
     private final CANcoder m_cancoder = new CANcoder(Constants.Shooter.canCoderID);
 
     public boolean isShooting = false;
+    public boolean isScoringAmp = false;
 
     /* Syd ID */
     private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -75,33 +81,33 @@ public class Shooter extends ProfiledPIDSubsystem {
     private final Measure<Voltage> m_desiredStepVoltage = Volts.of(1);
 
     //Create a new SysId routine for characterizing the shooter.
-    private final SysIdRoutine m_sysIdRoutine =
-      new SysIdRoutine(
-          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
-          new  SysIdRoutine.Config(m_desiredRampRate, m_desiredStepVoltage, null),
-          new SysIdRoutine.Mechanism(
-              // Tell SysId how to plumb the driving voltage to the motor(s).
-              (Measure<Voltage> volts) -> {
-                m_pivotMotor.setVoltage(volts.in(Volts));
-              },
-              // Tell SysId how to record a frame of data for each motor on the mechanism being
-              // characterized.
-              log -> {
-                // Record a frame for the shooter motor.
-                log.motor("shooter")
-                    .voltage(
-                        m_appliedVoltage.mut_replace(
-                            m_pivotMotor.get() * RobotController.getBatteryVoltage(), Volts))
-                    //.angularPosition(m_angle.mut_replace(m_pivotMotor.getPosition().getValue() / 18.8888888888888, Rotations))
-                    .angularPosition(m_angle.mut_replace(getMeasurement(), Radians))
-                    // .angularVelocity(
-                    //     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValue() / 18.8888888888888, RotationsPerSecond));
-                    .angularVelocity(
-                        m_velocity.mut_replace(m_pivotMotor.getVelocity().getValueAsDouble() / 111.51515151515151 * 2 * Math.PI, RadiansPerSecond));
-              },
-              // Tell SysId to make generated commands require this subsystem, suffix test state in
-              // WPILog with this subsystem's name ("shooter")
-              this));
+    // private final SysIdRoutine m_sysIdRoutine =
+    //   new SysIdRoutine(
+    //       // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+    //       new  SysIdRoutine.Config(m_desiredRampRate, m_desiredStepVoltage, null),
+    //       new SysIdRoutine.Mechanism(
+    //           // Tell SysId how to plumb the driving voltage to the motor(s).
+    //           (Measure<Voltage> volts) -> {
+    //             m_pivotMotor.setVoltage(volts.in(Volts));
+    //           },
+    //           // Tell SysId how to record a frame of data for each motor on the mechanism being
+    //           // characterized.
+    //           log -> {
+    //             // Record a frame for the shooter motor.
+    //             log.motor("shooter")
+    //                 .voltage(
+    //                     m_appliedVoltage.mut_replace(
+    //                         m_pivotMotor.get() * RobotController.getBatteryVoltage(), Volts))
+    //                 //.angularPosition(m_angle.mut_replace(m_pivotMotor.getPosition().getValue() / 18.8888888888888, Rotations))
+    //                 .angularPosition(m_angle.mut_replace(getMeasurement(), Radians))
+    //                 // .angularVelocity(
+    //                 //     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValue() / 18.8888888888888, RotationsPerSecond));
+    //                 .angularVelocity(
+    //                     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValueAsDouble() / 111.51515151515151 * 2 * Math.PI, RadiansPerSecond));
+    //           },
+    //           // Tell SysId to make generated commands require this subsystem, suffix test state in
+    //           // WPILog with this subsystem's name ("shooter")
+    //           this));
 
     private final PIDController bottomShooterPIDController = 
         new PIDController(
@@ -162,23 +168,23 @@ public class Shooter extends ProfiledPIDSubsystem {
         enable();
     }
 
-    /**
-     * Returns a command that will execute a quasistatic test in the given direction.
-     *
-     * @param direction The direction (forward or reverse) to run the test in
-     */
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.quasistatic(direction);
-    }
+    // /**
+    //  * Returns a command that will execute a quasistatic test in the given direction.
+    //  *
+    //  * @param direction The direction (forward or reverse) to run the test in
+    //  */
+    // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    //     return m_sysIdRoutine.quasistatic(direction);
+    // }
 
-    /**
-     * Returns a command that will execute a dynamic test in the given direction.
-     *
-     * @param direction The direction (forward or reverse) to run the test in
-     */
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.dynamic(direction);
-    }
+    // /**
+    //  * Returns a command that will execute a dynamic test in the given direction.
+    //  *
+    //  * @param direction The direction (forward or reverse) to run the test in
+    //  */
+    // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    //     return m_sysIdRoutine.dynamic(direction);
+    // }
 
     public void goHome() {
         setGoal(Constants.Shooter.homePosition);
@@ -254,6 +260,7 @@ public class Shooter extends ProfiledPIDSubsystem {
             () -> m_pivotMotor.stopMotor()
         );
     }
+
 
     public boolean pivotAtSetpoint() {
         // return getController().atGoal();
@@ -361,6 +368,7 @@ public class Shooter extends ProfiledPIDSubsystem {
         m_shooterBottomMotor.stopMotor();
         m_shooterTopMotor.stopMotor();
         isShooting = false;
+        isScoringAmp = false;
     }
 
     public boolean isReadyToShoot() {
@@ -375,16 +383,16 @@ public class Shooter extends ProfiledPIDSubsystem {
     }
 
     public void manualShooterPivot(Boolean pivotingUp) {
-        double speed = Constants.Shooter.manualShooterPivotSpeed;
-        double voltage = 0.22;
+        // double speed = Constants.Shooter.manualShooterPivotSpeed;
+        double voltage = Math.cos(getMeasurement()) * Constants.Shooter.pivotkG;
         if(pivotingUp == null) {
             m_pivotMotor.setVoltage(voltage);
         }
         else {
             if(!pivotingUp) {
-                voltage -= voltage / 2;
+                voltage -= (Constants.Shooter.pivotkS + Constants.Shooter.manualShooterPivotVoltage);
             } else {
-                voltage += voltage / 2;
+                voltage += (Constants.Shooter.pivotkS + Constants.Shooter.manualShooterPivotVoltage);
             }
             m_pivotMotor.setVoltage(voltage);
         }
@@ -404,6 +412,28 @@ public class Shooter extends ProfiledPIDSubsystem {
             // new IntakeCommand() TODO fix
         );
         //TODO make it so that it stops when not ready to shoot
+    }
+
+    public Command feedToShooterAmp() {
+        return new ParallelCommandGroup(
+            new FeedAmp(),
+            new AmpForkCommand()
+        );
+    }
+
+    public Command feedToIntakeFromShooter() {
+        return new ParallelCommandGroup(
+            Commands.runEnd(
+                () -> {
+                    setPivot(Constants.Shooter.shooterIntakeAngle);
+                    m_shooterTopMotor.set(Constants.Shooter.shooterIntakeSpeed);
+                    m_shooterBottomMotor.set(Constants.Shooter.shooterIntakeSpeed);
+                },
+                () -> stopShooter()
+            ),
+            new FeedtoIntake(),
+            new ForktoIntakeCommand()
+        ).until(() -> RobotContainer.s_Intake.intakeChangeFromBrokenToUnbroken());
     }
 
     private void configureNeutralMode() {
