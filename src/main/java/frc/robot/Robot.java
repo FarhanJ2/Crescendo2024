@@ -57,6 +57,18 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     // System.out.println(RobotContainer.s_Intake.beamBroken());
+    SmartDashboard.putBoolean("zero", RobotContainer.zero.get());
+    SmartDashboard.putBoolean("one", RobotContainer.one.get());
+    SmartDashboard.putBoolean("two", RobotContainer.two.get());
+    SmartDashboard.putBoolean("three", RobotContainer.three.get());
+    SmartDashboard.putBoolean("four", RobotContainer.four.get());
+    SmartDashboard.putBoolean("five", RobotContainer.five.get());
+    SmartDashboard.putBoolean("six", RobotContainer.six.get());
+    SmartDashboard.putBoolean("seven", RobotContainer.seven.get());
+    SmartDashboard.putBoolean("eight", RobotContainer.eight.get());
+    SmartDashboard.putBoolean("nine", RobotContainer.nine.get());
+    SmartDashboard.putBoolean("ten", RobotContainer.ten.get());
+
     CommandScheduler.getInstance().run();
   }
 

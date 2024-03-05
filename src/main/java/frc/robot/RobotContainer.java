@@ -104,14 +104,16 @@ public class RobotContainer {
 
     /* Auton selector */
     public static final DigitalInput zero = new DigitalInput(10);
-    private static final DigitalInput one = new DigitalInput(11);
-    private static final DigitalInput two = new DigitalInput(12);
-    private static final DigitalInput three = new DigitalInput(13);
-    private static final DigitalInput four = new DigitalInput(18);
-    private static final DigitalInput five = new DigitalInput(19);
-    private static final DigitalInput six = new DigitalInput(20);
-    private static final DigitalInput seven = new DigitalInput(21);
+    public static final DigitalInput one = new DigitalInput(11);
+    public static final DigitalInput two = new DigitalInput(12);
+    public static final DigitalInput three = new DigitalInput(13);
+    public static final DigitalInput four = new DigitalInput(18);
+    public static final DigitalInput five = new DigitalInput(19);
+    public static final DigitalInput six = new DigitalInput(20);
+    public static final DigitalInput seven = new DigitalInput(21);
     public static final DigitalInput eight = new DigitalInput(22);
+    public static final DigitalInput nine = new DigitalInput(23);
+    public static final DigitalInput ten = new DigitalInput(24);
 
     /* Sysid Tuning Controller */
     private final JoystickButton sysidX = new JoystickButton(sysIDJoystick, 1);
@@ -123,8 +125,6 @@ public class RobotContainer {
     private final JoystickButton sysidLeftTrigger = new JoystickButton(sysIDJoystick, 7);
     private final JoystickButton sysidLeftStick = new JoystickButton(sysIDJoystick, 11);
     private final JoystickButton sysidRightStick = new JoystickButton(sysIDJoystick, 12);
-    
-
 
     /* Subsystems */
     public static final Swerve s_Swerve = new Swerve();
@@ -291,7 +291,11 @@ public class RobotContainer {
         new Trigger(
             () -> s_Shooter.isReadyToShoot()
         )
-        .and(operator.leftBumper().or(operator.leftTrigger().or(operator.rightTrigger())))
+        .and(operator.leftBumper()
+            .or(operator.leftTrigger()
+            .or(operator.rightTrigger()
+            .or(operator.rightBumper())
+        )))
         .onTrue(
             /*s_Shooter.shooterReadyLEDCommand()*/
             Commands.runOnce(
@@ -357,13 +361,13 @@ public class RobotContainer {
         //     );
 
 
-        // sysidX.whileTrue(
-        //     s_AmpArm.applykS()
-        // );
+        sysidX.whileTrue(
+            s_AmpArm.applykS()
+        );
 
-        // sysidY.whileTrue(
-        //     s_AmpArm.applykG()
-        // );
+        sysidY.whileTrue(
+            s_AmpArm.applykG()
+        );
         // sysidY.onTrue(
         //     Commands.runOnce(() -> s_Shooter.setGoal(1))
         // );
