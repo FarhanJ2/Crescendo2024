@@ -171,7 +171,6 @@ public class RobotContainer {
         //     s_AmpArm.getHomeCommand()
         // );
 
-        //TODO CHECK IF IT WORKS
         s_Led.setDefaultCommand(
             s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
         );
@@ -300,9 +299,9 @@ public class RobotContainer {
             .or(operator.povRight())
         )
         .onTrue(
-            /*s_Shooter.shooterReadyLEDCommand()*/
             Commands.runOnce(
                 () -> {
+                    s_Shooter.shooterReadyLEDCommand();
                     operator.getHID().setRumble(RumbleType.kBothRumble, 1);
                 }
         )).onFalse(
@@ -332,7 +331,7 @@ public class RobotContainer {
             s_Intake.intakeLedCommand()
                 .deadlineWith(Commands.run(
                 () -> {
-                    driver.getHID().setRumble(RumbleType.kBothRumble, 0.7);
+                    driver.getHID().setRumble(RumbleType.kBothRumble, 1);
                 }
             ))
             .andThen(
@@ -603,25 +602,24 @@ public class RobotContainer {
                         s_AmpArm.getHandoffCommand(),
                         new WaitUntilCommand(
                             () -> s_AmpArm.getController().atGoal()
+                        ).raceWith(
+                            new WaitCommand(2) // 2 second timeout in case doesn't go to goal
                         ),
                         s_AmpArm.feedToArm()
-                    )
+                    ).alongWith(s_Led.fadeCommand(LEDColor.YELLOW))
                 );
         operator.x()
             .and(isNormalMode)
                 .onTrue( // Amp position
-                    s_AmpArm.getAmpSlamCommand()
+                    s_AmpArm.getAmpShootCommand()
                         .alongWith(s_Elevator.getAmpCommand())
+                        .alongWith(s_Led.flashCommand(LEDColor.YELLOW, 0.2, 2))
                 );
-        // operator.x()
-        //     .whileTrue(
-        //         s_AmpArm.applykG()
-        //     );
 
         operator.b()
             .and(isNormalMode)
                 .whileTrue(
-                    new ArmShot()
+                    new ArmShot().alongWith(s_Led.setColorCommand(LEDColor.WHITE))
                 );
                 // .onTrue(
                 //     s_AmpArm.getAmpShootCommand()
@@ -673,6 +671,12 @@ public class RobotContainer {
                 .and(() -> !s_Shooter.isScoringAmp)
                     .whileTrue(
                         s_Shooter.feedToShooter()
+                    )
+                    .onTrue(
+                        s_Led.flashCommand(LEDColor.WHITE, 0.15, 1)
+                    )
+                    .onFalse(
+                        s_Led.stopCommand()
                     );
 
         operator.rightTrigger()

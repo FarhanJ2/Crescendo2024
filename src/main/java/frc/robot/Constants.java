@@ -283,9 +283,9 @@ public final class Constants {
         // public static final double shootSpeed = 0;
 
         // Score positions in radians
-        public static final double homePosition = -Math.PI / 2; // -2.37
+        public static final double homePosition = -Math.PI / 2;
         public static final double handoffPosition = -2.22;
-        public static final double ampSlamPosition = -0.20; // 0.75
+        public static final double ampSlamPosition = -0.20; // NOT USED ANYMORE
         public static final double ampShootPosition = -0.6;
         public static final double trapPosition = 1.37;
 

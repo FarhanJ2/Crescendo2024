@@ -184,11 +184,17 @@ public class AmpArm extends ProfiledPIDSubsystem {
     }
 
     public Command getAmpShootCommand() {
-        return new InstantCommand(() -> setGoal(Position.AMP_SHOOT.getRotations()), this);
+        return new InstantCommand(() -> {
+            setGoal(Position.AMP_SHOOT.getRotations());
+            this.enable();
+        }, this);
     }
 
     public Command getTrapCommand() {
-        return new InstantCommand(() -> setGoal(Position.TRAP.getRotations()), this);
+        return new InstantCommand(() -> {
+            setGoal(Position.TRAP.getRotations());
+            this.enable();
+        }, this);
     }
 
     public Command getHomeCommand() {
@@ -199,7 +205,10 @@ public class AmpArm extends ProfiledPIDSubsystem {
     }
 
     public Command getHandoffCommand() {
-        return new InstantCommand(() -> setGoal(Position.HANDOFF.getRotations()), this);
+        return new InstantCommand(() -> {
+            setGoal(Position.HANDOFF.getRotations());
+            this.enable();
+        }, this);
     }
 
     public double getCANCoderPositionDegrees() {
