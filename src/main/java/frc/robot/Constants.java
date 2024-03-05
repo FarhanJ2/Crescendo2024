@@ -253,11 +253,11 @@ public final class Constants {
 
         public static final int canCoderID = 24;        
         public static final double pivotkS = 0.14; //0.14 //0.065414
-        public static final double pivotkG = 0.0; //0.095
-        public static final double pivotkV = 0; //0.46
+        public static final double pivotkG = 0.195; //0.095
+        public static final double pivotkV = 0.65; //0.46
         // public static final double pivotkA = 0.3;
 
-        public static final double pivotkP = 0; // 1 this one // 10
+        public static final double pivotkP = 3; // 1 this one // 10
         public static final double pivotkI = 0;
         public static final double pivotkD = 0; //0.000001 // 0.06
 
@@ -265,7 +265,7 @@ public final class Constants {
 
         public static final double pivotTolerance = 0.01;
 
-        public static final double kMaxVelocityRadPerSecond = 1;
+        public static final double kMaxVelocityRadPerSecond = 6;
         public static final double kMaxAccelerationRadPerSecSquared = 8;
 
         public static final double armOffset = -Math.PI / 2; // -2.13

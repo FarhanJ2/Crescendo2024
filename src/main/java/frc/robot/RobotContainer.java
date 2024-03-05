@@ -368,6 +368,14 @@ public class RobotContainer {
         sysidY.whileTrue(
             s_AmpArm.applykG()
         );
+
+        sysidB.whileTrue(
+            s_AmpArm.applykV()
+        );
+        sysidA.onTrue(
+            new InstantCommand(() -> {s_AmpArm.setGoal(0); s_AmpArm.enable();})
+        );
+
         // sysidY.onTrue(
         //     Commands.runOnce(() -> s_Shooter.setGoal(1))
         // );
@@ -600,7 +608,7 @@ public class RobotContainer {
             .and(isNormalMode)
                 .onTrue( // Amp position
                     s_AmpArm.getAmpSlamCommand()
-                        //.alongWith(s_Elevator.getAmpCommand())
+                        .alongWith(s_Elevator.getAmpCommand())
                 );
         // operator.x()
         //     .whileTrue(
