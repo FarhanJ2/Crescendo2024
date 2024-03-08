@@ -377,23 +377,24 @@ public class Swerve extends SubsystemBase {
 
         // limelight and odometry classes are written so that adding additional limelights is easy 
     
-        if (Robot.state != Robot.State.AUTON) {
-            Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter); //changed from without yaw
-            if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
-                poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
-            }
+        // TODO all this code must be uncommented for vision stuff
+        // if (Robot.state != Robot.State.AUTON && RobotContainer.addVisionMeasurement) {
+        //     Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter); //changed from without yaw
+        //     if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
+        //         poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
+        //     }
 
 
-            // //newly added limelight automatically configured for odometry impl
-            Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurement(limelightArm); //changed from without yaw
-            if (visionMeasurementLimelightArm != null && poseEstimator != null) {
-                poseEstimator.addVisionMeasurement(visionMeasurementLimelightArm, limelightArm.getLimelightLatency());
-            }
-        }
+        //     // //newly added limelight automatically configured for odometry impl
+        //     Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurement(limelightArm); //changed from without yaw
+        //     if (visionMeasurementLimelightArm != null && poseEstimator != null) {
+        //         poseEstimator.addVisionMeasurement(visionMeasurementLimelightArm, limelightArm.getLimelightLatency());
+        //     }
+        // }
 
-        else {
-            // System.out.println("TELEOP"); 
-        }
+        // else {
+        //     // System.out.println("TELEOP"); 
+        // }
         
         // limelights computes the correct pose but it's placed incorrectly on glass (offsetted by 1 meter)
         field.setRobotPose(new Pose2d(getPose().getX() - 1, getPose().getY(), getPose().getRotation()));

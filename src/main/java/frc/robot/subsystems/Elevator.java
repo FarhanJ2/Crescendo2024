@@ -279,9 +279,9 @@ public class Elevator extends ProfiledPIDSubsystem {
         // if (!m_lowerLimitSwitch.get() || getEncoderRotations() >= 2.8) return;
         // System.out.println("position: " + setpoint.position);
 
-        if (limitPressed()) {
-            zeroCancoder();
-        }
+        // if (limitPressed()) {
+        //     zeroCancoder();
+        // }
 
         double feedforward = m_feedforward.calculate(setpoint.velocity);
 
@@ -314,15 +314,15 @@ public class Elevator extends ProfiledPIDSubsystem {
             useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
         }
 
-        SmartDashboard.putNumber("elevator/motor voltage", m_leftMotor.getMotorVoltage().getValueAsDouble());
-        SmartDashboard.putNumber("elevator/using battery voltage", m_leftMotor.get() * RobotController.getBatteryVoltage());
+        // SmartDashboard.putNumber("elevator/motor voltage", m_leftMotor.getMotorVoltage().getValueAsDouble());
+        // SmartDashboard.putNumber("elevator/using battery voltage", m_leftMotor.get() * RobotController.getBatteryVoltage());
 
 
         // SmartDashboard.putNumber("elevator/cancoder", getCANCoder()); // 36 max top
-        SmartDashboard.putNumber("elevator/cancoder", m_cancoder.getPosition().getValue());
-        SmartDashboard.putNumber("elevator/actual measurement", getMeasurement());
-        SmartDashboard.putNumber("elevator/rotations", getEncoderRotations());
+        // SmartDashboard.putNumber("elevator/cancoder", m_cancoder.getPosition().getValue());
+        // SmartDashboard.putNumber("elevator/actual measurement", getMeasurement());
+        // SmartDashboard.putNumber("elevator/rotations", getEncoderRotations());
         SmartDashboard.putBoolean("elevator/lower limit", m_lowerLimitSwitch.get());
-        SmartDashboard.putNumber("elevator/velocity", m_cancoder.getVelocity().getValueAsDouble());
+        // SmartDashboard.putNumber("elevator/velocity", m_cancoder.getVelocity().getValueAsDouble());
     }
 }

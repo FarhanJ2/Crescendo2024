@@ -151,7 +151,7 @@ public final class Constants {
 
         public static final int beamBreakerIntake = 0;
         // public static final int beamBrakerShooter = 2;
-        public static final int beamBreakerArm = 3;
+        public static final int beamBreakerArm = 5; // 3
 
         public static final double intakeVoltage = 7;
         public static final double forkVoltage = 7;
@@ -216,8 +216,8 @@ public final class Constants {
 
         public static final double manualShooterPivotVoltage = 0.75;
 
-        public static final double ampForkSpeed = 0.4;
-        public static final double ampFeedSpeed = 0.4;
+        public static final double ampForkSpeed = 0.8;
+        public static final double ampFeedSpeed = 0.8;
 
         //TODO find max rpm
         public static final double topShooterMaxRPM = 4500; 
@@ -231,7 +231,7 @@ public final class Constants {
         public static final int leftMotorID = 20;
         public static final int rightMotorID = 21;
 
-        public static final int limitSwitchLowerChannel = 2;
+        public static final int limitSwitchLowerChannel = 8;
 
         public static final int canCoderID = 22;
 
@@ -286,7 +286,7 @@ public final class Constants {
         public static final double homePosition = -Math.PI / 2;
         public static final double handoffPosition = -2.22;
         public static final double ampSlamPosition = -0.20; // NOT USED ANYMORE
-        public static final double ampShootPosition = -0.6;
+        public static final double ampShootPosition = -0.55;
         public static final double trapPosition = 1.37;
 
         // Manual testing values
@@ -366,9 +366,9 @@ public final class Constants {
       public static final double startLineRPM = 1300; // 3000
       public static final double startLineAngle = 0.9; // 0.7
 
-      public static final double ampTopRPM = 300;
-      public static final double ampBottomRPM = 200;
-      public static final double ampAngle = 1.15;
+      public static final double ampTopRPM = 300; // 300
+      public static final double ampBottomRPM = 200; // 200
+      public static final double ampAngle = 1.2;
     }
 
     public static final class StructureConstants {

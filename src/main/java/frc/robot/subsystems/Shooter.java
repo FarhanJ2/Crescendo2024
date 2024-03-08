@@ -268,12 +268,12 @@ public class Shooter extends ProfiledPIDSubsystem {
     }
 
     public boolean bottomShooterAtSetpoint() {
-        return Math.abs(getShooterBottomRPM() - bottomShooterPIDController.getSetpoint()) <= Constants.Shooter.shooterTolerance * 3;
+        return Math.abs(getShooterBottomRPM() - bottomShooterPIDController.getSetpoint()) <= Constants.Shooter.shooterTolerance * 1.5;
     }
 
     public boolean topShooterAtSetpoint() {
         // return topShooterPIDController.getSetpoint() >= 100 
-        return Math.abs(getShooterTopRPM() - topShooterPIDController.getSetpoint()) <= Constants.Shooter.shooterTolerance * 3;
+        return Math.abs(getShooterTopRPM() - topShooterPIDController.getSetpoint()) <= Constants.Shooter.shooterTolerance * 1.5;
         // return topShooterPIDController.atSetpoint();
     }
 

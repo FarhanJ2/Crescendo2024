@@ -96,6 +96,9 @@ public class RobotContainer {
     private final Trigger alignSpeakerButton = driver.leftTrigger();
     private final Trigger zeroGyroButton = driver.b();
     private final Trigger pivotToAngleButton = driver.a(); 
+    private final Trigger toggleVisionMeasurement = driver.povUp();
+
+    public static boolean addVisionMeasurement = true;
 
     /* Operator Buttons */
     private final int manualShootAxis = 1;
@@ -105,17 +108,43 @@ public class RobotContainer {
     private final Trigger isNormalMode = new Trigger(() -> operatorMode == OperatorMode.NORMAL_MODE);
 
     /* Auton selector */
-    public static final DigitalInput zero = new DigitalInput(10);
-    public static final DigitalInput one = new DigitalInput(11);
-    public static final DigitalInput two = new DigitalInput(12);
-    public static final DigitalInput three = new DigitalInput(13);
-    public static final DigitalInput four = new DigitalInput(18);
-    public static final DigitalInput five = new DigitalInput(19);
-    public static final DigitalInput six = new DigitalInput(20);
-    public static final DigitalInput seven = new DigitalInput(21);
-    public static final DigitalInput eight = new DigitalInput(22);
-    public static final DigitalInput nine = new DigitalInput(23);
-    public static final DigitalInput ten = new DigitalInput(24);
+    private final DigitalInput[] autonSelector = {
+        new DigitalInput(10),
+        new DigitalInput(11),
+        new DigitalInput(12),
+        new DigitalInput(13),
+        new DigitalInput(14),
+        new DigitalInput(15),
+        new DigitalInput(16),
+        new DigitalInput(17),
+        new DigitalInput(18),
+        new DigitalInput(19),
+        new DigitalInput(20),
+        new DigitalInput(21),
+        new DigitalInput(22),
+        new DigitalInput(23),
+        new DigitalInput(24)
+    };
+    // THESE commands must correspond to its selection on the selector
+    private final Command[] autons = {
+        new InstantCommand(),
+        new PathPlannerAuto("2 piece"),
+        new PathPlannerAuto("3 piece"),
+        new PathPlannerAuto("Copy of 4 piece"),
+        new PathPlannerAuto("Center line")
+    };
+
+    // public static final DigitalInput zero = new DigitalInput(10);
+    // public static final DigitalInput one = new DigitalInput(11);
+    // public static final DigitalInput two = new DigitalInput(12);
+    // public static final DigitalInput three = new DigitalInput(13);
+    // public static final DigitalInput four = new DigitalInput(18);
+    // public static final DigitalInput five = new DigitalInput(19);
+    // public static final DigitalInput six = new DigitalInput(20);
+    // public static final DigitalInput seven = new DigitalInput(21);
+    // public static final DigitalInput eight = new DigitalInput(22);
+    // public static final DigitalInput nine = new DigitalInput(23);
+    // public static final DigitalInput ten = new DigitalInput(24);
 
     /* Sysid Tuning Controller */
     private final JoystickButton sysidX = new JoystickButton(sysIDJoystick, 1);
@@ -206,6 +235,10 @@ public class RobotContainer {
             new InstantCommand(
                 () -> s_Swerve.zeroHeading()
             )
+        );
+
+        toggleVisionMeasurement.onTrue(
+            new InstantCommand(() -> addVisionMeasurement = !addVisionMeasurement)
         );
 
         pivotToAngleButton.onTrue(
@@ -603,7 +636,7 @@ public class RobotContainer {
                         new WaitUntilCommand(
                             () -> s_AmpArm.getController().atGoal()
                         ).raceWith(
-                            new WaitCommand(2) // 2 second timeout in case doesn't go to goal
+                            new WaitCommand(1) // 2 second timeout in case doesn't go to goal
                         ),
                         s_AmpArm.feedToArm()
                     ).alongWith(s_Led.fadeCommand(LEDColor.YELLOW))
@@ -781,8 +814,20 @@ public class RobotContainer {
                 );
     }
 
+    private int getSelected() {
+        for (int i = 0; i < autonSelector.length; i++) {
+            if (autonSelector[i].get() == false) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     public Command getAutonomousCommand() {
         // Copy of 4 piece
-        return new PathPlannerAuto("Center line");
+        return new PathPlannerAuto("Copy of 4 piece");
+        // return new PathPlannerAuto("Center line revised");
+
+        // return autons[getSelected()];
     }
 }
