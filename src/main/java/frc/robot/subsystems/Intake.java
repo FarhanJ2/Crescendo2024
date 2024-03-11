@@ -35,6 +35,7 @@ public class Intake extends SubsystemBase {
 
     public void intake() {
         // m_intakeMotor.setVoltage(Constants.Intake.intakeVoltage);
+        m_forkMotor.setVoltage(1);
         m_intakeMotor.set(-Constants.Intake.intakeSpeed);
     }
 
@@ -55,6 +56,10 @@ public class Intake extends SubsystemBase {
             m_forkMotor.set(Constants.Intake.forkSpeed);
             m_intakeMotor.set(Constants.Intake.intakeFeedSpeed / 3.5);
         }
+    }
+
+    public void forkToShooterLow() {
+        m_forkMotor.setVoltage(1);
     }
 
     public void runForkAmp() {

@@ -356,8 +356,8 @@ public final class Constants {
     }
 
     public static final class ShootingConstants {
-      public static final double podiumRPM = 3000; // 3000
-      public static final double podiumAngle = 0.65; // 0.7
+      public static final double podiumRPM = 1500; // 3000 // 3000
+      public static final double podiumAngle = 1; // 0.65 //0.7
 
       public static final double speakerRPM = 1500; // 1500
       public static final double speakerAngle = 1.05;
@@ -368,7 +368,7 @@ public final class Constants {
 
       public static final double ampTopRPM = 300; // 300
       public static final double ampBottomRPM = 200; // 200
-      public static final double ampAngle = 1.2;
+      public static final double ampAngle = 1.15;
     }
 
     public static final class StructureConstants {

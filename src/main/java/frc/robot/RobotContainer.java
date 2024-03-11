@@ -209,7 +209,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("subwoofer shot", 
             new ParallelDeadlineGroup(
                 new WaitCommand(1.6),
-                new RampSpeaker(),
+                new RampPodium(),
                 new SequentialCommandGroup(
                     new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
                     new InstantCommand(() -> System.out.println("READY TO SHOOT")),
