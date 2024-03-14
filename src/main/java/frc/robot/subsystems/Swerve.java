@@ -10,6 +10,8 @@ import static edu.wpi.first.units.Units.VoltsPerMeterPerSecond;
 
 import java.sql.Driver;
 
+import org.littletonrobotics.junction.Logger;
+
 import frc.robot.SwerveModule;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.PoseConfig;
@@ -36,6 +38,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -407,7 +410,10 @@ public class Swerve extends SubsystemBase {
         // limelights computes the correct pose but it's placed incorrectly on glass (offsetted by 1 meter)
         field.setRobotPose(new Pose2d(getPose().getX(), getPose().getY(), getPose().getRotation()));
 
-        for(SwerveModule mod : mSwerveMods){
+        Logger.recordOutput("Odometry/Robot", getPose());
+        Logger.recordOutput("Odometry/Robot3d", new Pose3d(getPose()));
+
+        for(SwerveModule mod : mSwerveMods) {
             SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond); 

@@ -20,7 +20,8 @@ public class Intake extends SubsystemBase {
         TO_INTAKE // For arm to intake
     }
 
-    private final TalonFX m_intakeMotor = new TalonFX(Constants.Intake.intakeMotorID);
+    private final TalonFX m_intakeMotor1 = new TalonFX(Constants.Intake.intakeMotor1ID);
+    private final TalonFX m_intakeMotor2 = new TalonFX(Constants.Intake.intakeMotor2ID);
     private final TalonFX m_forkMotor = new TalonFX(Constants.Intake.forkMotorID);
 
     private final DigitalInput intakeBeam = new DigitalInput(Constants.Intake.beamBreakerIntake);
@@ -36,25 +37,30 @@ public class Intake extends SubsystemBase {
     public void intake() {
         // m_intakeMotor.setVoltage(Constants.Intake.intakeVoltage);
         m_forkMotor.setVoltage(1);
-        m_intakeMotor.set(-Constants.Intake.intakeSpeed);
+        m_intakeMotor1.set(-Constants.Intake.intakeSpeed);
+        m_intakeMotor2.set(-Constants.Intake.intakeSpeed);
     }
 
     public void intakeReverse() {
-        m_intakeMotor.set(Constants.Intake.intakeSpeed);
+        m_intakeMotor1.set(Constants.Intake.intakeSpeed);
+        m_intakeMotor2.set(Constants.Intake.intakeSpeed);
     }
 
     public void runFork(Direction direction) {
         if (direction == Direction.TO_SHOOTER) {
             m_forkMotor.set(Constants.Intake.forkSpeed);
-            m_intakeMotor.set(-Constants.Intake.intakeFeedSpeed);
+            m_intakeMotor1.set(-Constants.Intake.intakeFeedSpeed);
+            m_intakeMotor2.set(-Constants.Intake.intakeFeedSpeed);
         } 
         else if (direction == Direction.TO_AMP_ARM) {
             m_forkMotor.set(-Constants.Intake.forkSpeed / 3.5);
-            m_intakeMotor.set(-Constants.Intake.intakeFeedSpeed / 3.5);
+            m_intakeMotor1.set(-Constants.Intake.intakeFeedSpeed / 3.5);
+            m_intakeMotor2.set(-Constants.Intake.intakeFeedSpeed / 3.5);
         }
         else if (direction == Direction.TO_INTAKE) {
             m_forkMotor.set(Constants.Intake.forkSpeed);
-            m_intakeMotor.set(Constants.Intake.intakeFeedSpeed / 3.5);
+            m_intakeMotor1.set(Constants.Intake.intakeFeedSpeed / 3.5);
+            m_intakeMotor2.set(Constants.Intake.intakeFeedSpeed / 3.5);
         }
     }
 
@@ -64,12 +70,14 @@ public class Intake extends SubsystemBase {
 
     public void runForkAmp() {
         m_forkMotor.set(Constants.Shooter.ampForkSpeed);
-        m_intakeMotor.set(-Constants.Shooter.ampForkSpeed);
+        m_intakeMotor1.set(-Constants.Shooter.ampForkSpeed);
+        m_intakeMotor2.set(-Constants.Shooter.ampForkSpeed);
     }
 
     public void runForkToIntake() {
         m_forkMotor.set(Constants.Shooter.forkToIntakeSpeed);
-        m_intakeMotor.set(Constants.Intake.intakeSpeed / 2);
+        m_intakeMotor1.set(Constants.Intake.intakeSpeed / 2);
+        m_intakeMotor2.set(Constants.Intake.intakeSpeed / 2);
     }
 
     public Command intakeLedCommand() {
@@ -77,10 +85,13 @@ public class Intake extends SubsystemBase {
     }
 
     private void configureMotors() {
-        m_intakeMotor.setInverted(false);
+        m_intakeMotor1.setInverted(false);
+        // TODO YOU MAY NEED TO CHANGE THE BELOW LINE FROM FALSE TO TRUE
+        m_intakeMotor2.setInverted(false);
         m_forkMotor.setInverted(true);
 
-        m_intakeMotor.setNeutralMode(NeutralModeValue.Coast);
+        m_intakeMotor1.setNeutralMode(NeutralModeValue.Coast);
+        m_intakeMotor2.setNeutralMode(NeutralModeValue.Coast);
         m_forkMotor.setNeutralMode(NeutralModeValue.Coast);
     }
 
@@ -108,7 +119,8 @@ public class Intake extends SubsystemBase {
     }
 
     public void stop() {
-        m_intakeMotor.stopMotor();
+        m_intakeMotor1.stopMotor();
+        m_intakeMotor2.stopMotor();
         m_forkMotor.stopMotor();
     }
 

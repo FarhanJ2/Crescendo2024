@@ -4,9 +4,18 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -18,7 +27,7 @@ import frc.robot.subsystems.LED;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   public static final CTREConfigs ctreConfigs = new CTREConfigs();
 
   private Command m_autonomousCommand;
@@ -32,47 +41,30 @@ public class Robot extends TimedRobot {
 
   public static State state = State.AUTON;
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
+    Logger.recordMetadata("Crescedo 2024", "Hawk Rider");
+
+    if (isReal()) {
+        Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+    } else {
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+        Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+    }
+
+    // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
+    Logger.start();
+
     m_robotContainer = new RobotContainer();
   }
-
-  /**
-   * This function is called every robot packet, no matter the mode. Use this for items like
-   * diagnostics that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
-    // System.out.println(RobotContainer.s_Intake.beamBroken());
-    // SmartDashboard.putBoolean("zero", RobotContainer.zero.get());
-    // SmartDashboard.putBoolean("one", RobotContainer.one.get());
-    // SmartDashboard.putBoolean("two", RobotContainer.two.get());
-    // SmartDashboard.putBoolean("three", RobotContainer.three.get());
-    // SmartDashboard.putBoolean("four", RobotContainer.four.get());
-    // SmartDashboard.putBoolean("five", RobotContainer.five.get());
-    // SmartDashboard.putBoolean("six", RobotContainer.six.get());
-    // SmartDashboard.putBoolean("seven", RobotContainer.seven.get());
-    // SmartDashboard.putBoolean("eight", RobotContainer.eight.get());
-    // SmartDashboard.putBoolean("nine", RobotContainer.nine.get());
-    // SmartDashboard.putBoolean("ten", RobotContainer.ten.get());
-
     CommandScheduler.getInstance().run();
   }
 
-  /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {}
 
@@ -81,48 +73,36 @@ public class Robot extends TimedRobot {
     RobotContainer.s_Led.rainbow();
   }
 
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
     state = State.AUTON;
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
   }
 
-  /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {}
 
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
     state = State.TELEOP;
   }
 
-  /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    // RobotContainer.s_Led.rainbow();
-      // RobotContainer.s_Led.wave(DriverStation.getAlliance().get() == Alliance.Blue ? LED.LEDColor.BLUE : LED.LEDColor.RED);
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {
-    // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
   }
 
-  /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
 }

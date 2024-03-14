@@ -146,7 +146,8 @@ public final class Constants {
 
     //Subsystems
     public static final class Intake {
-        public static final int intakeMotorID = 13;
+        public static final int intakeMotor1ID = 13;
+        public static final int intakeMotor2ID = 24;
         public static final int forkMotorID = 14;
 
         public static final int beamBreakerIntake = 0;
