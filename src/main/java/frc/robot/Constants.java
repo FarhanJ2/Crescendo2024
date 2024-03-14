@@ -356,10 +356,14 @@ public final class Constants {
     }
 
     public static final class ShootingConstants {
-      public static final double podiumRPM = 1500; // 3000 // 3000
-      public static final double podiumAngle = 1; // 0.65 //0.7
+      public static final double podiumRPM = 4000; // 3000 // 3000
+      public static final double podiumAngle = 0.65; // 0.65 //0.7
 
-      public static final double speakerRPM = 1500; // 1500
+    //162 inches is roughly 0.5 angle
+
+      //220 inches is roughly 0.45 angle
+
+      public static final double speakerRPM = 1000; // 1500
       public static final double speakerAngle = 1.05;
       public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
       

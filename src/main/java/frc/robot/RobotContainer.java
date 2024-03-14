@@ -32,6 +32,7 @@ import frc.robot.commands.AmpArm.ArmHandoff;
 import frc.robot.commands.AmpArm.ArmShot;
 import frc.robot.commands.AmpArm.ManualArmPivot;
 import frc.robot.commands.Elevator.ManualElevator;
+import frc.robot.commands.feeder.Feed;
 import frc.robot.commands.intake.ForkCommand;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.ReverseIntakeCommand;
@@ -688,6 +689,7 @@ public class RobotContainer {
             .and(isNormalMode)
                 .whileTrue( // Podium shot
                     new ParallelCommandGroup(
+                        new Feed(),
                         new RampPodium() // 0.15 angle 1800-2000rpm for podium
                     )
                 );

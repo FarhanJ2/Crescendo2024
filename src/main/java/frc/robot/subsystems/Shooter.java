@@ -142,8 +142,6 @@ public class Shooter extends ProfiledPIDSubsystem {
             Constants.Shooter.bottomShooterkV
         );
 
-    // private boolean isReadyToShoot;
-
     public Shooter() {
         super(new ProfiledPIDController(
             Constants.Shooter.pivotkP, 
@@ -160,8 +158,6 @@ public class Shooter extends ProfiledPIDSubsystem {
         bottomShooterPIDController.setTolerance(Constants.Shooter.shooterTolerance);
 
         m_pivotMotor.setInverted(true);
-
-        // isReadyToShoot = false;
 
         configureNeutralMode();
 
@@ -205,7 +201,7 @@ public class Shooter extends ProfiledPIDSubsystem {
     public void tuneTest(double rpm) {
         double Feedforward = bottomShooterFeedforward.calculate(rpm);
         double PidOutput = bottomShooterPIDController.calculate(getShooterBottomRPM(), rpm);
-        // System.out.println(PidOutput + Feedforward);
+
         m_shooterBottomMotor.setVoltage(PidOutput + Feedforward);
     }
 
@@ -264,7 +260,7 @@ public class Shooter extends ProfiledPIDSubsystem {
 
     public boolean pivotAtSetpoint() {
         // return getController().atGoal();
-        return Math.abs(getMeasurement() - getController().getGoal().position) <= Constants.Shooter.pivotTolerance * 3;
+        return Math.abs(getMeasurement() - getController().getGoal().position) <= Constants.Shooter.pivotTolerance * 3; // TODO get rid of multiplier
     }
 
     public boolean bottomShooterAtSetpoint() {
@@ -301,7 +297,7 @@ public class Shooter extends ProfiledPIDSubsystem {
 
     @Override
     public double getMeasurement() {
-        return getCANCoder() * Math.PI / 180;
+        return getCANCoder() * Math.PI / 180 + 0.1;
         // return getPivotRadians();
     }
 

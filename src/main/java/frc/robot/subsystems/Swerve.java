@@ -144,7 +144,7 @@ public class Swerve extends SubsystemBase {
         limelightChooser.addOption(limelightArm.getLimelightName(), limelightArm);
 
         limelightShooter.setPipeline(LimelightConstants.limelightShooterTagPipeline);
-        //limelightArm.setPipeline(LimelightConstants.limelightShooterTagPipeline);
+        limelightArm.setPipeline(LimelightConstants.limelightShooterTagPipeline);
 
         //TODO FIXXXXXXXXXX plz
         
@@ -153,7 +153,7 @@ public class Swerve extends SubsystemBase {
         m_backLeftMotor = mSwerveMods[2].getDriveMotor();
         m_backRightMotor = mSwerveMods[3].getDriveMotor();
 
-
+   
    
 
         // sysID = new SysIdRoutine(
@@ -328,13 +328,21 @@ public class Swerve extends SubsystemBase {
 
     public void zeroHeading(){
         Pose2d zeroPose;
+        // if(RobotContainer.alliance == DriverStation.Alliance.Blue) {
+        //     zeroPose = new Pose2d(getPose().getTranslation(), new Rotation2d());
+        // }
+        // else {
+        //     zeroPose = new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), Rotation2d.fromDegrees(180));
+        // }
+
         if(RobotContainer.alliance == DriverStation.Alliance.Blue) {
             zeroPose = new Pose2d(getPose().getTranslation(), new Rotation2d());
         }
         else {
             zeroPose = new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), Rotation2d.fromDegrees(180));
         }
-        poseEstimator.resetPosition(getGyroYaw(), getModulePositions(), zeroPose);    
+        poseEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(new Translation2d(15.3, 5.700184), Rotation2d.fromDegrees(180))); //TODO change back
+    
     }
 
     public Rotation2d getGyroYaw() {
@@ -397,7 +405,7 @@ public class Swerve extends SubsystemBase {
         // }
         
         // limelights computes the correct pose but it's placed incorrectly on glass (offsetted by 1 meter)
-        field.setRobotPose(new Pose2d(getPose().getX() - 1, getPose().getY(), getPose().getRotation()));
+        field.setRobotPose(new Pose2d(getPose().getX(), getPose().getY(), getPose().getRotation()));
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
