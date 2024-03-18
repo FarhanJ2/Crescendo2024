@@ -283,6 +283,9 @@ public class RobotContainer {
         );
         NamedCommands.registerCommand("intake", new IntakeCommand());
 
+        // Set up note visualizer
+        NoteVisualizer.setRobotPoseSupplier(drive::getPose);
+
         // Configure the button bindings
         configureAbsoluteButtonBindings();
         configureNormalModeButtonBindings();

@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.math.Conversions;
+import frc.lib.util.NoteVisualizer;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.SwerveModule;
@@ -406,6 +407,8 @@ public class Shooter extends ProfiledPIDSubsystem {
             new Feed(),
             new ForkCommand(Intake.Direction.TO_SHOOTER)
             // new IntakeCommand() TODO fix
+        ).alongWith(
+            NoteVisualizer.shoot()
         );
         //TODO make it so that it stops when not ready to shoot
     }
