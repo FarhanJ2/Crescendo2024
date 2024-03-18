@@ -119,7 +119,7 @@ public class Elevator extends ProfiledPIDSubsystem {
             0);
 
         getController().setTolerance(Constants.Elevator.tolerance);
-        m_cancoder.getConfigurator().apply(new CANcoderConfiguration().withMagnetSensor(new MagnetSensorConfigs().withSensorDirection(SensorDirectionValue.Clockwise_Positive)));
+        m_cancoder.getConfigurator().apply(new CANcoderConfiguration().withMagnetSensor(new MagnetSensorConfigs().withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)));
 
         zeroCancoder();
         
@@ -253,7 +253,7 @@ public class Elevator extends ProfiledPIDSubsystem {
     }
 
     private boolean elevatorAtMax() {
-        return getEncoderRotations() >= Constants.Elevator.maxRotations;
+        return getMeasurement() >= Constants.Elevator.maxRotations;
     }
 
     private void zeroCancoder() {
@@ -266,8 +266,8 @@ public class Elevator extends ProfiledPIDSubsystem {
     }
 
     private void configureMotors() {
-        m_leftMotor.setInverted(true);
-        m_rightMotor.setInverted(false);
+        m_leftMotor.setInverted(false);
+        m_rightMotor.setInverted(true);
 
         m_leftMotor.setNeutralMode(NeutralModeValue.Brake);
         m_rightMotor.setNeutralMode(NeutralModeValue.Brake);
@@ -314,13 +314,13 @@ public class Elevator extends ProfiledPIDSubsystem {
             useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
         }
 
-        // SmartDashboard.putNumber("elevator/motor voltage", m_leftMotor.getMotorVoltage().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/motor voltage", m_leftMotor.getMotorVoltage().getValueAsDouble());
         // SmartDashboard.putNumber("elevator/using battery voltage", m_leftMotor.get() * RobotController.getBatteryVoltage());
 
 
         // SmartDashboard.putNumber("elevator/cancoder", getCANCoder()); // 36 max top
         // SmartDashboard.putNumber("elevator/cancoder", m_cancoder.getPosition().getValue());
-        // SmartDashboard.putNumber("elevator/actual measurement", getMeasurement());
+        SmartDashboard.putNumber("elevator/actual measurement", getMeasurement());
         // SmartDashboard.putNumber("elevator/rotations", getEncoderRotations());
         SmartDashboard.putBoolean("elevator/lower limit", m_lowerLimitSwitch.get());
         // SmartDashboard.putNumber("elevator/velocity", m_cancoder.getVelocity().getValueAsDouble());

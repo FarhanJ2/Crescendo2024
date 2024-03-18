@@ -27,6 +27,7 @@ public class OdometryImpl extends SubsystemBase {
   }
  
   public double getDistance(Pose2d target) {
+    //changed from getRelativePose()
       double distance = s_Swerve.getRelativePose().getTranslation().getDistance(target.getTranslation());
       return distance;
   }
@@ -121,8 +122,8 @@ public class OdometryImpl extends SubsystemBase {
   public void periodic() {
       // This method will be called once per scheduler run
       // newly added
-      SmartDashboard.putNumber("Vision Pose Error Limelight Front", getVisionPoseError(s_Swerve.limelightShooter));
-      SmartDashboard.putNumber("Vision Pose Error Limelight Back", getVisionPoseError(s_Swerve.limelightArm));
+      // SmartDashboard.putNumber("Vision Pose Error Limelight Front", getVisionPoseError(s_Swerve.limelightShooter));
+      // SmartDashboard.putNumber("Vision Pose Error Limelight Back", getVisionPoseError(s_Swerve.limelightArm));
 
       SmartDashboard.putNumber(
         (RobotContainer.alliance == DriverStation.Alliance.Red) ? "Red speaker distance" : "Blue speaker distance", 

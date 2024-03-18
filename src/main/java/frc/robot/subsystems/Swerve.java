@@ -74,7 +74,9 @@ public class Swerve extends SubsystemBase {
 
     public DriverStation.Alliance alliance; 
 
-    private SendableChooser limelightChooser; 
+    public boolean aimedAtSpeaker = false;
+
+    // private SendableChooser limelightChooser; 
 
     private ChassisSpeeds chassisSpeeds;
 
@@ -123,7 +125,7 @@ public class Swerve extends SubsystemBase {
 
 
 
-    // private final SysIdRoutine sysID;
+    private final SysIdRoutine sysID;
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
@@ -141,10 +143,10 @@ public class Swerve extends SubsystemBase {
         odometryImpl = new OdometryImpl(this);
         limelightShooter = new Limelight(Constants.LimelightConstants.limelightShooter);
         limelightArm = new Limelight(Constants.LimelightConstants.limelightArm);
-        limelightChooser = new SendableChooser<>();
-        limelightChooser.setDefaultOption("None", null);
-        limelightChooser.addOption(limelightShooter.getLimelightName(), limelightShooter);
-        limelightChooser.addOption(limelightArm.getLimelightName(), limelightArm);
+        // limelightChooser = new SendableChooser<>();
+        // limelightChooser.setDefaultOption("None", null);
+        // limelightChooser.addOption(limelightShooter.getLimelightName(), limelightShooter);
+        // limelightChooser.addOption(limelightArm.getLimelightName(), limelightArm);
 
         limelightShooter.setPipeline(LimelightConstants.limelightShooterTagPipeline);
         limelightArm.setPipeline(LimelightConstants.limelightShooterTagPipeline);
@@ -159,32 +161,32 @@ public class Swerve extends SubsystemBase {
    
    
 
-        // sysID = new SysIdRoutine(
-        //     new SysIdRoutine.Config(
-        //         null,
-        //         null,
-        //         null),
-                // (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
-            // new SysIdRoutine.Mechanism(
-            //     (Measure<Voltage> volts) -> {
-            //         m_frontLeftMotor.setVoltage(volts.in(Volts));
-            //         m_frontRightMotor.setVoltage(volts.in(Volts));
-            //         m_backLeftMotor.setVoltage(-volts.in(Volts));
-            //         m_backRightMotor.setVoltage(-volts.in(Volts));
-            //     },
-            //     log -> {
-            //         log.motor("swerve")
-            //         .voltage(
-            //             m_appliedVoltage.mut_replace(
-            //                 m_frontLeftMotor.get() * RobotController.getBatteryVoltage(), Volts))
-            //         //.angularPosition(m_angle.mut_replace(m_pivotMotor.getPosition().getValue() / 18.8888888888888, Rotations))
-            //         .linearPosition(m_distance.mut_replace(m_frontLeftMotor.getPosition().getValueAsDouble() * Math.PI * 0.1016, Meters))
-            //         // .angularVelocity(
-            //         //     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValue() / 18.8888888888888, RotationsPerSecond));
-            //         .linearVelocity(
-            //             m_velocity.mut_replace(m_frontLeftMotor.getVelocity().getValueAsDouble() * Math.PI * 0.1016, MetersPerSecond));
-            //     },
-            //     this));
+        sysID = new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (Measure<Voltage> volts) -> {
+                    m_frontLeftMotor.setVoltage(volts.in(Volts));
+                    m_frontRightMotor.setVoltage(volts.in(Volts));
+                    m_backLeftMotor.setVoltage(-volts.in(Volts));
+                    m_backRightMotor.setVoltage(-volts.in(Volts));
+                },
+                log -> {
+                    log.motor("swerve")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(
+                            m_frontLeftMotor.get() * RobotController.getBatteryVoltage(), Volts))
+                    //.angularPosition(m_angle.mut_replace(m_pivotMotor.getPosition().getValue() / 18.8888888888888, Rotations))
+                    .linearPosition(m_distance.mut_replace(m_frontLeftMotor.getPosition().getValueAsDouble() * Math.PI * 0.1016, Meters))
+                    // .angularVelocity(
+                    //     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValue() / 18.8888888888888, RotationsPerSecond));
+                    .linearVelocity(
+                        m_velocity.mut_replace(m_frontLeftMotor.getVelocity().getValueAsDouble() * Math.PI * 0.1016, MetersPerSecond));
+                },
+                this));
 
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
@@ -192,8 +194,8 @@ public class Swerve extends SubsystemBase {
                 this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(1, 0, 0), // Translation PID constants
-                        new PIDConstants(0.095, 0.0009, 0.01), // (p 0.85), (p 0.6 d 0.3),  
+                        new PIDConstants(1, 0.001, 0), // Translation PID constants
+                        new PIDConstants(0.1, 0.0011, 0.01), //0.095, 0.0009, 0.01// (p 0.85), (p 0.6 d 0.3),  
                         4.3, // Max module speed, in m/s
                         Constants.Swerve.trackWidth, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
@@ -281,11 +283,13 @@ public class Swerve extends SubsystemBase {
     public double calculateTurnAngle(Pose2d target, double robotAngle) {
         double tx = target.getX(); 
         double ty = target.getY(); 
-        double rx = getPose().getX();
-        double ry = getPose().getY();
+        double rx = getRelativePose().getX();
+        double ry = getRelativePose().getY();
 
         double requestedAngle = Math.atan((ty - ry) / (tx - rx)) * (180 / Math.PI);
         double calculatedAngle = (180 - robotAngle + requestedAngle);
+
+        // System.out.println(((calculatedAngle + 360) % 360));
 
         return ((calculatedAngle + 360) % 360);
     }
@@ -331,20 +335,21 @@ public class Swerve extends SubsystemBase {
 
     public void zeroHeading(){
         Pose2d zeroPose;
-        // if(RobotContainer.alliance == DriverStation.Alliance.Blue) {
-        //     zeroPose = new Pose2d(getPose().getTranslation(), new Rotation2d());
-        // }
-        // else {
-        //     zeroPose = new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), Rotation2d.fromDegrees(180));
-        // }
-
         if(RobotContainer.alliance == DriverStation.Alliance.Blue) {
             zeroPose = new Pose2d(getPose().getTranslation(), new Rotation2d());
         }
         else {
             zeroPose = new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), Rotation2d.fromDegrees(180));
         }
-        poseEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(new Translation2d(15.3, 5.700184), Rotation2d.fromDegrees(180))); //TODO change back
+        poseEstimator.resetPosition(getGyroYaw(), getModulePositions(), zeroPose); //TODO change back
+
+        // if(RobotContainer.alliance == DriverStation.Alliance.Blue) {
+        //     zeroPose = new Pose2d(getPose().getTranslation(), new Rotation2d());
+        // }
+        // else {
+        //     zeroPose = new Pose2d(poseEstimator.getEstimatedPosition().getTranslation(), Rotation2d.fromDegrees(180));
+        // }
+        // poseEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(new Translation2d(15.3, 5.700184), Rotation2d.fromDegrees(180))); //TODO change back
     
     }
 
@@ -363,19 +368,19 @@ public class Swerve extends SubsystemBase {
         return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
-    // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    //     // return null;
-    //     return sysID.quasistatic(direction);
-    // }
-
-    // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    //     // return null;
-    //     return sysID.dynamic(direction);
-    // }
-
-    public Limelight getFlashedLimelight() {
-        return (Limelight) limelightChooser.getSelected(); 
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        // return null;
+        return sysID.quasistatic(direction);
     }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        // return null;
+        return sysID.dynamic(direction);
+    }
+
+    // public Limelight getFlashedLimelight() {
+    //     return (Limelight) limelightChooser.getSelected(); 
+    // }
 
 
     @Override
@@ -389,19 +394,19 @@ public class Swerve extends SubsystemBase {
         // limelight and odometry classes are written so that adding additional limelights is easy 
     
         // TODO all this code must be uncommented for vision stuff
-        // if (Robot.state != Robot.State.AUTON && RobotContainer.addVisionMeasurement) {
-        //     Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter); //changed from without yaw
-        //     if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
-        //         poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
-        //     }
+        if (Robot.state != Robot.State.AUTON && RobotContainer.addVisionMeasurement) {
+            Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter); //changed from without yaw
+            if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
+                poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
+            }
 
 
-        //     // //newly added limelight automatically configured for odometry impl
-        //     Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurement(limelightArm); //changed from without yaw
-        //     if (visionMeasurementLimelightArm != null && poseEstimator != null) {
-        //         poseEstimator.addVisionMeasurement(visionMeasurementLimelightArm, limelightArm.getLimelightLatency());
-        //     }
-        // }
+            // //newly added limelight automatically configured for odometry impl
+            Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurement(limelightArm); //changed from without yaw
+            if (visionMeasurementLimelightArm != null && poseEstimator != null) {
+                poseEstimator.addVisionMeasurement(visionMeasurementLimelightArm, limelightArm.getLimelightLatency());
+            }
+        }
 
         // else {
         //     // System.out.println("TELEOP"); 
@@ -423,10 +428,10 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("swerve/yaw", gyro.getYaw().getValue());
 
         // TODO need to change depending on the team your're on
-        SmartDashboard.putNumber("swerve/distance", odometryImpl.getDistance(Constants.RedTeamPoses.redSpeakerPose)); 
+        // SmartDashboard.putNumber("swerve/distance", odometryImpl.getDistance(Constants.RedTeamPoses.redSpeakerPose)); 
 
         SmartDashboard.putData("field", field);
-        SmartDashboard.putData("limelightChooser", limelightChooser);
+        // SmartDashboard.putData("limelightChooser", limelightChooser);
 
         
     }

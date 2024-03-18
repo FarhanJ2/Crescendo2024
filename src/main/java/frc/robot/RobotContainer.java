@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -42,9 +43,11 @@ import frc.robot.commands.shooter.ManualShooterPivot;
 import frc.robot.commands.shooter.ManualShot;
 import frc.robot.commands.shooter.Pivot;
 import frc.robot.commands.shooter.RampAmp;
+import frc.robot.commands.shooter.RampCenterLine;
 import frc.robot.commands.shooter.RampPodium;
 import frc.robot.commands.shooter.RampShooter;
 import frc.robot.commands.shooter.RampSpeaker;
+import frc.robot.commands.shooter.RampSpotOne;
 import frc.robot.commands.shooter.RampStartLine;
 import frc.robot.commands.swerve.RotateToAngle;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -65,9 +68,10 @@ public class RobotContainer {
     }
    
     private final Thread allianceGetter = new Thread(() -> {
-        while(!DriverStation.waitForDsConnection(0)) {
-            DriverStation.reportWarning("SHET UP", false);
-        }
+        // while(!DriverStation.waitForDsConnection(0)) {
+        //     DriverStation.reportWarning("SHET UP", false);
+        // }
+        //TODO fix for comp
         DriverStation.reportWarning("ME SHET UP???", false);
         try {
             Thread.sleep(1000);
@@ -98,6 +102,7 @@ public class RobotContainer {
     private final Trigger zeroGyroButton = driver.b();
     private final Trigger pivotToAngleButton = driver.a(); 
     private final Trigger toggleVisionMeasurement = driver.povUp();
+    private final Trigger centerLineShotButton = driver.povDown();
 
     public static boolean addVisionMeasurement = true;
 
@@ -226,18 +231,53 @@ public class RobotContainer {
         );
 
         // NamedCommands.registerCommand("ramp", new RampShooter(1000, 1000, 0.13));
-        //TODO CHANGE BASED ON WHERE WE'RE SHOOTING
+        // NamedCommands.registerCommand("subwoofer shot", 
+        //     new ParallelDeadlineGroup(
+        //         new WaitCommand(1.6),
+        //         new RampPodium(),
+        //         new SequentialCommandGroup(
+        //             new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
+        //             new InstantCommand(() -> System.out.println("READY TO SHOOT")),
+        //             new ParallelDeadlineGroup(
+        //                 new WaitCommand(0.3),
+        //                 s_Shooter.feedToShooter()
+        //             )
+        //         )
+        //     )
+        // );
         NamedCommands.registerCommand("subwoofer shot", 
-            new ParallelDeadlineGroup(
-                new WaitCommand(1.6),
-                new RampPodium(),
-                new SequentialCommandGroup(
-                    new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
-                    new InstantCommand(() -> System.out.println("READY TO SHOOT")),
-                    new ParallelDeadlineGroup(
-                        new WaitCommand(0.3),
-                        s_Shooter.feedToShooter()
-                    )
+            new ParallelRaceGroup(
+                new WaitCommand(2),
+                new ParallelDeadlineGroup(
+                    new SequentialCommandGroup(
+                        new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
+                        new InstantCommand(() -> System.out.println("READY TO SHOOT")),
+                        new ParallelDeadlineGroup(
+                            new WaitCommand(0.3),
+                            s_Shooter.feedToShooter()
+                        )
+                    ),
+                    new RampSpeaker()
+                )
+            )
+        );
+        NamedCommands.registerCommand("spot 1 shot", 
+            new ParallelRaceGroup(
+                new WaitCommand(4),
+                new ParallelDeadlineGroup(
+                    new SequentialCommandGroup(
+                        new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
+                        new InstantCommand(() -> System.out.println("READY TO SHOOT")),
+                        new ParallelDeadlineGroup(
+                            new WaitCommand(0.5),
+                            s_Shooter.feedToShooter()
+                        )
+                    ),
+                    new RotateToAngle(
+                        () -> s_Swerve.calculateTurnAngle(alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueSpeakerPose : Constants.RedTeamPoses.redSpeakerPose, s_Swerve.getHeading().getDegrees() + 180), 
+                        () -> s_Swerve.getHeading().getDegrees()
+                    ),
+                    new RampSpotOne()
                 )
             )
         );
@@ -255,6 +295,22 @@ public class RobotContainer {
         zeroGyroButton.onTrue(
             new InstantCommand(
                 () -> s_Swerve.zeroHeading()
+            )
+        );
+
+        centerLineShotButton.whileTrue(
+            new ParallelCommandGroup(
+                //aligns to the amp
+                new RotateToAngle(
+                    () -> s_Swerve.calculateTurnAngle(alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueAmpPose : Constants.RedTeamPoses.redAmpPose, s_Swerve.getHeading().getDegrees() + 180), 
+                    () -> s_Swerve.getHeading().getDegrees(),
+                    () -> centerLineShotButton.getAsBoolean()
+                ),
+                new RampCenterLine(),
+                new SequentialCommandGroup(
+                    new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
+                    s_Shooter.feedToShooter()
+                )
             )
         );
 
@@ -276,7 +332,7 @@ public class RobotContainer {
         // TODO need to change team for this
         alignSpeakerButton.onTrue(
             new RotateToAngle(
-                () -> s_Swerve.calculateTurnAngle(Constants.BlueTeamPoses.redSpeakerPose, s_Swerve.getHeading().getDegrees() + 180), 
+                () -> s_Swerve.calculateTurnAngle(alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueSpeakerPose : Constants.RedTeamPoses.redSpeakerPose, s_Swerve.getHeading().getDegrees() + 180), 
                 () -> s_Swerve.getHeading().getDegrees(),
                 () -> alignSpeakerButton.getAsBoolean()
             )
@@ -847,8 +903,10 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         // Copy of 4 piece
-        return new PathPlannerAuto("Copy of 4 piece");
+        // return new PathPlannerAuto("Copy of 4 piece");
         // return new PathPlannerAuto("Center line revised");
+        // return new PathPlannerAuto("2 note center");
+        return new PathPlannerAuto("3 note center");
 
         // return autons[getSelected()];
     }

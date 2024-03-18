@@ -1,5 +1,6 @@
 package frc.robot.commands.swerve;
 
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 import java.util.function.Supplier;
@@ -20,6 +21,12 @@ public class RotateToAngle extends Command {
         0,
         0
     );
+
+    
+
+    public RotateToAngle(Supplier<Double> requestedAngle, Supplier<Double> currentAngle) {
+        this(requestedAngle, currentAngle, () -> true);
+    }
 
     public RotateToAngle(Supplier<Double> requestedAngle, Supplier<Double> currentAngle, Supplier<Boolean> buttonPressed) {
         
@@ -61,8 +68,9 @@ public class RotateToAngle extends Command {
     // only stop if at setpoint and button unpressed or button is unpressed
     @Override
     public boolean isFinished() {
-        return (pidController.atSetpoint() && !buttonPressed.get())
-        || !buttonPressed.get();
+        if(buttonPressed == null) return pidController.atSetpoint();
+        else return (pidController.atSetpoint() && !buttonPressed.get())
+            || !buttonPressed.get();
     }
 
     @Override

@@ -43,7 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Subwoofer bottom to bottom center Revised"
+                  "pathName": "Copy of Subwoofer bottom to bottom center STRAIGHT"
                 }
               }
             ]
@@ -52,13 +52,57 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom center to subwoofer bottom revised"
+            "pathName": "Bottom center to shoot spot 1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "subwoofer shot"
+            "name": "spot 1 shot"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intake"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 6.0
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Shoot spot 1 to bottom 2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom 2 to shoot spot 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "spot 1 shot"
           }
         }
       ]

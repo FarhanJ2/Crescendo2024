@@ -87,7 +87,7 @@ public class Intake extends SubsystemBase {
     private void configureMotors() {
         m_intakeMotor1.setInverted(false);
         // TODO YOU MAY NEED TO CHANGE THE BELOW LINE FROM FALSE TO TRUE
-        m_intakeMotor2.setInverted(false);
+        m_intakeMotor2.setInverted(true);
         m_forkMotor.setInverted(true);
 
         m_intakeMotor1.setNeutralMode(NeutralModeValue.Coast);

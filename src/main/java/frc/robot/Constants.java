@@ -93,7 +93,7 @@ public final class Constants {
             public static final int driveMotorID = 1;
             public static final int angleMotorID = 2;
             public static final int canCoderID = 3;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-100.55);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-131.57);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -103,7 +103,7 @@ public final class Constants {
             public static final int driveMotorID = 4;
             public static final int angleMotorID = 5;
             public static final int canCoderID = 6;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(111.27);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-54.32);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -113,7 +113,7 @@ public final class Constants {
             public static final int driveMotorID = 7;
             public static final int angleMotorID = 8;
             public static final int canCoderID = 9;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(9.05);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-63.28);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -123,7 +123,7 @@ public final class Constants {
             public static final int driveMotorID = 10;
             public static final int angleMotorID = 11;
             public static final int canCoderID = 12;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-70.40);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-175.43);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -150,9 +150,9 @@ public final class Constants {
         public static final int intakeMotor2ID = 24;
         public static final int forkMotorID = 14;
 
-        public static final int beamBreakerIntake = 0;
+        public static final int beamBreakerIntake = 8;
         // public static final int beamBrakerShooter = 2;
-        public static final int beamBreakerArm = 5; // 3
+        public static final int beamBreakerArm = 9; // 3
 
         public static final double intakeVoltage = 7;
         public static final double forkVoltage = 7;
@@ -232,7 +232,7 @@ public final class Constants {
         public static final int leftMotorID = 20;
         public static final int rightMotorID = 21;
 
-        public static final int limitSwitchLowerChannel = 8;
+        public static final int limitSwitchLowerChannel = 4;
 
         public static final int canCoderID = 22;
 
@@ -249,11 +249,11 @@ public final class Constants {
 
         public static final double tolerance = 0.05;
 
-        public static final double climbRotations = 2.9;
+        public static final double climbRotations = 2.8;
         public static final double ampRotations = 2.3;
         public static final double homeRotations = 0;
         public static final double trapRotations = 1.5;
-        public static final double maxRotations = 2.9;
+        public static final double maxRotations = 2.8;
 
         public static final double manualElevatorSpeed = 0.8;
     }
@@ -313,6 +313,9 @@ public final class Constants {
 
     public static class LimelightConstants {
         // All limelights on the robot
+        // public static final String limelightShooter = "limelight-shooter";
+        // public static final String limelightArm = "limelight-arm";
+
         public static final String limelightShooter = "limelight-shooter";
         public static final String limelightArm = "limelight-arm";
 
@@ -342,29 +345,32 @@ public final class Constants {
         // Blue team poses
         public static final Pose2d initialPose = new Pose2d(new Translation2d(1.225347, 7.652309), new Rotation2d()); // Next to blue speaker
         public static final Pose2d blueSpeakerPose = new Pose2d(new Translation2d(1.286580, 5.671689), Rotation2d.fromDegrees(180));
-        public static final Pose2d redSpeakerPose = new Pose2d(new Translation2d(16.541748, 5.700184), new Rotation2d());
+        // public static final Pose2d redSpeakerPose = new Pose2d(new Translation2d(16.541748, 5.700184), new Rotation2d());
         public static final Pose2d blueOrigin = new Pose2d(new Translation2d(0, 0), new Rotation2d()); 
+        public static final Pose2d blueAmpPose = new Pose2d(new Translation2d( 1.813129, 8.220855), new Rotation2d());
         
     }
 
     public static class RedTeamPoses {
         // TODO: add the red team poses which just be the blue team poses for structures but inverted
         public static final Pose2d initialPose = new Pose2d(new Translation2d(1.225347, 7.652309), new Rotation2d()); // Next to blue speaker
-        public static final Pose2d blueSpeakerPose = new Pose2d(new Translation2d(16.541748, 5.700184), Rotation2d.fromDegrees(180));
-        public static final Pose2d redSpeakerPose = new Pose2d(new Translation2d(1.286580, 5.671689), Rotation2d.fromDegrees(0)); 
+        // public static final Pose2d blueSpeakerPose = new Pose2d(new Translation2d(16.541748, 5.700184), Rotation2d.fromDegrees(180));
         public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
+        public static final Pose2d redSpeakerPose = new Pose2d(new Translation2d(16.541748, 5.700184), new Rotation2d()).relativeTo(redOrigin);
+        public static final Pose2d redAmpPose = new Pose2d(new Translation2d(14.722884, 8.220855), new Rotation2d()).relativeTo(redOrigin);
+
 
     }
 
     public static final class ShootingConstants {
-      public static final double podiumRPM = 4000; // 3000 // 3000
+      public static final double podiumRPM = 2000; // 3000 // 3000
       public static final double podiumAngle = 0.65; // 0.65 //0.7
 
     //162 inches is roughly 0.5 angle
 
       //220 inches is roughly 0.45 angle
 
-      public static final double speakerRPM = 1000; // 1500
+      public static final double speakerRPM = 1300; // 1500
       public static final double speakerAngle = 1.05;
       public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
       
@@ -373,7 +379,13 @@ public final class Constants {
 
       public static final double ampTopRPM = 300; // 300
       public static final double ampBottomRPM = 200; // 200
-      public static final double ampAngle = 1.15;
+      public static final double ampAngle = 1.08;
+
+      public static final double spotOneRPM = 3000;
+      public static final double spotOneAngle = 0.42;
+
+      public static final double centerToAmpRPM = 4000;
+      public static final double canterToAmpAngle = 0.9;
     }
 
     public static final class StructureConstants {
