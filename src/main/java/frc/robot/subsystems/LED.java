@@ -27,14 +27,14 @@ public class LED extends SubsystemBase {
 
   private LEDColor currentColor = LEDColor.OFF;
 
-  private static final int waveLength = 20;
-  private static final int bounceWaveLength = 7;
+  private static final int waveLength = 6;
+  private static final int bounceWaveLength = 6;
 
   private double fadeMultiplier = 0;
   private FadeDirection fadeDirection = FadeDirection.IN;
 
-  // private int strip2Start;
-  // private int stripLength;
+  private int strip2Start;
+  private int stripLength;
 
   public enum LEDColor {
     PURPLE(70, 2, 115),
@@ -76,6 +76,9 @@ public class LED extends SubsystemBase {
   }
 
   public LED(int port, int length) {
+    strip2Start = length / 2;
+    stripLength = length / 2;
+
     LEDStrip = new AddressableLED(port);
     LEDBuffer = new AddressableLEDBuffer(length);
 
@@ -111,28 +114,32 @@ public class LED extends SubsystemBase {
   }
 
   public void wave(LEDColor color) {
-    for (int i = 0; i < LEDBuffer.getLength(); i++) {
+    for (int i = 0; i < stripLength; i++) {
       if ((i >= waveIndex && i < waveIndex + waveLength)
-      || (waveIndex + waveLength > LEDBuffer.getLength() && i < (waveIndex + waveLength) % LEDBuffer.getLength())) {
+      || (waveIndex + waveLength > stripLength && i < (waveIndex + waveLength) % stripLength)) {
         this.LEDBuffer.setRGB(i, color.r, color.g, color.b);
+        this.LEDBuffer.setRGB(i + strip2Start, color.r, color.g, color.b);
       } else {
         this.LEDBuffer.setRGB(i, 0, 0, 0);
+        this.LEDBuffer.setRGB(i + strip2Start, 0, 0, 0);
       }
     }
 
     waveIndex++;
-    waveIndex %= LEDBuffer.getLength();
+    waveIndex %= stripLength;
 
     currentColor = LEDColor.OFF;
     this.LEDStrip.setData(this.LEDBuffer);
   }
 
   public void bounceWave(LEDColor color) {
-    for (int i = 0; i < LEDBuffer.getLength(); i++) {
+    for (int i = 0; i < stripLength; i++) {
       if (i >= bounceWaveIndex && i < bounceWaveIndex + bounceWaveLength) {
         this.LEDBuffer.setRGB(i, color.r, color.g, color.b);
+        this.LEDBuffer.setRGB(i + strip2Start, color.r, color.g, color.b);
       } else {
         this.LEDBuffer.setRGB(i, 0, 0, 0);
+        this.LEDBuffer.setRGB(i + strip2Start, 0, 0, 0);
       }
     }
 
@@ -153,11 +160,12 @@ public class LED extends SubsystemBase {
   }
 
   public void rainbow() {
-    for (int i = 0; i < LEDBuffer.getLength(); i++) {
-      i %= LEDBuffer.getLength();
+    for (int i = 0; i < stripLength; i++) {
+      i %= stripLength;
 
-      final var hue = (rainbowStart + (i * 180 / LEDBuffer.getLength())) % 180;
+      final var hue = (rainbowStart + (i * 180 / stripLength)) % 180;
       LEDBuffer.setHSV(i, hue, 255, 128); // Strip 1
+      LEDBuffer.setHSV(i + strip2Start, hue, 255, 128); // Strip 2
     }
 
     currentColor = LEDColor.OFF;

@@ -245,15 +245,15 @@ public final class Constants {
         public static final double kD = 0.001;
 
         public static final double kMaxVelocityPerSecond = 3.5;
-        public static final double kMaxAccelerationPerSecSquared = 10.5; // 6
+        public static final double kMaxAccelerationPerSecSquared = 8; // 6
 
         public static final double tolerance = 0.005;
 
-        public static final double climbRotations = 2.99; //2.99 for TVR //2.8 for hvr omega
+        public static final double climbRotations = 3; //2.99 for TVR //2.8 for hvr omega
         public static final double ampRotations = 2.3;
         public static final double homeRotations = 0;
         public static final double trapRotations = 1.5;
-        public static final double maxRotations = 2.97;
+        public static final double maxRotations = 3;
 
         public static final double manualElevatorSpeed = 0.2;
     }
@@ -308,7 +308,7 @@ public final class Constants {
 
     public static final class Led {
         public static final int port = 0;
-        public static final int length = 106;
+        public static final int length = 40;
     }
 
     public static class LimelightConstants {

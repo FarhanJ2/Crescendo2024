@@ -36,6 +36,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -123,7 +124,12 @@ public class Swerve extends SubsystemBase {
         }
     });
 
-
+    // Used to align to speaker, currently not used
+    private final PIDController alignPID = new PIDController( // TODO fix this
+        0.14,
+        0,
+        0
+    );
 
     private final SysIdRoutine sysID;
 
@@ -216,8 +222,6 @@ public class Swerve extends SubsystemBase {
 
     }
 
-
-
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =
             Constants.Swerve.swerveKinematics.toSwerveModuleStates(
@@ -278,6 +282,10 @@ public class Swerve extends SubsystemBase {
             positions[mod.moduleNumber] = mod.getPosition();
         }
         return positions;
+    }
+
+    public PIDController getAlignController() {
+        return alignPID;
     }
 
     public double calculateTurnAngle(Pose2d target, double robotAngle) {

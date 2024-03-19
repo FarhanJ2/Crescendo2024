@@ -125,7 +125,7 @@ public class Elevator extends ProfiledPIDSubsystem {
         
         configureMotors();
 
-        // enable(); TODO bring this back when done tuning
+        enable();
     }
 
     // /**
@@ -172,27 +172,6 @@ public class Elevator extends ProfiledPIDSubsystem {
             }
         );
     }
-
-    // TODO get what limit is when it's pressed (true or false)
-    // public boolean upperLimitPressed() {
-    //     return m_upperLimitSwitch.get();
-    // }
-
-    // public boolean lowerLimitPressed() {
-    //     return m_lowerLimitSwitch.get();
-    // }
-
-    // public Command getHomeCommand() {
-    //     // return new InstantCommand(() -> setGoal(Level.HOME.getRotations()));
-    //     // TODO  dont know if this works
-    //     return new ParallelDeadlineGroup(
-    //         new WaitUntilCommand(m_lowerLimitSwitch::get)
-    //     ).andThen(
-    //         new InstantCommand(
-    //             () -> m_cancoder.setPosition(0)
-    //         )
-    //     );
-    // }
 
     public Command getHomeCommand() {
         // return new InstantCommand(() -> setGoal(Level.HOME.getRotations()));

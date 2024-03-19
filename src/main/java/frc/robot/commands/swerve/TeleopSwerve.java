@@ -12,7 +12,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
-
 public class TeleopSwerve extends Command {    
     private Swerve s_Swerve;    
     private DoubleSupplier translationSup;
@@ -44,23 +43,24 @@ public class TeleopSwerve extends Command {
 
     @Override
     public void execute() {
-        /* Get Values, Deadband*/
         double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
 
         double multipliedRotation = 0;
+        Translation2d multipliedTranslation = new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed);
 
         if (!alignSpeakerSup.getAsBoolean()) { // Drive normally
             multipliedRotation = rotationVal * Constants.Swerve.maxAngularVelocity;
         } else { // Drive with alignment
             multipliedRotation = (RobotContainer.s_Swerve.isLowGear() ? 5 : 1) * alignPID.calculate(continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees()));
+            multipliedTranslation = RobotContainer.s_Swerve.isLowGear() ? multipliedTranslation : multipliedTranslation.times(0.3);
         }
 
         /* Drive */
         s_Swerve.drive(
-            new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
-            multipliedRotation, //rotationVal * Constants.Swerve.maxAngularVelocity, 
+            multipliedTranslation,
+            multipliedRotation, 
             !robotCentricSup.getAsBoolean(), 
             true
         );

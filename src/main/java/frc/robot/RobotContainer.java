@@ -707,7 +707,7 @@ public class RobotContainer {
             .and(isNormalMode)
                 .onTrue( // Amp position
                     s_AmpArm.getAmpShootCommand()
-                        //.alongWith(s_Elevator.getAmpCommand()) TODO bring back
+                        .alongWith(s_Elevator.getAmpCommand())
                         .alongWith(s_Led.flashCommand(LEDColor.YELLOW, 0.2, 2))
                 );
 
@@ -726,7 +726,7 @@ public class RobotContainer {
             .and(isNormalMode)
                 .onTrue( // Home
                     s_AmpArm.getHomeCommand()
-                        //.alongWith(s_Elevator.getHomeCommand()) TODO bring back
+                        .alongWith(s_Elevator.getHomeCommand())
                 );
         // operator.povLeft()
         //     .and(isNormalMode)
