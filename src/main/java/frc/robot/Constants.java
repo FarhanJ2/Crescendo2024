@@ -389,7 +389,7 @@ public final class Constants {
 
     public static final class StructureConstants {
         //changed from 85 inches to 80
-        public static final double speakerHeight = Units.inchesToMeters(78);
+        public static final double speakerHeight = Units.inchesToMeters(82); //78 80 82
         public static final double shooterRobotHeight = Units.inchesToMeters(16);
     }
 
