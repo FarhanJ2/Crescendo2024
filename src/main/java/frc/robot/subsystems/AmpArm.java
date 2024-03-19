@@ -164,14 +164,14 @@ public class AmpArm extends ProfiledPIDSubsystem {
 
     public Command applykG() {
         return Commands.runEnd(
-            () -> m_pivotMotor.setVoltage(Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.AmpArm.pivotkS + Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG),
+            () -> m_pivotMotor.setVoltage(/*Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.AmpArm.pivotkS + */Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG),
             () -> m_pivotMotor.stopMotor()
         );
     }
 
     public Command applykV() {
         return Commands.runEnd(
-            () -> m_pivotMotor.setVoltage(Constants.AmpArm.pivotkV + Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.AmpArm.pivotkS + Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG),
+            () -> m_pivotMotor.setVoltage(Constants.AmpArm.pivotkV + /*Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.AmpArm.pivotkS + */Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG),
             () -> m_pivotMotor.stopMotor()
         );
     }
@@ -212,7 +212,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
     }
 
     public double getCANCoderPositionDegrees() {
-        return (m_cancoder.getAbsolutePosition().getValueAsDouble() * 360 + 360) % 360;
+        return ((m_cancoder.getAbsolutePosition().getValueAsDouble() * 360 + 360) - 63) % 360;
     }
 
     public double getCANCoderPositionRadians() {
@@ -312,8 +312,8 @@ public class AmpArm extends ProfiledPIDSubsystem {
         // return 0;
         // return getPivotRadians();
         // return m_pivotMotor.getPosition().getValueAsDouble();
-        double preConversion = convert360To180(((getCANCoderPositionDegrees() + 110)) % 360) * Math.PI / 180;
-        return preConversion - 3.05 - (Math.PI / 2);
+        double preConversion = convert360To180(((getCANCoderPositionDegrees() /*+ 110*/)) % 360) * Math.PI / 180;
+        return preConversion /*  - 3.05*/ - (Math.PI / 2) /* + 6.35*/;
     }
     
     private double convert360To180(double angle) {
@@ -341,5 +341,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
         SmartDashboard.putNumber("arm/cancoder degrees", getCANCoderPositionDegrees());
 
         SmartDashboard.putNumber("arm/velocity", getCANCoderVelocityRadians());
+
+        SmartDashboard.putNumber("arm/pure can position", getCANCoderPositionRadians());
     }
 }

@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.util.NoteVisualizer;
 import frc.robot.commands.AmpArm.ArmHandoff;
 import frc.robot.commands.AmpArm.ArmShot;
 import frc.robot.commands.AmpArm.ManualArmPivot;
@@ -100,7 +101,7 @@ public class RobotContainer {
     private final Trigger slowModeButton = driver.rightTrigger();
     private final Trigger alignSpeakerButton = driver.leftTrigger();
     private final Trigger zeroGyroButton = driver.b();
-    private final Trigger pivotToAngleButton = driver.a(); 
+    // private final Trigger pivotToAngleButton = driver.a(); 
     private final Trigger toggleVisionMeasurement = driver.povUp();
     private final Trigger centerLineShotButton = driver.povDown();
 
@@ -284,7 +285,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("intake", new IntakeCommand());
 
         // Set up note visualizer
-        NoteVisualizer.setRobotPoseSupplier(drive::getPose);
+        NoteVisualizer.setRobotPoseSupplier(s_Swerve::getPose);
 
         // Configure the button bindings
         configureAbsoluteButtonBindings();
@@ -321,11 +322,17 @@ public class RobotContainer {
             new InstantCommand(() -> addVisionMeasurement = !addVisionMeasurement)
         );
 
-        pivotToAngleButton.onTrue(
-            new InstantCommand(
-                () -> s_Shooter.setPivot(RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance))
-            )
-        );
+        // pivotToAngleButton.whileTrue(
+        //     Commands.parallel(
+        //         Commands.run(
+        //             () -> s_Shooter.setPivot(RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance))
+        //         ),
+        //         Commands.runEnd(
+        //             () -> s_Shooter.rampShooter(3000, 3000),
+        //             () -> s_Shooter.stopShooter()
+        //         )
+        //     )
+        // );
         
         slowModeButton.onTrue(
             new InstantCommand(
@@ -370,7 +377,6 @@ public class RobotContainer {
             );
     }
 
-    // TODO need to make this remove the default command if it's the manual command
     private void lockManualControls() {
         // clearDefaultCommands();
 
@@ -768,7 +774,7 @@ public class RobotContainer {
             .and(isNormalMode)
                 .whileTrue( // Podium shot
                     new ParallelCommandGroup(
-                        new Feed(),
+                        // new Feed(),
                         new RampPodium() // 0.15 angle 1800-2000rpm for podium
                     )
                 );
@@ -782,7 +788,7 @@ public class RobotContainer {
         //shooting speaker and amp
         operator.rightTrigger()
             .and(isNormalMode)
-                .and(() -> !s_Shooter.isScoringAmp)
+                .and(() -> !s_Shooter.isScoringAmp).and(operator.rightBumper().negate())
                     .whileTrue(
                         s_Shooter.feedToShooter()
                     )
@@ -795,9 +801,29 @@ public class RobotContainer {
 
         operator.rightTrigger()
             .and(isNormalMode)
+                .and(operator.rightBumper())
+                    .whileTrue(
+                        s_Shooter.feedToTrigShooter()
+                    )
+                    .onTrue(
+                        s_Led.flashCommand(LEDColor.WHITE, 0.15, 1)
+                    )
+                    .onFalse(
+                        s_Led.stopCommand()
+                    );
+
+
+        operator.rightTrigger()
+            .and(isNormalMode)
                 .and(() -> s_Shooter.isScoringAmp)
                     .whileTrue(
                         s_Shooter.feedToShooterAmp()
+                    )
+                    .onTrue(
+                        s_Led.flashCommand(LEDColor.WHITE, 0.15, 1)
+                    )
+                    .onFalse(
+                        s_Led.stopCommand()
                     );
         
         // TODO SHOOT FROM ANYWHERE, PUT BACK
@@ -812,12 +838,31 @@ public class RobotContainer {
         //                 )
         //             )
         //         );
-        operator.rightBumper()
-            .and(isNormalMode)
-                .whileTrue(
-                    new RampStartLine()
-                );
+        // operator.rightBumper()
+        //     .and(isNormalMode)
+        //         .whileTrue(
+        //             new RampStartLine()
+        //         );
 
+        operator.rightBumper().onTrue(
+            new InstantCommand(() -> {
+                s_Shooter.trigTargetAngle = RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance);
+                System.out.println(s_Shooter.trigTargetAngle);
+            })
+        );
+
+        operator.rightBumper().whileTrue(
+            Commands.parallel(
+                Commands.run(
+                    () -> s_Shooter.setPivot(s_Shooter.trigTargetAngle)
+                ),
+                Commands.runEnd(
+                    () -> s_Shooter.rampShooter(3000, 3000),
+                    () -> s_Shooter.stopShooter()
+                ),
+                new Feed()
+            )
+        );
         
         operator.povRight()
             .and(isNormalMode)

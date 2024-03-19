@@ -34,7 +34,7 @@ public class OdometryImpl extends SubsystemBase {
 
   public double getPivotAngle(DriverStation.Alliance alliance) {
     double base;
-    double height = Constants.StructureConstants.speakerHeight;
+    double height = Constants.StructureConstants.speakerHeight - Constants.StructureConstants.shooterRobotHeight;
        
     if (alliance == DriverStation.Alliance.Red) {
         base = getDistance(Constants.RedTeamPoses.redSpeakerPose);
@@ -45,6 +45,7 @@ public class OdometryImpl extends SubsystemBase {
         base = getDistance(Constants.BlueTeamPoses.blueSpeakerPose);
     }
         
+    // System.out.println(Math.atan(height / base));
     return Math.atan(height / base); 
 
 

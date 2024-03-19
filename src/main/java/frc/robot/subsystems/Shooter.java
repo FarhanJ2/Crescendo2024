@@ -71,6 +71,8 @@ public class Shooter extends ProfiledPIDSubsystem {
     public boolean isShooting = false;
     public boolean isScoringAmp = false;
 
+    public double trigTargetAngle = 0;
+
     /* Syd ID */
     private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
     // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
@@ -406,11 +408,17 @@ public class Shooter extends ProfiledPIDSubsystem {
         return new ParallelCommandGroup(
             new Feed(),
             new ForkCommand(Intake.Direction.TO_SHOOTER)
-            // new IntakeCommand() TODO fix
         ).alongWith(
             NoteVisualizer.shoot()
         );
-        //TODO make it so that it stops when not ready to shoot
+    }
+
+    public Command feedToTrigShooter() {
+        return new ParallelCommandGroup(
+            new ForkCommand(Intake.Direction.TO_SHOOTER)
+        ).alongWith(
+            NoteVisualizer.shoot()
+        );
     }
 
     public Command feedToShooterAmp() {

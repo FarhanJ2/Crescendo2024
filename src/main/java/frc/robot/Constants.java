@@ -262,13 +262,13 @@ public final class Constants {
         public static final int pivotMotorID = 22;
         public static final int shootMotorID = 23;
 
-        public static final int canCoderID = 24;        
-        public static final double pivotkS = 0.14; //0.14 //0.065414
-        public static final double pivotkG = 0.195; //0.095
-        public static final double pivotkV = 0.65; //0.46
+        public static final int canCoderID = 25; 
+        public static final double pivotkS = 0.14; //0.14
+        public static final double pivotkG = 0.195; //0.195
+        public static final double pivotkV = 0.65; //0.65
         // public static final double pivotkA = 0.3;
 
-        public static final double pivotkP = 3; // 1 this one // 10
+        public static final double pivotkP = 0; // 3
         public static final double pivotkI = 0;
         public static final double pivotkD = 0; //0.000001 // 0.06
 
@@ -356,9 +356,8 @@ public final class Constants {
         public static final Pose2d initialPose = new Pose2d(new Translation2d(1.225347, 7.652309), new Rotation2d()); // Next to blue speaker
         // public static final Pose2d blueSpeakerPose = new Pose2d(new Translation2d(16.541748, 5.700184), Rotation2d.fromDegrees(180));
         public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
-        public static final Pose2d redSpeakerPose = new Pose2d(new Translation2d(16.541748, 5.700184), new Rotation2d()).relativeTo(redOrigin);
+        public static final Pose2d redSpeakerPose = new Pose2d(new Translation2d(16.535595, 5.554168), new Rotation2d()).relativeTo(redOrigin);
         public static final Pose2d redAmpPose = new Pose2d(new Translation2d(14.722884, 8.220855), new Rotation2d()).relativeTo(redOrigin);
-
 
     }
 
@@ -389,7 +388,9 @@ public final class Constants {
     }
 
     public static final class StructureConstants {
+        //changed from 85 inches to 80
         public static final double speakerHeight = Units.inchesToMeters(78);
+        public static final double shooterRobotHeight = Units.inchesToMeters(16);
     }
 
 }
