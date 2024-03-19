@@ -125,7 +125,7 @@ public class Elevator extends ProfiledPIDSubsystem {
         
         configureMotors();
 
-        enable();
+        // enable(); TODO bring this back when done tuning
     }
 
     // /**
@@ -147,11 +147,24 @@ public class Elevator extends ProfiledPIDSubsystem {
     // }
     
 
-    public Command applykS() {
+    public Command applykG() {
         return Commands.runEnd(
             () -> {
-                m_rightMotor.setVoltage(-Constants.Elevator.kS);
-                m_leftMotor.setVoltage(-Constants.Elevator.kS);
+                m_rightMotor.setVoltage(-Constants.Elevator.kG);
+                m_leftMotor.setVoltage(-Constants.Elevator.kG);
+            },
+            () -> {
+                m_rightMotor.stopMotor();
+                m_leftMotor.stopMotor();
+            }
+        );
+    }
+
+    public Command applykV() {
+        return Commands.runEnd(
+            () -> {
+                m_rightMotor.setVoltage(-Constants.Elevator.kG - Constants.Elevator.kV);
+                m_leftMotor.setVoltage(-Constants.Elevator.kG - Constants.Elevator.kV);
             },
             () -> {
                 m_rightMotor.stopMotor();
@@ -323,6 +336,6 @@ public class Elevator extends ProfiledPIDSubsystem {
         SmartDashboard.putNumber("elevator/actual measurement", getMeasurement());
         // SmartDashboard.putNumber("elevator/rotations", getEncoderRotations());
         SmartDashboard.putBoolean("elevator/lower limit", m_lowerLimitSwitch.get());
-        // SmartDashboard.putNumber("elevator/velocity", m_cancoder.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/velocity", m_cancoder.getVelocity().getValueAsDouble());
     }
 }

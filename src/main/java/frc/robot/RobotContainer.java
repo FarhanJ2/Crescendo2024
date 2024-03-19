@@ -450,21 +450,28 @@ public class RobotContainer {
         //         s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse)
         //     );
 
-
         sysidX.whileTrue(
-            s_AmpArm.applykS()
+            s_Elevator.applykG()
         );
 
-        sysidY.whileTrue(
-            s_AmpArm.applykG()
+        sysidA.whileTrue(
+            s_Elevator.applykV()
         );
 
-        sysidB.whileTrue(
-            s_AmpArm.applykV()
-        );
-        sysidA.onTrue(
-            new InstantCommand(() -> {s_AmpArm.setGoal(0); s_AmpArm.enable();})
-        );
+        // sysidX.whileTrue(
+        //     s_AmpArm.applykS()
+        // );
+
+        // sysidY.whileTrue(
+        //     s_AmpArm.applykG()
+        // );
+
+        // sysidB.whileTrue(
+        //     s_AmpArm.applykV()
+        // );
+        // sysidA.onTrue(
+        //     new InstantCommand(() -> {s_AmpArm.setGoal(0); s_AmpArm.enable();})
+        // );
 
         // sysidY.onTrue(
         //     Commands.runOnce(() -> s_Shooter.setGoal(1))
@@ -647,7 +654,7 @@ public class RobotContainer {
                                 s_Elevator.setDefaultCommand(
                                     new ManualElevator(
                                         () -> {
-                                            if(isNormalMode.getAsBoolean() || Math.abs(operator.getRawAxis(manualElevatorAxis)) < Constants.stickDeadband) { //deadband for joystick
+                                            if(isNormalMode.getAsBoolean() || Math.abs(operator.getRawAxis(manualElevatorAxis)) < Constants.stickDeadband * Math.PI * Math.E) { //deadband for joystick
                                                 return null;
                                             } else {
                                                 return Math.signum(operator.getRawAxis(manualElevatorAxis)) > 0;
@@ -700,7 +707,7 @@ public class RobotContainer {
             .and(isNormalMode)
                 .onTrue( // Amp position
                     s_AmpArm.getAmpShootCommand()
-                        .alongWith(s_Elevator.getAmpCommand())
+                        //.alongWith(s_Elevator.getAmpCommand()) TODO bring back
                         .alongWith(s_Led.flashCommand(LEDColor.YELLOW, 0.2, 2))
                 );
 
@@ -719,7 +726,7 @@ public class RobotContainer {
             .and(isNormalMode)
                 .onTrue( // Home
                     s_AmpArm.getHomeCommand()
-                        .alongWith(s_Elevator.getHomeCommand())
+                        //.alongWith(s_Elevator.getHomeCommand()) TODO bring back
                 );
         // operator.povLeft()
         //     .and(isNormalMode)

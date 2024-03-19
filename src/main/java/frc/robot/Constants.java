@@ -232,30 +232,30 @@ public final class Constants {
         public static final int leftMotorID = 20;
         public static final int rightMotorID = 21;
 
-        public static final int limitSwitchLowerChannel = 4;
+        public static final int limitSwitchLowerChannel = 0;
 
         public static final int canCoderID = 22;
 
-        public static final double kS = 0.15;
-        public static final double kG = 0;
-        public static final double kV = 5.65;
+        public static final double kS = 0;
+        public static final double kG = 0.15;
+        public static final double kV = 2.6; // 5.65
 
-        public static final double kP = 4;
+        public static final double kP = 3.9; // 4
         public static final double kI = 0;
-        public static final double kD = 0;
+        public static final double kD = 0.001;
 
-        public static final double kMaxVelocityPerSecond = 1.3;
-        public static final double kMaxAccelerationPerSecSquared = 6;
+        public static final double kMaxVelocityPerSecond = 3.5;
+        public static final double kMaxAccelerationPerSecSquared = 10.5; // 6
 
-        public static final double tolerance = 0.05;
+        public static final double tolerance = 0.005;
 
-        public static final double climbRotations = 2.8;
+        public static final double climbRotations = 2.99; //2.99 for TVR //2.8 for hvr omega
         public static final double ampRotations = 2.3;
         public static final double homeRotations = 0;
         public static final double trapRotations = 1.5;
-        public static final double maxRotations = 2.8;
+        public static final double maxRotations = 2.97;
 
-        public static final double manualElevatorSpeed = 0.8;
+        public static final double manualElevatorSpeed = 0.2;
     }
 
     public static final class AmpArm {
@@ -265,10 +265,10 @@ public final class Constants {
         public static final int canCoderID = 25; 
         public static final double pivotkS = 0.14; //0.14
         public static final double pivotkG = 0.195; //0.195
-        public static final double pivotkV = 0.65; //0.65
+        public static final double pivotkV = 0.85; //0.65
         // public static final double pivotkA = 0.3;
 
-        public static final double pivotkP = 0; // 3
+        public static final double pivotkP = 1.5; // 3
         public static final double pivotkI = 0;
         public static final double pivotkD = 0; //0.000001 // 0.06
 
@@ -276,8 +276,8 @@ public final class Constants {
 
         public static final double pivotTolerance = 0.01;
 
-        public static final double kMaxVelocityRadPerSecond = 6;
-        public static final double kMaxAccelerationRadPerSecSquared = 8;
+        public static final double kMaxVelocityRadPerSecond = 10;
+        public static final double kMaxAccelerationRadPerSecSquared = 15;
 
         public static final double armOffset = -Math.PI / 2; // -2.13
 
