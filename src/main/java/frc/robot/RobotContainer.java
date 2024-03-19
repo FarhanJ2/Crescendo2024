@@ -1,6 +1,5 @@
 package frc.robot;
 
-import java.sql.Driver;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -115,16 +114,11 @@ public class RobotContainer {
     private final Trigger isNormalMode = new Trigger(() -> operatorMode == OperatorMode.NORMAL_MODE);
 
     /* Auton selector */
-    // TODO make private
-    public static final DigitalInput[] autonSelector = {
+    private static final DigitalInput[] autonSelector = {
         new DigitalInput(10), // red 1
         new DigitalInput(11), // red 2
         new DigitalInput(12), // red 3
         new DigitalInput(13), // red 4
-        new DigitalInput(14),
-        new DigitalInput(15),
-        new DigitalInput(16),
-        new DigitalInput(17),
         new DigitalInput(18), // red 5
         new DigitalInput(19), // blue 1
         new DigitalInput(20), // blue 2
@@ -152,7 +146,7 @@ public class RobotContainer {
         "nothing"
     };
 
-    // THESE commands must correspond to its selection on the selector
+    // These commands must correspond to its selection on the selector
     private final Command[] autons = {
         new InstantCommand(),
         new PathPlannerAuto("2 piece"),
@@ -160,18 +154,6 @@ public class RobotContainer {
         new PathPlannerAuto("Copy of 4 piece"),
         new PathPlannerAuto("Center line")
     };
-
-    // public static final DigitalInput zero = new DigitalInput(10);
-    // public static final DigitalInput one = new DigitalInput(11);
-    // public static final DigitalInput two = new DigitalInput(12);
-    // public static final DigitalInput three = new DigitalInput(13);
-    // public static final DigitalInput four = new DigitalInput(18);
-    // public static final DigitalInput five = new DigitalInput(19);
-    // public static final DigitalInput six = new DigitalInput(20);
-    // public static final DigitalInput seven = new DigitalInput(21);
-    // public static final DigitalInput eight = new DigitalInput(22);
-    // public static final DigitalInput nine = new DigitalInput(23);
-    // public static final DigitalInput ten = new DigitalInput(24);
 
     /* Sysid Tuning Controller */
     private final JoystickButton sysidX = new JoystickButton(sysIDJoystick, 1);
@@ -205,7 +187,8 @@ public class RobotContainer {
                 () -> -driver.getLeftY(),
                 () -> -driver.getLeftX(),
                 () -> -driver.getRightX(),
-                robotCentricButton
+                robotCentricButton,
+                () -> alignSpeakerButton.getAsBoolean()
             )
         );
 
@@ -433,20 +416,6 @@ public class RobotContainer {
         new Trigger(
             () -> RobotContainer.s_Intake.intakeBeamBroken()
         ).onTrue(
-            // Commands.run(
-            //     () -> {
-            //         driver.getHID().setRumble(RumbleType.kBothRumble, 1);
-            //     }
-            // )
-            // .withTimeout(1)
-            // .andThen(
-            //     Commands.runOnce(
-            //         () -> driver.getHID().setRumble(RumbleType.kBothRumble, 0)
-            //     )
-            // )
-            // .andThen(new InstantCommand(() -> System.out.println("finish vibrate")))
-
-            // TODO do this after led works
             s_Intake.intakeLedCommand()
                 .deadlineWith(Commands.run(
                 () -> {
@@ -794,10 +763,10 @@ public class RobotContainer {
                     )
                     .onTrue(
                         s_Led.flashCommand(LEDColor.WHITE, 0.15, 1)
-                    )
-                    .onFalse(
-                        s_Led.stopCommand()
                     );
+                    // .onFalse(
+                    //     s_Led.stopCommand()
+                    // );
 
         operator.rightTrigger()
             .and(isNormalMode)

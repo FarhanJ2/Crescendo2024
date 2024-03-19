@@ -1,12 +1,14 @@
 package frc.robot.commands.swerve;
 
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Swerve;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -17,8 +19,15 @@ public class TeleopSwerve extends Command {
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
     private BooleanSupplier robotCentricSup;
+    private BooleanSupplier alignSpeakerSup;
 
-    public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup) {
+    private final PIDController alignPID = new PIDController( // TODO fix this
+        0.14,
+        0,
+        0
+    );
+
+    public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier alignSpeakerSup) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
 
@@ -26,19 +35,32 @@ public class TeleopSwerve extends Command {
         this.strafeSup = strafeSup;
         this.rotationSup = rotationSup;
         this.robotCentricSup = robotCentricSup;
+        this.alignSpeakerSup = alignSpeakerSup;
+    }
+
+    private double continuous180To360(double angle) {
+        return (angle + 360) % 360;
     }
 
     @Override
     public void execute() {
         /* Get Values, Deadband*/
-        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), 0.15);
-        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), 0.15);
-        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), 0.15);
+        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
+        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
+        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+
+        double multipliedRotation = 0;
+
+        if (!alignSpeakerSup.getAsBoolean()) { // Drive normally
+            multipliedRotation = rotationVal * Constants.Swerve.maxAngularVelocity;
+        } else { // Drive with alignment
+            multipliedRotation = (RobotContainer.s_Swerve.isLowGear() ? 5 : 1) * alignPID.calculate(continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees()));
+        }
 
         /* Drive */
         s_Swerve.drive(
             new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
-            rotationVal * Constants.Swerve.maxAngularVelocity, 
+            multipliedRotation, //rotationVal * Constants.Swerve.maxAngularVelocity, 
             !robotCentricSup.getAsBoolean(), 
             true
         );
