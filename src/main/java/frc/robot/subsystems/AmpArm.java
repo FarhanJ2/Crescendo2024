@@ -43,9 +43,11 @@ public class AmpArm extends ProfiledPIDSubsystem {
 
     public static enum Position {
         HOME(Constants.AmpArm.homePosition),
+        DANGLE(Constants.AmpArm.danglePosition),
         HANDOFF(Constants.AmpArm.handoffPosition),
         AMP_SLAM(Constants.AmpArm.ampSlamPosition),
         AMP_SHOOT(Constants.AmpArm.ampShootPosition),
+        CLIMB_POSITION(Constants.AmpArm.climbIdlePosition),
         TRAP(Constants.AmpArm.trapPosition);
 
         private double rotations;
@@ -116,7 +118,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
                 new TrapezoidProfile.Constraints(
                     Constants.AmpArm.kMaxVelocityRadPerSecond,
                     Constants.AmpArm.kMaxAccelerationRadPerSecSquared)),
-            -Math.PI / 2);
+            Constants.AmpArm.homePosition);
 
         getController().setTolerance(Constants.AmpArm.pivotTolerance);
         getController().setIZone(Constants.AmpArm.integratorZone);
@@ -179,6 +181,20 @@ public class AmpArm extends ProfiledPIDSubsystem {
     public Command getAmpSlamCommand() {
         return new InstantCommand(() -> {
             setGoal(Position.AMP_SLAM.getRotations());
+            this.enable();
+        }, this);
+    }
+
+    public Command getClimbPosition() {
+        return new InstantCommand(() -> {
+            setGoal(Position.CLIMB_POSITION.getRotations());
+            this.enable();
+        }, this);
+    }
+
+    public Command getAmpDangleCommand() {
+        return new InstantCommand(() -> {
+            setGoal(Position.DANGLE.getRotations());
             this.enable();
         }, this);
     }
@@ -249,13 +265,13 @@ public class AmpArm extends ProfiledPIDSubsystem {
         //     m_pivotMotor.setVoltage(voltage);
         // }
         if(pivotingUp == null) {
-            m_pivotMotor.setVoltage(Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.AmpArm.pivotkS + Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG);
+            m_pivotMotor.setVoltage(Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG);
         }
         else if(pivotingUp) {
-            m_pivotMotor.setVoltage(0.5 + Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.AmpArm.pivotkS + Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG);
+            m_pivotMotor.setVoltage(0.5 + Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG);
         }
         else if(!pivotingUp) {
-            m_pivotMotor.setVoltage(-0.5 + Math.signum(Math.sin(getMeasurement() + Math.PI / 2)) * Constants.AmpArm.pivotkS + Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG);
+            m_pivotMotor.setVoltage(-0.5 + Math.cos(getMeasurement()) * Constants.AmpArm.pivotkG);
 
         }
     }
@@ -313,7 +329,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
         // return getPivotRadians();
         // return m_pivotMotor.getPosition().getValueAsDouble();
         double preConversion = convert360To180(((getCANCoderPositionDegrees() /*+ 110*/)) % 360) * Math.PI / 180;
-        return preConversion /*  - 3.05*/ - (Math.PI / 2) /* + 6.35*/;
+        return preConversion /*  - 3.05*/ /* - (Math.PI / 2) */ /* + 6.35*/ + 3.425 - Math.PI;
     }
     
     private double convert360To180(double angle) {

@@ -244,8 +244,8 @@ public final class Constants {
         public static final double kI = 0;
         public static final double kD = 0.001;
 
-        public static final double kMaxVelocityPerSecond = 3.5;
-        public static final double kMaxAccelerationPerSecSquared = 8; // 6
+        public static final double kMaxVelocityPerSecond = 2; // 3.5
+        public static final double kMaxAccelerationPerSecSquared = 8; // 8
 
         public static final double tolerance = 0.005;
 
@@ -284,9 +284,11 @@ public final class Constants {
         // public static final double shootSpeed = 0;
 
         // Score positions in radians
-        public static final double homePosition = -Math.PI / 2;
-        public static final double handoffPosition = -2.22;
+        public static final double homePosition = -2.4; //-Math.PI / 2
+        public static final double danglePosition = -Math.PI / 2;
+        public static final double handoffPosition = -2.4; //-2.22
         public static final double ampSlamPosition = -0.20; // NOT USED ANYMORE
+        public static final double climbIdlePosition = -1.1;
         public static final double ampShootPosition = -0.55;
         public static final double trapPosition = 1.37;
 

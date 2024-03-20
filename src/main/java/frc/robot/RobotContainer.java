@@ -112,6 +112,7 @@ public class RobotContainer {
     private final int manualElevatorAxis = 1;
 
     private final Trigger isNormalMode = new Trigger(() -> operatorMode == OperatorMode.NORMAL_MODE);
+    private final Trigger elevatorLocked = new Trigger(() -> elevatorManual == OperatorLock.LOCKED);
 
     /* Auton selector */
     private static final DigitalInput[] autonSelector = {
@@ -322,14 +323,14 @@ public class RobotContainer {
                 () -> s_Swerve.toggleMultiplier()
             )
         );
-        // TODO need to change team for this
-        alignSpeakerButton.onTrue(
-            new RotateToAngle(
-                () -> s_Swerve.calculateTurnAngle(alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueSpeakerPose : Constants.RedTeamPoses.redSpeakerPose, s_Swerve.getHeading().getDegrees() + 180), 
-                () -> s_Swerve.getHeading().getDegrees(),
-                () -> alignSpeakerButton.getAsBoolean()
-            )
-        );
+        // TODO removed after rotate while moving
+        // alignSpeakerButton.onTrue(
+        //     new RotateToAngle(
+        //         () -> s_Swerve.calculateTurnAngle(alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueSpeakerPose : Constants.RedTeamPoses.redSpeakerPose, s_Swerve.getHeading().getDegrees() + 180), 
+        //         () -> s_Swerve.getHeading().getDegrees(),
+        //         () -> alignSpeakerButton.getAsBoolean()
+        //     )
+        // );
 
         // flashButton.onTrue(
         //     new InstantCommand(() -> {
@@ -615,12 +616,13 @@ public class RobotContainer {
         // Endgame Mode
         operator.leftTrigger() 
             .and(isNormalMode.negate())
-                .onTrue( // Trap Position
-                    Commands.parallel(
-                        s_Elevator.getTrapCommand(),
-                        s_AmpArm.getTrapCommand()
-                    )
-                );
+                .and(elevatorLocked)
+                    .onTrue( // Trap Position
+                        Commands.parallel(
+                            s_Elevator.getTrapCommand(),
+                            s_AmpArm.getTrapCommand()
+                        )
+                    );
 
         operator.rightTrigger()
             .and(isNormalMode.negate())
@@ -630,18 +632,24 @@ public class RobotContainer {
 
         operator.y()
             .and(isNormalMode.negate())
-                .onTrue(
-                    s_Elevator.getClimbCommand()
-                );
+                .and(elevatorLocked)
+                    .onTrue(
+                        Commands.sequence(
+                            s_AmpArm.getClimbPosition(),
+                            new WaitCommand(0.5),
+                            s_Elevator.getClimbCommand()
+                        )
+                    );
         
         operator.a()
             .and(isNormalMode.negate())
-                .onTrue(
-                    Commands.parallel(
-                        s_Elevator.getHomeCommand(),
-                        s_AmpArm.getHomeCommand()
-                    )
-                );
+                .and(elevatorLocked)
+                    .onTrue(
+                        Commands.parallel(
+                            s_Elevator.getHomeCommand(),
+                            s_AmpArm.getAmpDangleCommand() // TODO used to be home
+                        )
+                    );
 
         operator.leftStick()
             .and(isNormalMode.negate())
@@ -649,6 +657,9 @@ public class RobotContainer {
                     new InstantCommand(
                         () -> {
                             if(elevatorManual == OperatorLock.LOCKED) {
+                                s_AmpArm.setGoal(Constants.AmpArm.danglePosition);
+                                s_AmpArm.enable();
+                                // s_AmpArm.getAmpDangleCommand().execute();
                                 elevatorManual = OperatorLock.UNLOCKED;
                                 s_Elevator.disable();
                                 s_Elevator.setDefaultCommand(
@@ -700,7 +711,11 @@ public class RobotContainer {
                         ).raceWith(
                             new WaitCommand(1) // 2 second timeout in case doesn't go to goal
                         ),
-                        s_AmpArm.feedToArm()
+                        s_AmpArm.feedToArm(),
+                        Commands.runEnd(
+                            () -> s_AmpArm.armHandoff(),
+                            () -> s_AmpArm.stopShooter()
+                        ).withTimeout(0.1)
                     ).alongWith(s_Led.fadeCommand(LEDColor.YELLOW))
                 );
         operator.x()
@@ -725,7 +740,7 @@ public class RobotContainer {
         operator.a()
             .and(isNormalMode)
                 .onTrue( // Home
-                    s_AmpArm.getHomeCommand()
+                    s_AmpArm.getAmpDangleCommand() // used to be home
                         .alongWith(s_Elevator.getHomeCommand())
                 );
         // operator.povLeft()
@@ -820,17 +835,17 @@ public class RobotContainer {
         //             new RampStartLine()
         //         );
 
-        operator.rightBumper().onTrue(
-            new InstantCommand(() -> {
-                s_Shooter.trigTargetAngle = RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance);
-                System.out.println(s_Shooter.trigTargetAngle);
-            })
-        );
+        // operator.rightBumper().onTrue(
+        //     new InstantCommand(() -> {
+        //         s_Shooter.trigTargetAngle = RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance);
+        //         System.out.println(s_Shooter.trigTargetAngle);
+        //     })
+        // );
 
         operator.rightBumper().whileTrue(
             Commands.parallel(
                 Commands.run(
-                    () -> s_Shooter.setPivot(s_Shooter.trigTargetAngle)
+                    () -> s_Shooter.setPivot(RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance))
                 ),
                 Commands.runEnd(
                     () -> s_Shooter.rampShooter(3000, 3000),
