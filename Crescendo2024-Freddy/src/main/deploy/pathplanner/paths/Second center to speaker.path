@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.05,
+        "y": 4.104648209296419
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.011491818035289,
+        "y": 4.104648209296419
+      },
+      "isLocked": false,
+      "linkedName": "alex center note mid"
+    },
+    {
+      "anchor": {
+        "x": 3.9163975470808086,
+        "y": 5.55593454044051
+      },
+      "prevControl": {
+        "x": 4.722667731049748,
+        "y": 3.9433941725026314
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "mid range straight shot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "woofer to source to center paths",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

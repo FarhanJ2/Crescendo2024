@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.34,
+        "y": 5.6
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.3478355528139607,
+        "y": 5.878442614028085
+      },
+      "isLocked": false,
+      "linkedName": "subwoofer"
+    },
+    {
+      "anchor": {
+        "x": 8.050364672157917,
+        "y": 7.447004608294931
+      },
+      "prevControl": {
+        "x": 7.214775572408288,
+        "y": 7.417685692514242
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "alex center note top"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "5 note paths",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

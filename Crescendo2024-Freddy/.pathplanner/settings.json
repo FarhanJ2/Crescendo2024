@@ -1,0 +1,21 @@
+{
+  "robotWidth": 0.914,
+  "robotLength": 0.914,
+  "holonomicMode": true,
+  "pathFolders": [
+    "source to center paths",
+    "woofer to source to center paths",
+    "5 note paths",
+    "woofer to amp to center paths"
+  ],
+  "autoFolders": [
+    "Alex's autons",
+    "Drafts",
+    "Simple autons"
+  ],
+  "defaultMaxVel": 4.0,
+  "defaultMaxAccel": 3.5,
+  "defaultMaxAngVel": 540.0,
+  "defaultMaxAngAccel": 720.0,
+  "maxModuleSpeed": 4.5
+}

@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.050364672157917,
+        "y": 7.447004608294931
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.050364672157917,
+        "y": 7.447004608294931
+      },
+      "isLocked": false,
+      "linkedName": "alex center note top"
+    },
+    {
+      "anchor": {
+        "x": 3.9163975470808086,
+        "y": 5.55593454044051
+      },
+      "prevControl": {
+        "x": 4.825283936282158,
+        "y": 6.083675024492907
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "mid range straight shot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "5 note paths",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
