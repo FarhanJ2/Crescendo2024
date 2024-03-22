@@ -473,8 +473,8 @@ public class Shooter extends ProfiledPIDSubsystem {
 
         
         SmartDashboard.putNumber("shooter/pivot cancoder radians", getMeasurement());
-        SmartDashboard.putNumber("shooter/pivot cancoder", getCANCoder());
-        SmartDashboard.putNumber("shooter/pivot voltage", m_pivotMotor.getMotorVoltage().getValueAsDouble());
+        // SmartDashboard.putNumber("shooter/pivot cancoder", getCANCoder());
+        // SmartDashboard.putNumber("shooter/pivot voltage", m_pivotMotor.getMotorVoltage().getValueAsDouble());
         // if(isReadyToShoot()) System.out.println("shooter is ready");
         // m_shooterTopMotor.set(1);
         // m_shooterBottomMotor.set(1);
@@ -488,20 +488,20 @@ public class Shooter extends ProfiledPIDSubsystem {
             // System.out.println(m_pivotMotor.getMotorVoltage().getValue());
         }
 
-        SmartDashboard.putBoolean("shooter/top ready", topShooterAtSetpoint());
-        SmartDashboard.putBoolean("shooter/bottom ready", bottomShooterAtSetpoint());
-        SmartDashboard.putBoolean("shooter/pivot ready", pivotAtSetpoint());
+        // SmartDashboard.putBoolean("shooter/top ready", topShooterAtSetpoint());
+        // SmartDashboard.putBoolean("shooter/bottom ready", bottomShooterAtSetpoint());
+        // SmartDashboard.putBoolean("shooter/pivot ready", pivotAtSetpoint());
 
         // m_pivotMotor.setVoltage(0.4); 
         SmartDashboard.putNumber("shooter/bottom rpm ", getShooterBottomRPM()); 
         SmartDashboard.putNumber("shooter/top rpm ", getShooterTopRPM());   
-        SmartDashboard.putNumber("shooter/pivot deg", getPivotDegrees());
-        SmartDashboard.putNumber("shooter/pivot rad", getPivotRadians());
-        SmartDashboard.putNumber("shooter/pivot velocity", getCANCoderVelocityRadians());
+        // SmartDashboard.putNumber("shooter/pivot deg", getPivotDegrees());
+        // SmartDashboard.putNumber("shooter/pivot rad", getPivotRadians());
+        // SmartDashboard.putNumber("shooter/pivot velocity", getCANCoderVelocityRadians());
 
-        SmartDashboard.putBoolean("shooter/is ramped", isReadyToShoot());
-        SmartDashboard.putNumber("shooter/top setpoint", topShooterPIDController.getSetpoint());
-        SmartDashboard.putNumber("shooter/top error", topShooterPIDController.getPositionError());
+        // SmartDashboard.putBoolean("shooter/is ramped", isReadyToShoot());
+        // SmartDashboard.putNumber("shooter/top setpoint", topShooterPIDController.getSetpoint());
+        // SmartDashboard.putNumber("shooter/top error", topShooterPIDController.getPositionError());
     }   
 
 }

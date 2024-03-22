@@ -346,7 +346,7 @@ public final class Constants {
     public static class BlueTeamPoses {
         // Blue team poses
         public static final Pose2d initialPose = new Pose2d(new Translation2d(1.225347, 7.652309), new Rotation2d()); // Next to blue speaker
-        public static final Pose2d blueSpeakerPose = new Pose2d(new Translation2d(1.286580, 5.671689), Rotation2d.fromDegrees(180));
+        public static final Pose2d blueSpeakerPose = new Pose2d(new Translation2d(0, 5.671689), Rotation2d.fromDegrees(180));
         // public static final Pose2d redSpeakerPose = new Pose2d(new Translation2d(16.541748, 5.700184), new Rotation2d());
         public static final Pose2d blueOrigin = new Pose2d(new Translation2d(0, 0), new Rotation2d()); 
         public static final Pose2d blueAmpPose = new Pose2d(new Translation2d( 1.813129, 8.220855), new Rotation2d());
@@ -371,6 +371,8 @@ public final class Constants {
 
       //220 inches is roughly 0.45 angle
 
+      public static final double cruiseRPM = 1000;
+
       public static final double speakerRPM = 1300; // 1500
       public static final double speakerAngle = 1.05;
       public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
@@ -378,14 +380,14 @@ public final class Constants {
       public static final double startLineRPM = 1300; // 3000
       public static final double startLineAngle = 0.9; // 0.7
 
-      public static final double ampTopRPM = 300; // 300
-      public static final double ampBottomRPM = 200; // 200
+      public static final double ampTopRPM = 360; // 300
+      public static final double ampBottomRPM = 240; // 200
       public static final double ampAngle = 1.08;
 
       public static final double spotOneRPM = 3000;
       public static final double spotOneAngle = 0.42;
 
-      public static final double centerToAmpRPM = 4000;
+      public static final double centerToAmpRPM = 2000;
       public static final double canterToAmpAngle = 0.9;
     }
 

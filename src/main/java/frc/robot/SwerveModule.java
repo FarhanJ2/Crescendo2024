@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.configs.HardwareLimitSwitchConfigs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -47,6 +49,23 @@ public class SwerveModule {
         mDriveMotor = new TalonFX(moduleConstants.driveMotorID);
         mDriveMotor.getConfigurator().apply(Robot.ctreConfigs.swerveDriveFXConfig);
         mDriveMotor.getConfigurator().setPosition(0.0);
+
+        configureStatusFrameRates();
+    }
+
+    private void configureStatusFrameRates() {
+        BaseStatusSignal.setUpdateFrequencyForAll(
+            250, 
+            mAngleMotor.getVelocity(),
+            mAngleMotor.getPosition(),            
+            
+            mDriveMotor.getVelocity(),
+            mDriveMotor.getPosition(),
+            mDriveMotor.getMotorVoltage()
+        );
+
+        // mAngleMotor.optimizeBusUtilization();
+        // mDriveMotor.optimizeBusUtilization();
     }
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
@@ -66,6 +85,8 @@ public class SwerveModule {
             mDriveMotor.setControl(driveVelocity);
         }
     }
+
+    
 
     public Rotation2d getCANcoder(){
         return Rotation2d.fromRotations(angleEncoder.getAbsolutePosition().getValue());

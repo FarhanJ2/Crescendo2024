@@ -85,8 +85,11 @@ public class Intake extends SubsystemBase {
     }
 
     private void configureMotors() {
+        m_intakeMotor1.optimizeBusUtilization();
+        m_intakeMotor2.optimizeBusUtilization();
+        m_forkMotor.optimizeBusUtilization();
+
         m_intakeMotor1.setInverted(false);
-        // TODO YOU MAY NEED TO CHANGE THE BELOW LINE FROM FALSE TO TRUE
         m_intakeMotor2.setInverted(true);
         m_forkMotor.setInverted(true);
 

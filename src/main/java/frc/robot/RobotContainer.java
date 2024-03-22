@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.sql.Driver;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -68,9 +69,14 @@ public class RobotContainer {
     }
    
     private final Thread allianceGetter = new Thread(() -> {
+
         // while(!DriverStation.waitForDsConnection(0)) {
         //     DriverStation.reportWarning("SHET UP", false);
         // }
+
+        while(!DriverStation.isDSAttached()) {
+            DriverStation.reportWarning("SHET UP", false);
+        }
         //TODO fix for comp
         DriverStation.reportWarning("ME SHET UP???", false);
         try {
@@ -92,7 +98,7 @@ public class RobotContainer {
     /* Controllers */
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
-    private final Joystick sysIDJoystick = new Joystick(2);
+    // private final Joystick sysIDJoystick = new Joystick(2);
 
     /* Drive Controls */
     private final Trigger robotCentricButton = driver.leftBumper();
@@ -113,7 +119,6 @@ public class RobotContainer {
 
     private final Trigger isNormalMode = new Trigger(() -> operatorMode == OperatorMode.NORMAL_MODE);
     private final Trigger elevatorLocked = new Trigger(() -> elevatorManual == OperatorLock.LOCKED);
-
     /* Auton selector */
     private static final DigitalInput[] autonSelector = {
         new DigitalInput(10), // red 1
@@ -130,8 +135,8 @@ public class RobotContainer {
     };
 
     public static final String[] autonNames = {
-        "red 1",
-        "red 2",
+        "4 note",
+        "3 note center",
         "red 3",
         "red 4",
         "",
@@ -147,25 +152,16 @@ public class RobotContainer {
         "nothing"
     };
 
-    // These commands must correspond to its selection on the selector
-    private final Command[] autons = {
-        new InstantCommand(),
-        new PathPlannerAuto("2 piece"),
-        new PathPlannerAuto("3 piece"),
-        new PathPlannerAuto("Copy of 4 piece"),
-        new PathPlannerAuto("Center line")
-    };
-
     /* Sysid Tuning Controller */
-    private final JoystickButton sysidX = new JoystickButton(sysIDJoystick, 1);
-    private final JoystickButton sysidA = new JoystickButton(sysIDJoystick, 2);
-    private final JoystickButton sysidB = new JoystickButton(sysIDJoystick, 3);
-    private final JoystickButton sysidY = new JoystickButton(sysIDJoystick, 4);
-    private final JoystickButton sysidLeftBumper = new JoystickButton(sysIDJoystick, 5);
-    private final JoystickButton sysidRightBumper = new JoystickButton(sysIDJoystick, 6);
-    private final JoystickButton sysidLeftTrigger = new JoystickButton(sysIDJoystick, 7);
-    private final JoystickButton sysidLeftStick = new JoystickButton(sysIDJoystick, 11);
-    private final JoystickButton sysidRightStick = new JoystickButton(sysIDJoystick, 12);
+    // private final JoystickButton sysidX = new JoystickButton(sysIDJoystick, 1);
+    // private final JoystickButton sysidA = new JoystickButton(sysIDJoystick, 2);
+    // private final JoystickButton sysidB = new JoystickButton(sysIDJoystick, 3);
+    // private final JoystickButton sysidY = new JoystickButton(sysIDJoystick, 4);
+    // private final JoystickButton sysidLeftBumper = new JoystickButton(sysIDJoystick, 5);
+    // private final JoystickButton sysidRightBumper = new JoystickButton(sysIDJoystick, 6);
+    // private final JoystickButton sysidLeftTrigger = new JoystickButton(sysIDJoystick, 7);
+    // private final JoystickButton sysidLeftStick = new JoystickButton(sysIDJoystick, 11);
+    // private final JoystickButton sysidRightStick = new JoystickButton(sysIDJoystick, 12);
 
     /* Subsystems */
     public static final Swerve s_Swerve = new Swerve();
@@ -175,6 +171,19 @@ public class RobotContainer {
     public static final Feeder s_Feeder = new Feeder();
     public static final Elevator s_Elevator = new Elevator();
     public static final LED s_Led = new LED(Constants.Led.port, Constants.Led.length);
+
+    // These commands must correspond to its selection on the selector
+    // private static final Command[] autons = {
+    //     // new InstantCommand(),
+    //     // new PathPlannerAuto("2 piece"),
+    //     // new PathPlannerAuto("3 piece"),
+    //     // new PathPlannerAuto("Copy of 4 piece"),
+    //     // new PathPlannerAuto("Center line")
+    //     new PathPlannerAuto("Copy of 4 piece"),
+    //     new PathPlannerAuto("3 piece"),
+    // };
+
+    
     
     public RobotContainer() {
 
@@ -246,6 +255,26 @@ public class RobotContainer {
                 )
             )
         );
+        // NamedCommands.registerCommand("spot 1 shot", 
+        //     new ParallelRaceGroup(
+        //         new WaitCommand(4),
+        //         new ParallelDeadlineGroup(
+        //             new SequentialCommandGroup(
+        //                 new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
+        //                 new InstantCommand(() -> System.out.println("READY TO SHOOT")),
+        //                 new ParallelDeadlineGroup(
+        //                     new WaitCommand(0.5),
+        //                     s_Shooter.feedToShooter()
+        //                 )
+        //             ),
+        //             new RotateToAngle(
+        //                 () -> s_Swerve.calculateTurnAngle(alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueSpeakerPose : Constants.RedTeamPoses.redSpeakerPose, s_Swerve.getHeading().getDegrees() + 180), 
+        //                 () -> s_Swerve.getHeading().getDegrees()
+        //             ),
+        //             new RampSpotOne()
+        //         )
+        //     )
+        // );
         NamedCommands.registerCommand("spot 1 shot", 
             new ParallelRaceGroup(
                 new WaitCommand(4),
@@ -255,17 +284,28 @@ public class RobotContainer {
                         new InstantCommand(() -> System.out.println("READY TO SHOOT")),
                         new ParallelDeadlineGroup(
                             new WaitCommand(0.5),
-                            s_Shooter.feedToShooter()
+                            s_Shooter.feedToTrigShooter()
+                            // s_Shooter.feedToShooter()
                         )
                     ),
                     new RotateToAngle(
                         () -> s_Swerve.calculateTurnAngle(alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueSpeakerPose : Constants.RedTeamPoses.redSpeakerPose, s_Swerve.getHeading().getDegrees() + 180), 
                         () -> s_Swerve.getHeading().getDegrees()
                     ),
-                    new RampSpotOne()
+                    Commands.parallel(
+                        Commands.run(
+                            () -> s_Shooter.setPivot(RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance))
+                        ),
+                        Commands.runEnd(
+                            () -> s_Shooter.rampShooter(3000, 3000),
+                            () -> s_Shooter.stopShooter()
+                        ),
+                        new Feed()
+                    )
                 )
             )
         );
+
         NamedCommands.registerCommand("intake", new IntakeCommand());
 
         // Set up note visualizer
@@ -451,13 +491,13 @@ public class RobotContainer {
         //         s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse)
         //     );
 
-        sysidX.whileTrue(
-            s_Elevator.applykG()
-        );
+        // sysidX.whileTrue(
+        //     s_Elevator.applykG()
+        // );
 
-        sysidA.whileTrue(
-            s_Elevator.applykV()
-        );
+        // sysidA.whileTrue(
+        //     s_Elevator.applykV()
+        // );
 
         // sysidX.whileTrue(
         //     s_AmpArm.applykS()
@@ -578,42 +618,54 @@ public class RobotContainer {
         //         s_AmpArm.applykV()
         //     );
 
-        sysidLeftBumper
-            .whileTrue(
-                s_Shooter.applykS()
-            );
+        // sysidLeftBumper
+        //     .whileTrue(
+        //         s_Shooter.applykS()
+        //     );
 
-        sysidRightBumper
-            .whileTrue(
-                s_Shooter.applykG()
-            );
+        // sysidRightBumper
+        //     .whileTrue(
+        //         s_Shooter.applykG()
+        //     );
         
-        sysidLeftTrigger
-            .whileTrue(
-                s_Shooter.applykV()
-            );
+        // sysidLeftTrigger
+        //     .whileTrue(
+        //         s_Shooter.applykV()
+        //     );
 
-        sysidLeftStick
-            .whileTrue(
-                Commands.runEnd(
-                    () -> s_Elevator.moveElevator(true), 
-                    () -> s_Elevator.stopElevator(), 
-                    s_Elevator
-                )
-            );
+        // sysidLeftStick
+        //     .whileTrue(
+        //         Commands.runEnd(
+        //             () -> s_Elevator.moveElevator(true), 
+        //             () -> s_Elevator.stopElevator(), 
+        //             s_Elevator
+        //         )
+        //     );
 
-        sysidRightStick
-            .whileTrue(
-                Commands.runEnd(
-                    () -> s_Elevator.moveElevator(false), 
-                    () -> s_Elevator.stopElevator(), 
-                    s_Elevator
-                )
-            );
+        // sysidRightStick
+        //     .whileTrue(
+        //         Commands.runEnd(
+        //             () -> s_Elevator.moveElevator(false), 
+        //             () -> s_Elevator.stopElevator(), 
+        //             s_Elevator
+        //         )
+        //     );
     }
 
     private void configureEndGameButtonBindings() {
         // Endgame Mode
+        // operator.axisGreaterThan(manualElevatorAxis, Math.PI * Math.E)
+        //     .and(isNormalMode.negate())
+        //         .whileTrue(
+        //             Commands.runEnd(
+        //                 () -> {
+        //                     s_Elevator.moveElevator(operator.getRawAxis(manualElevatorAxis) > 0);
+        //                     s_Elevator.disable();
+        //                 }, 
+        //                 () -> s_Elevator.stopElevator()
+        //             )
+        //         );
+
         operator.leftTrigger() 
             .and(isNormalMode.negate())
                 .and(elevatorLocked)
@@ -650,7 +702,7 @@ public class RobotContainer {
                             s_AmpArm.getAmpDangleCommand() // TODO used to be home
                         )
                     );
-
+        
         operator.leftStick()
             .and(isNormalMode.negate())
                 .onTrue(
@@ -855,7 +907,9 @@ public class RobotContainer {
             )
         );
         
-        operator.povRight()
+        (operator.povRight()
+        .or(operator.povUpRight())
+        .or(operator.povDownRight()))
             .and(isNormalMode)
                 .whileTrue(
                     new RampAmp()
@@ -934,19 +988,31 @@ public class RobotContainer {
     public static int getSelected() {
         for (int i = 0; i < autonSelector.length; i++) {
             if (autonSelector[i].get() == false) {
+                // System.out.println(i);
                 return i;
             }
         }
+        System.out.println("sami");
+
         return 0;
     }
 
-    public Command getAutonomousCommand() {
+    public static Command getAutonomousCommand() {
         // Copy of 4 piece
         // return new PathPlannerAuto("Copy of 4 piece");
         // return new PathPlannerAuto("Center line revised");
         // return new PathPlannerAuto("2 note center");
-        return new PathPlannerAuto("3 note center");
+        // return new PathPlannerAuto("3 note center");
 
+        // System.out.println("jie xuan");
+        switch(getSelected()) {
+            case 0:
+                return new PathPlannerAuto("Copy of 4 piece");
+            case 1:
+                return new PathPlannerAuto("3 note center");
+            default:
+                return null;
+        }
         // return autons[getSelected()];
     }
 }

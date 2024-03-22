@@ -131,7 +131,7 @@ public class Swerve extends SubsystemBase {
         0
     );
 
-    private final SysIdRoutine sysID;
+    // private final SysIdRoutine sysID;
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
@@ -155,7 +155,7 @@ public class Swerve extends SubsystemBase {
         // limelightChooser.addOption(limelightArm.getLimelightName(), limelightArm);
 
         limelightShooter.setPipeline(LimelightConstants.limelightShooterTagPipeline);
-        limelightArm.setPipeline(LimelightConstants.limelightShooterTagPipeline);
+        limelightArm.setPipeline(LimelightConstants.limelightArmTagPipeline);
 
         //TODO FIXXXXXXXXXX plz
         
@@ -167,32 +167,32 @@ public class Swerve extends SubsystemBase {
    
    
 
-        sysID = new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,
-                null,
-                null,
-                (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
-            new SysIdRoutine.Mechanism(
-                (Measure<Voltage> volts) -> {
-                    m_frontLeftMotor.setVoltage(volts.in(Volts));
-                    m_frontRightMotor.setVoltage(volts.in(Volts));
-                    m_backLeftMotor.setVoltage(-volts.in(Volts));
-                    m_backRightMotor.setVoltage(-volts.in(Volts));
-                },
-                log -> {
-                    log.motor("swerve")
-                    .voltage(
-                        m_appliedVoltage.mut_replace(
-                            m_frontLeftMotor.get() * RobotController.getBatteryVoltage(), Volts))
-                    //.angularPosition(m_angle.mut_replace(m_pivotMotor.getPosition().getValue() / 18.8888888888888, Rotations))
-                    .linearPosition(m_distance.mut_replace(m_frontLeftMotor.getPosition().getValueAsDouble() * Math.PI * 0.1016, Meters))
-                    // .angularVelocity(
-                    //     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValue() / 18.8888888888888, RotationsPerSecond));
-                    .linearVelocity(
-                        m_velocity.mut_replace(m_frontLeftMotor.getVelocity().getValueAsDouble() * Math.PI * 0.1016, MetersPerSecond));
-                },
-                this));
+        // sysID = new SysIdRoutine(
+        //     new SysIdRoutine.Config(
+        //         null,
+        //         null,
+        //         null,
+        //         (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+        //     new SysIdRoutine.Mechanism(
+        //         (Measure<Voltage> volts) -> {
+        //             m_frontLeftMotor.setVoltage(volts.in(Volts));
+        //             m_frontRightMotor.setVoltage(volts.in(Volts));
+        //             m_backLeftMotor.setVoltage(-volts.in(Volts));
+        //             m_backRightMotor.setVoltage(-volts.in(Volts));
+        //         },
+        //         log -> {
+        //             log.motor("swerve")
+        //             .voltage(
+        //                 m_appliedVoltage.mut_replace(
+        //                     m_frontLeftMotor.get() * RobotController.getBatteryVoltage(), Volts))
+        //             //.angularPosition(m_angle.mut_replace(m_pivotMotor.getPosition().getValue() / 18.8888888888888, Rotations))
+        //             .linearPosition(m_distance.mut_replace(m_frontLeftMotor.getPosition().getValueAsDouble() * Math.PI * 0.1016, Meters))
+        //             // .angularVelocity(
+        //             //     m_velocity.mut_replace(m_pivotMotor.getVelocity().getValue() / 18.8888888888888, RotationsPerSecond));
+        //             .linearVelocity(
+        //                 m_velocity.mut_replace(m_frontLeftMotor.getVelocity().getValueAsDouble() * Math.PI * 0.1016, MetersPerSecond));
+        //         },
+        //         this));
 
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
@@ -376,15 +376,15 @@ public class Swerve extends SubsystemBase {
         return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        // return null;
-        return sysID.quasistatic(direction);
-    }
+    // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    //     // return null;
+    //     return sysID.quasistatic(direction);
+    // }
 
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        // return null;
-        return sysID.dynamic(direction);
-    }
+    // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    //     // return null;
+    //     return sysID.dynamic(direction);
+    // }
 
     // public Limelight getFlashedLimelight() {
     //     return (Limelight) limelightChooser.getSelected(); 
@@ -402,7 +402,7 @@ public class Swerve extends SubsystemBase {
         // limelight and odometry classes are written so that adding additional limelights is easy 
     
         // TODO all this code must be uncommented for vision stuff
-        if (Robot.state != Robot.State.AUTON && RobotContainer.addVisionMeasurement) {
+        if (Robot.state != Robot.State.AUTON  && RobotContainer.addVisionMeasurement) {
             Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter); //changed from without yaw
             if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
                 poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
@@ -426,14 +426,14 @@ public class Swerve extends SubsystemBase {
         Logger.recordOutput("Odometry/Robot", getPose());
         Logger.recordOutput("Odometry/Robot3d", new Pose3d(getPose()));
 
-        for(SwerveModule mod : mSwerveMods) {
-            SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
-            SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond); 
-            SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Voltage", mod.getVoltage());
-        }
+        // for(SwerveModule mod : mSwerveMods) {
+        //     SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
+        //     SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
+        //     SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond); 
+        //     SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Voltage", mod.getVoltage());
+        // }
 
-        SmartDashboard.putNumber("swerve/yaw", gyro.getYaw().getValue());
+        // SmartDashboard.putNumber("swerve/yaw", gyro.getYaw().getValue());
 
         // TODO need to change depending on the team your're on
         // SmartDashboard.putNumber("swerve/distance", odometryImpl.getDistance(Constants.RedTeamPoses.redSpeakerPose)); 
