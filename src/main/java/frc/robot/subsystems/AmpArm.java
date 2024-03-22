@@ -69,8 +69,8 @@ public class AmpArm extends ProfiledPIDSubsystem {
     // private final Measure<Velocity<Voltage>> m_desiredRampRate = Volts.of(0.075).per(Seconds.of(1));
     // private final Measure<Voltage> m_desiredStepVoltage = Volts.of(0.6);
 
-    private final TalonFX m_pivotMotor = new TalonFX(Constants.AmpArm.pivotMotorID);
-    private final TalonFX m_shootMotor = new TalonFX(Constants.AmpArm.shootMotorID);
+    private final TalonFX m_pivotMotor = new TalonFX(Constants.AmpArm.pivotMotorID, Constants.canivoreName);
+    private final TalonFX m_shootMotor = new TalonFX(Constants.AmpArm.shootMotorID, Constants.canivoreName);
 
     // private final SysIdRoutine m_sysIdRoutine =
     //   new SysIdRoutine(
@@ -100,7 +100,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
     //           // WPILog with this subsystem's name ("shooter")
     //           this));
 
-    private final CANcoder m_cancoder = new CANcoder(Constants.AmpArm.canCoderID);
+    private final CANcoder m_cancoder = new CANcoder(Constants.AmpArm.canCoderID, Constants.canivoreName);
 
     private final ArmFeedforward m_feedforward =
       new ArmFeedforward(

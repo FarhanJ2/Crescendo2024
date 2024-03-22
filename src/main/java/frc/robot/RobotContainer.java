@@ -137,7 +137,7 @@ public class RobotContainer {
     public static final String[] autonNames = {
         "4 note",
         "3 note center",
-        "red 3",
+        "4 note reverse",//"red 3",
         "red 4",
         "",
         "",
@@ -1010,6 +1010,8 @@ public class RobotContainer {
                 return new PathPlannerAuto("Copy of 4 piece");
             case 1:
                 return new PathPlannerAuto("3 note center");
+            case 2:
+                return new PathPlannerAuto("Copy of 4 piece Reverse");
             default:
                 return null;
         }

@@ -52,15 +52,15 @@ public class Elevator extends ProfiledPIDSubsystem {
         }
     }
 
-    private final TalonFX m_leftMotor = new TalonFX(Constants.Elevator.leftMotorID);
-    private final TalonFX m_rightMotor = new TalonFX(Constants.Elevator.rightMotorID);
+    private final TalonFX m_leftMotor = new TalonFX(Constants.Elevator.leftMotorID, Constants.canivoreName);
+    private final TalonFX m_rightMotor = new TalonFX(Constants.Elevator.rightMotorID, Constants.canivoreName);
 
 
 
     // private final DigitalInput m_upperLimitSwitch = new DigitalInput(Constants.Elevator.limitSwitchUpperChannel);
     private final DigitalInput m_lowerLimitSwitch = new DigitalInput(Constants.Elevator.limitSwitchLowerChannel);
 
-    private final CANcoder m_cancoder = new CANcoder(Constants.Elevator.canCoderID);
+    private final CANcoder m_cancoder = new CANcoder(Constants.Elevator.canCoderID, Constants.canivoreName);
 
     // private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
     // // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.

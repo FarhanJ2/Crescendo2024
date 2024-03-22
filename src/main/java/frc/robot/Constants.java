@@ -15,6 +15,8 @@ import frc.lib.util.SwerveModuleConstants;
 public final class Constants {
     public static final double stickDeadband = 0.1;
 
+    public static final String canivoreName = "rio";
+
     public static final class Swerve {
         public static final int pigeonID = 0;
 
@@ -244,7 +246,7 @@ public final class Constants {
         public static final double kI = 0;
         public static final double kD = 0.001;
 
-        public static final double kMaxVelocityPerSecond = 2; // 3.5
+        public static final double kMaxVelocityPerSecond = 3.5; // 3.5
         public static final double kMaxAccelerationPerSecSquared = 8; // 8
 
         public static final double tolerance = 0.005;
@@ -255,7 +257,7 @@ public final class Constants {
         public static final double trapRotations = 1.5;
         public static final double maxRotations = 3;
 
-        public static final double manualElevatorSpeed = 0.2;
+        public static final double manualElevatorSpeed = 0.4;
     }
 
     public static final class AmpArm {
@@ -276,7 +278,7 @@ public final class Constants {
 
         public static final double pivotTolerance = 0.01;
 
-        public static final double kMaxVelocityRadPerSecond = 10;
+        public static final double kMaxVelocityRadPerSecond = 13;
         public static final double kMaxAccelerationRadPerSecSquared = 15;
 
         public static final double armOffset = -Math.PI / 2; // -2.13
@@ -365,7 +367,7 @@ public final class Constants {
 
     public static final class ShootingConstants {
       public static final double podiumRPM = 2000; // 3000 // 3000
-      public static final double podiumAngle = 0.65; // 0.65 //0.7
+      public static final double podiumAngle = 0.6; // 0.65 //0.7
 
     //162 inches is roughly 0.5 angle
 
@@ -374,15 +376,15 @@ public final class Constants {
       public static final double cruiseRPM = 1000;
 
       public static final double speakerRPM = 1300; // 1500
-      public static final double speakerAngle = 1.05;
+      public static final double speakerAngle = 1.02;
       public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
       
       public static final double startLineRPM = 1300; // 3000
       public static final double startLineAngle = 0.9; // 0.7
 
-      public static final double ampTopRPM = 360; // 300
-      public static final double ampBottomRPM = 240; // 200
-      public static final double ampAngle = 1.08;
+      public static final double ampTopRPM = 300; // 300
+      public static final double ampBottomRPM = 200; // 200
+      public static final double ampAngle = 1.1;
 
       public static final double spotOneRPM = 3000;
       public static final double spotOneAngle = 0.42;

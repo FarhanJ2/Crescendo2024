@@ -20,9 +20,9 @@ public class Intake extends SubsystemBase {
         TO_INTAKE // For arm to intake
     }
 
-    private final TalonFX m_intakeMotor1 = new TalonFX(Constants.Intake.intakeMotor1ID);
-    private final TalonFX m_intakeMotor2 = new TalonFX(Constants.Intake.intakeMotor2ID);
-    private final TalonFX m_forkMotor = new TalonFX(Constants.Intake.forkMotorID);
+    private final TalonFX m_intakeMotor1 = new TalonFX(Constants.Intake.intakeMotor1ID, Constants.canivoreName);
+    private final TalonFX m_intakeMotor2 = new TalonFX(Constants.Intake.intakeMotor2ID, Constants.canivoreName);
+    private final TalonFX m_forkMotor = new TalonFX(Constants.Intake.forkMotorID, Constants.canivoreName);
 
     private final DigitalInput intakeBeam = new DigitalInput(Constants.Intake.beamBreakerIntake);
     // private final DigitalInput shooterBeam = new DigitalInput(Constants.Intake.beamBrakerShooter);

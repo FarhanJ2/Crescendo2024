@@ -62,11 +62,11 @@ import frc.robot.subsystems.LED.LEDColor;
 import frc.team254.lib.util.InterpolatingDouble;
 
 public class Shooter extends ProfiledPIDSubsystem {
-    private final TalonFX m_shooterBottomMotor = new TalonFX(Constants.Shooter.bottomShooterMotorID);
-    private final TalonFX m_shooterTopMotor = new TalonFX(Constants.Shooter.topShooterMotorID);
-    private final TalonFX m_pivotMotor = new TalonFX(Constants.Shooter.pivotMotorID);
+    private final TalonFX m_shooterBottomMotor = new TalonFX(Constants.Shooter.bottomShooterMotorID, Constants.canivoreName);
+    private final TalonFX m_shooterTopMotor = new TalonFX(Constants.Shooter.topShooterMotorID, Constants.canivoreName);
+    private final TalonFX m_pivotMotor = new TalonFX(Constants.Shooter.pivotMotorID, Constants.canivoreName);
 
-    private final CANcoder m_cancoder = new CANcoder(Constants.Shooter.canCoderID);
+    private final CANcoder m_cancoder = new CANcoder(Constants.Shooter.canCoderID, Constants.canivoreName);
 
     public boolean isShooting = false;
     public boolean isScoringAmp = false;
@@ -160,7 +160,7 @@ public class Shooter extends ProfiledPIDSubsystem {
         topShooterPIDController.setTolerance(Constants.Shooter.shooterTolerance);
         bottomShooterPIDController.setTolerance(Constants.Shooter.shooterTolerance);
 
-        m_pivotMotor.setInverted(true);
+        m_pivotMotor.setInverted(false);
 
         configureNeutralMode();
 
@@ -300,7 +300,7 @@ public class Shooter extends ProfiledPIDSubsystem {
 
     @Override
     public double getMeasurement() {
-        return getCANCoder() * Math.PI / 180 + 0.1 + 1.35;
+        return getCANCoder() * Math.PI / 180 + 0.1 + 1.35 + 0.05;
         // return getPivotRadians();
     }
 

@@ -134,7 +134,7 @@ public class Swerve extends SubsystemBase {
     // private final SysIdRoutine sysID;
 
     public Swerve() {
-        gyro = new Pigeon2(Constants.Swerve.pigeonID);
+        gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.canivoreName);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
@@ -402,7 +402,7 @@ public class Swerve extends SubsystemBase {
         // limelight and odometry classes are written so that adding additional limelights is easy 
     
         // TODO all this code must be uncommented for vision stuff
-        if (Robot.state != Robot.State.AUTON  && RobotContainer.addVisionMeasurement) {
+        if (Robot.state != Robot.State.AUTON && RobotContainer.addVisionMeasurement) {
             Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter); //changed from without yaw
             if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
                 poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
@@ -421,7 +421,7 @@ public class Swerve extends SubsystemBase {
         // }
         
         // limelights computes the correct pose but it's placed incorrectly on glass (offsetted by 1 meter)
-        field.setRobotPose(new Pose2d(getPose().getX(), getPose().getY(), getPose().getRotation()));
+        field.setRobotPose(new Pose2d(getPose().getX(), getPose().getY(), getPose().getRotation())); //switch to getPose later 
 
         Logger.recordOutput("Odometry/Robot", getPose());
         Logger.recordOutput("Odometry/Robot3d", new Pose3d(getPose()));
