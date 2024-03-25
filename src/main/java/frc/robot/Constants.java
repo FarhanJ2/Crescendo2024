@@ -389,8 +389,8 @@ public final class Constants {
       public static final double spotOneRPM = 3000;
       public static final double spotOneAngle = 0.42;
 
-      public static final double centerToAmpRPM = 2000;
-      public static final double canterToAmpAngle = 0.9;
+      public static final double centerToAmpRPM = 1500;
+      public static final double canterToAmpAngle = 0.7;
     }
 
     public static final class StructureConstants {

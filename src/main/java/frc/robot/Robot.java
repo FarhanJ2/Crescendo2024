@@ -66,7 +66,7 @@ public class Robot extends LoggedRobot {
     // for (int i = 0; i < RobotContainer.autonSelector.length; i++) {
     //   SmartDashboard.putBoolean("selector/" + i, RobotContainer.autonSelector[i].get());
     // }
-    SmartDashboard.putString("auton selection", RobotContainer.autonNames[RobotContainer.getSelected()]);
+    // SmartDashboard.putString("auton selection", RobotContainer.autonNames[RobotContainer.getSelected()]);
 
     CommandScheduler.getInstance().run();
   }
@@ -82,7 +82,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     // state = State.AUTON;
-    m_autonomousCommand = RobotContainer.getAutonomousCommand();
+    m_autonomousCommand = RobotContainer.autonomousCommand;
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();

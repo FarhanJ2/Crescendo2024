@@ -29,7 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.lib.util.NoteVisualizer;
+// import frc.lib.util.NoteVisualizer;
 import frc.robot.commands.AmpArm.ArmHandoff;
 import frc.robot.commands.AmpArm.ArmShot;
 import frc.robot.commands.AmpArm.ManualArmPivot;
@@ -67,6 +67,8 @@ public class RobotContainer {
         UNLOCKED,
         LOCKED,
     }
+
+    public static Command autonomousCommand;
    
     private final Thread allianceGetter = new Thread(() -> {
 
@@ -308,8 +310,10 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("intake", new IntakeCommand());
 
+        autonomousCommand = new PathPlannerAuto("Copy of 4 piece");
+
         // Set up note visualizer
-        NoteVisualizer.setRobotPoseSupplier(s_Swerve::getPose);
+        // NoteVisualizer.setRobotPoseSupplier(s_Swerve::getPose);
 
         // Configure the button bindings
         configureAbsoluteButtonBindings();
@@ -999,22 +1003,27 @@ public class RobotContainer {
 
     public static Command getAutonomousCommand() {
         // Copy of 4 piece
+        // System.out.println(autonomousCommand);
+        return autonomousCommand;
         // return new PathPlannerAuto("Copy of 4 piece");
+        // return new PathPlannerAuto("Copy of 4 piece reverse");
         // return new PathPlannerAuto("Center line revised");
         // return new PathPlannerAuto("2 note center");
         // return new PathPlannerAuto("3 note center");
 
         // System.out.println("jie xuan");
-        switch(getSelected()) {
-            case 0:
-                return new PathPlannerAuto("Copy of 4 piece");
-            case 1:
-                return new PathPlannerAuto("3 note center");
-            case 2:
-                return new PathPlannerAuto("Copy of 4 piece Reverse");
-            default:
-                return null;
-        }
+
+        // switch(getSelected()) {
+        //     case 0:
+        //         return new PathPlannerAuto("Copy of 4 piece");
+        //     case 1:
+        //         return new PathPlannerAuto("3 note center");
+        //     case 2:
+        //         return new PathPlannerAuto("Copy of 4 piece Reverse");
+        //     default:
+        //         return null;
+        // }
+
         // return autons[getSelected()];
     }
 }

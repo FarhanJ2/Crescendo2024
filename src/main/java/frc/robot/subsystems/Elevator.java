@@ -226,9 +226,9 @@ public class Elevator extends ProfiledPIDSubsystem {
             //     stopElevator();
             //     return;
             // }
-            if(!m_lowerLimitSwitch.get()) {
+            if(limitPressed()) {
                 stopElevator();
-                zeroCancoder();
+                // zeroCancoder(); TODO removed
                 return;
             }
             

@@ -37,6 +37,7 @@ public class Feeder extends SubsystemBase {
 
     private void configureMotors() {
         m_feederMotor.setInverted(false);
+        m_feederMotor.optimizeBusUtilization();
 
         m_feederMotor.setNeutralMode(NeutralModeValue.Coast);
     }
