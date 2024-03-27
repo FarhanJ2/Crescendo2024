@@ -53,6 +53,7 @@ import frc.robot.commands.shooter.RampStartLine;
 import frc.robot.commands.swerve.RotateToAngle;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.AmpArm.ArmStatus;
 import frc.robot.subsystems.LED.LEDColor;
 import frc.robot.subsystems.LED.LEDMode;
 
@@ -88,6 +89,10 @@ public class RobotContainer {
         alliance = DriverStation.getAlliance().get();
         DriverStation.silenceJoystickConnectionWarning(true);
         s_Swerve.poseEstimatorInitializer.start();
+
+        s_Led.setDefaultCommand(
+            s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
+        );
     });
 
     public static DriverStation.Alliance alliance;
@@ -121,6 +126,7 @@ public class RobotContainer {
 
     private final Trigger isNormalMode = new Trigger(() -> operatorMode == OperatorMode.NORMAL_MODE);
     private final Trigger elevatorLocked = new Trigger(() -> elevatorManual == OperatorLock.LOCKED);
+
     /* Auton selector */
     private static final DigitalInput[] autonSelector = {
         new DigitalInput(10), // red 1
@@ -137,10 +143,10 @@ public class RobotContainer {
     };
 
     public static final String[] autonNames = {
-        "4 note",
+        "4 piece",
         "3 note center",
-        "4 note reverse",//"red 3",
-        "red 4",
+        "4 piece reverse",
+        "2 note center",
         "",
         "",
         "",
@@ -222,9 +228,9 @@ public class RobotContainer {
         //     s_AmpArm.getHomeCommand()
         // );
 
-        s_Led.setDefaultCommand(
-            s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
-        );
+        // s_Led.setDefaultCommand(
+        //     s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
+        // );
 
         // NamedCommands.registerCommand("ramp", new RampShooter(1000, 1000, 0.13));
         // NamedCommands.registerCommand("subwoofer shot", 
@@ -310,7 +316,8 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("intake", new IntakeCommand());
 
-        autonomousCommand = new PathPlannerAuto("Copy of 4 piece");
+        // autonomousCommand = new PathPlannerAuto("Copy of 4 piece");
+        autonomousCommand = new PathPlannerAuto(autonNames[getSelected()]);
 
         // Set up note visualizer
         // NoteVisualizer.setRobotPoseSupplier(s_Swerve::getPose);
@@ -759,23 +766,27 @@ public class RobotContainer {
         // Arm
         operator.y()
             .and(isNormalMode)
+            .and(new Trigger(() -> s_AmpArm.status == ArmStatus.NOTHING))
                 .onTrue( // Handoff
                     new SequentialCommandGroup(
+                        new InstantCommand(() -> s_AmpArm.status = ArmStatus.INTAKING),
                         s_AmpArm.getHandoffCommand(),
                         new WaitUntilCommand(
                             () -> s_AmpArm.getController().atGoal()
                         ).raceWith(
-                            new WaitCommand(1) // 2 second timeout in case doesn't go to goal
+                            new WaitCommand(1.5) // 1.5 second timeout in case doesn't go to goal
                         ),
                         s_AmpArm.feedToArm(),
                         Commands.runEnd(
                             () -> s_AmpArm.armHandoff(),
                             () -> s_AmpArm.stopShooter()
-                        ).withTimeout(0.1)
+                        ).withTimeout(0),
+                        new InstantCommand(() -> s_AmpArm.status = ArmStatus.NOTHING)
                     ).alongWith(s_Led.fadeCommand(LEDColor.YELLOW))
                 );
         operator.x()
             .and(isNormalMode)
+            .and(new Trigger(() -> s_AmpArm.status == ArmStatus.NOTHING))
                 .onTrue( // Amp position
                     s_AmpArm.getAmpShootCommand()
                         .alongWith(s_Elevator.getAmpCommand())
@@ -798,6 +809,7 @@ public class RobotContainer {
                 .onTrue( // Home
                     s_AmpArm.getAmpDangleCommand() // used to be home
                         .alongWith(s_Elevator.getHomeCommand())
+                        .alongWith(new InstantCommand(() -> s_AmpArm.status = ArmStatus.NOTHING))
                 );
         // operator.povLeft()
         //     .and(isNormalMode)
@@ -992,11 +1004,9 @@ public class RobotContainer {
     public static int getSelected() {
         for (int i = 0; i < autonSelector.length; i++) {
             if (autonSelector[i].get() == false) {
-                // System.out.println(i);
                 return i;
             }
         }
-        System.out.println("sami");
 
         return 0;
     }

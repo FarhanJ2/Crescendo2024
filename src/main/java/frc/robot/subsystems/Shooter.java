@@ -300,7 +300,7 @@ public class Shooter extends ProfiledPIDSubsystem {
 
     @Override
     public double getMeasurement() {
-        return getCANCoder() * Math.PI / 180 + 0.1 + 1.35 + 0.05;
+        return getCANCoder() * Math.PI / 180 + 0.1 + 1.35 + 0.05 + 0.45 + 1.1;
         // return getPivotRadians();
     }
 

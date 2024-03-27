@@ -53,9 +53,9 @@ public class Intake extends SubsystemBase {
             m_intakeMotor2.set(-Constants.Intake.intakeFeedSpeed);
         } 
         else if (direction == Direction.TO_AMP_ARM) {
-            m_forkMotor.set(-Constants.Intake.forkSpeed / 3.5);
-            m_intakeMotor1.set(-Constants.Intake.intakeFeedSpeed / 3.5);
-            m_intakeMotor2.set(-Constants.Intake.intakeFeedSpeed / 3.5);
+            m_forkMotor.set(-Constants.Intake.forkSpeed / 3);
+            m_intakeMotor1.set(-Constants.Intake.intakeFeedSpeed / 3);
+            m_intakeMotor2.set(-Constants.Intake.intakeFeedSpeed / 3);
         }
         else if (direction == Direction.TO_INTAKE) {
             m_forkMotor.set(Constants.Intake.forkSpeed);

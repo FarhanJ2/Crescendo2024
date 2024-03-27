@@ -134,7 +134,7 @@ public class Swerve extends SubsystemBase {
     // private final SysIdRoutine sysID;
 
     public Swerve() {
-        gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.canivoreName);
+        gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.pigeonCanName);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
@@ -156,8 +156,6 @@ public class Swerve extends SubsystemBase {
 
         limelightShooter.setPipeline(LimelightConstants.limelightShooterTagPipeline);
         limelightArm.setPipeline(LimelightConstants.limelightArmTagPipeline);
-
-        //TODO FIXXXXXXXXXX plz
         
         m_frontLeftMotor = mSwerveMods[0].getDriveMotor();
         m_frontRightMotor = mSwerveMods[1].getDriveMotor();
@@ -402,19 +400,18 @@ public class Swerve extends SubsystemBase {
         // limelight and odometry classes are written so that adding additional limelights is easy 
     
         // TODO all this code must be uncommented for vision stuff
-        // if (Robot.state != Robot.State.AUTON && RobotContainer.addVisionMeasurement) {
-        //     Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter); //changed from without yaw
-        //     if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
-        //         poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
-        //     }
+        if (Robot.state != Robot.State.AUTON && RobotContainer.addVisionMeasurement) {
+            Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter); //changed from without yaw
+            if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
+                poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
+            }
 
-
-        //     // //newly added limelight automatically configured for odometry impl
-        //     Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurement(limelightArm); //changed from without yaw
-        //     if (visionMeasurementLimelightArm != null && poseEstimator != null) {
-        //         poseEstimator.addVisionMeasurement(visionMeasurementLimelightArm, limelightArm.getLimelightLatency());
-        //     }
-        // }
+            // //newly added limelight automatically configured for odometry impl
+            Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurement(limelightArm); //changed from without yaw
+            if (visionMeasurementLimelightArm != null && poseEstimator != null) {
+                poseEstimator.addVisionMeasurement(visionMeasurementLimelightArm, limelightArm.getLimelightLatency());
+            }
+        }
 
         // else {
         //     // System.out.println("TELEOP"); 

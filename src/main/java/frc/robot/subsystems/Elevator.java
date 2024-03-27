@@ -306,7 +306,7 @@ public class Elevator extends ProfiledPIDSubsystem {
             useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
         }
 
-        // SmartDashboard.putNumber("elevator/motor voltage", m_leftMotor.getMotorVoltage().getValueAsDouble());
+        SmartDashboard.putNumber("elevator/motor voltage", m_leftMotor.getMotorVoltage().getValueAsDouble());
         // SmartDashboard.putNumber("elevator/using battery voltage", m_leftMotor.get() * RobotController.getBatteryVoltage());
 
 

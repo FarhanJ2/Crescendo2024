@@ -43,7 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Copy of Subwoofer to stage"
+                  "pathName": "Subwoofer to stage"
                 }
               }
             ]
@@ -52,7 +52,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of Stage to subwoofer"
+            "pathName": "Stage to subwoofer"
           }
         },
         {
@@ -131,7 +131,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Copy of Subwoofer to top note"
+                  "pathName": "Subwoofer to top note"
                 }
               }
             ]
@@ -140,7 +140,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of Top note to subwoofer"
+            "pathName": "Top note to subwoofer"
           }
         },
         {
@@ -152,6 +152,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "Drafts",
   "choreoAuto": false
 }

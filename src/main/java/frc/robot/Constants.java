@@ -16,6 +16,7 @@ public final class Constants {
     public static final double stickDeadband = 0.1;
 
     public static final String canivoreName = "rio";
+    public static final String pigeonCanName = "rio"; //Pigeon is on separate can loop than others
 
     public static final class Swerve {
         public static final int pigeonID = 0;
@@ -246,8 +247,8 @@ public final class Constants {
         public static final double kI = 0;
         public static final double kD = 0.001;
 
-        public static final double kMaxVelocityPerSecond = 3.5; // 3.5
-        public static final double kMaxAccelerationPerSecSquared = 8; // 8
+        public static final double kMaxVelocityPerSecond = 4.5; // 3.5
+        public static final double kMaxAccelerationPerSecSquared = 5; // 8
 
         public static final double tolerance = 0.005;
 
@@ -257,7 +258,7 @@ public final class Constants {
         public static final double trapRotations = 1.5;
         public static final double maxRotations = 3;
 
-        public static final double manualElevatorSpeed = 0.4;
+        public static final double manualElevatorSpeed = 0.5;
     }
 
     public static final class AmpArm {
@@ -295,9 +296,9 @@ public final class Constants {
         public static final double trapPosition = 1.37;
 
         // Manual testing values
-        public static final double manualArmPivotSpeed = 0.05;
-        public static final double handoffSpeed = -0.15;
-        public static final double shootSpeed = 0.3;
+        public static final double manualArmPivotSpeed = 0.1;
+        public static final double handoffSpeed = -0.3;
+        public static final double shootSpeed = 0.8;
     }
 
     public static final class Vision {

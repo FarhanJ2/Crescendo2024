@@ -55,7 +55,7 @@ public class SwerveModule {
 
     private void configureStatusFrameRates() {
         BaseStatusSignal.setUpdateFrequencyForAll(
-            250, 
+            250,
             mAngleMotor.getVelocity(),
             mAngleMotor.getPosition(),          
             
@@ -64,8 +64,8 @@ public class SwerveModule {
             mDriveMotor.getMotorVoltage()
         );
 
-        // mAngleMotor.optimizeBusUtilization();
-        // mDriveMotor.optimizeBusUtilization();
+        mAngleMotor.optimizeBusUtilization();
+        mDriveMotor.optimizeBusUtilization();
     }
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){

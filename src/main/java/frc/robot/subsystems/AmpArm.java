@@ -60,6 +60,11 @@ public class AmpArm extends ProfiledPIDSubsystem {
             return rotations;
         }
     }
+
+    public static enum ArmStatus {
+        NOTHING,
+        INTAKING
+    }
     // private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
     // // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
     // private final MutableMeasure<Angle> m_angle = mutable(Radians.of(0));
@@ -101,6 +106,8 @@ public class AmpArm extends ProfiledPIDSubsystem {
     //           this));
 
     private final CANcoder m_cancoder = new CANcoder(Constants.AmpArm.canCoderID, Constants.canivoreName);
+
+    public ArmStatus status = ArmStatus.NOTHING; 
 
     private final ArmFeedforward m_feedforward =
       new ArmFeedforward(
