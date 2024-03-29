@@ -290,7 +290,7 @@ public class Elevator extends ProfiledPIDSubsystem {
         m_rightMotor.setVoltage(volts);
     }
 
-    private boolean limitPressed() {
+    public boolean limitPressed() {
         return !m_lowerLimitSwitch.get();
     }
 

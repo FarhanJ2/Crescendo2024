@@ -312,7 +312,10 @@ public class AmpArm extends ProfiledPIDSubsystem {
             new ForkCommand(Intake.Direction.TO_INTAKE)
         );
     }
-    
+
+    public boolean inHandoffPosition() {
+        return Math.abs(getMeasurement() - Position.HANDOFF.getRotations()) <= Constants.AmpArm.pivotTolerance * 5;
+    }
 
     private void configureMotors() {
         m_pivotMotor.setNeutralMode(NeutralModeValue.Brake);

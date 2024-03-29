@@ -15,8 +15,8 @@ import frc.lib.util.SwerveModuleConstants;
 public final class Constants {
     public static final double stickDeadband = 0.1;
 
-    public static final String canivoreName = "rio";
-    public static final String pigeonCanName = "rio"; //Pigeon is on separate can loop than others
+    public static final String canivoreName = "canivore";
+    public static final String pigeonCanName = "canivore"; //Pigeon is on separate can loop than others
 
     public static final class Swerve {
         public static final int pigeonID = 0;
@@ -150,7 +150,7 @@ public final class Constants {
     //Subsystems
     public static final class Intake {
         public static final int intakeMotor1ID = 13;
-        public static final int intakeMotor2ID = 24;
+        public static final int intakeMotor2ID = 26;
         public static final int forkMotorID = 14;
 
         public static final int beamBreakerIntake = 8;
@@ -247,8 +247,8 @@ public final class Constants {
         public static final double kI = 0;
         public static final double kD = 0.001;
 
-        public static final double kMaxVelocityPerSecond = 4.5; // 3.5
-        public static final double kMaxAccelerationPerSecSquared = 5; // 8
+        public static final double kMaxVelocityPerSecond = 5.2; // 3.5
+        public static final double kMaxAccelerationPerSecSquared = 8; // 8
 
         public static final double tolerance = 0.005;
 
@@ -262,8 +262,8 @@ public final class Constants {
     }
 
     public static final class AmpArm {
-        public static final int pivotMotorID = 22;
         public static final int shootMotorID = 23;
+        public static final int pivotMotorID = 24;
 
         public static final int canCoderID = 25; 
         public static final double pivotkS = 0.14; //0.14

@@ -16,7 +16,9 @@ public class ForkCommand extends Command {
 
     @Override
     public void execute() {
-        
+        if (direction == Intake.Direction.TO_AMP_ARM && !RobotContainer.s_AmpArm.inHandoffPosition()) {
+            RobotContainer.s_Intake.stop();
+        }
         RobotContainer.s_Intake.runFork(this.direction);
     }
 

@@ -33,6 +33,8 @@ public class Robot extends LoggedRobot {
 
   private Command m_autonomousCommand;
 
+  
+
   private RobotContainer m_robotContainer;
 
   public enum State {
@@ -59,7 +61,17 @@ public class Robot extends LoggedRobot {
     // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
     Logger.start();
 
+    // new Thread(() -> {
+    //   try {
+    //     Thread.sleep(5000);
+    //   } catch (Exception e) {
+    //     // TODO: handle exception
+    //   }
+    //   m_robotContainer = new RobotContainer();
+    // }).start();
+
     m_robotContainer = new RobotContainer();
+
   }
   @Override
   public void robotPeriodic() {

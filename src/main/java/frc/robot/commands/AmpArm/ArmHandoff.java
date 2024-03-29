@@ -26,7 +26,7 @@ public class ArmHandoff extends Command {
 
   @Override
   public void execute() {
-    if (toArm) {
+    if (toArm && RobotContainer.s_AmpArm.inHandoffPosition()) {
       RobotContainer.s_AmpArm.armHandoff();
     }
     // RobotContainer.s_AmpArm.armHandoff();

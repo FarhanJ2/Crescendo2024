@@ -162,7 +162,14 @@ public class Swerve extends SubsystemBase {
         m_backLeftMotor = mSwerveMods[2].getDriveMotor();
         m_backRightMotor = mSwerveMods[3].getDriveMotor();
 
-   
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            resetModulesToAbsolute();
+        }).start();
    
 
         // sysID = new SysIdRoutine(
@@ -391,34 +398,30 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic(){
-        // m_backLeftMotor.setControl(new Follower(Constants.Swerve.Mod0.driveMotorID, false));
-        // m_backRightMotor.setControl(new Follower(Constants.Swerve.Mod1.driveMotorID, false));
-
-        // swerveOdometry.update(getGyroYaw(), getModulePositions());
         if (poseEstimator != null) poseEstimator.update(getGyroYaw(), getModulePositions());
-
-        // limelight and odometry classes are written so that adding additional limelights is easy 
+        SmartDashboard.putNumber("pose error ll arm", odometryImpl.getVisionPoseError(limelightArm)); 
+        SmartDashboard.putNumber("pose error ll shooter", odometryImpl.getVisionPoseError(limelightShooter));
     
         // TODO all this code must be uncommented for vision stuff
         if (Robot.state != Robot.State.AUTON && RobotContainer.addVisionMeasurement) {
             Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter); //changed from without yaw
+            Vector<N3> vtShooter = odometryImpl.getCalculatedStdDevs(visionMeasurementLimelightShooter, limelightShooter);
             if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
+                poseEstimator.setVisionMeasurementStdDevs(vtShooter);
                 poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
             }
 
             // //newly added limelight automatically configured for odometry impl
             Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurement(limelightArm); //changed from without yaw
             if (visionMeasurementLimelightArm != null && poseEstimator != null) {
+                Vector<N3> vtArm = odometryImpl.getCalculatedStdDevs(visionMeasurementLimelightArm, limelightArm);
+                poseEstimator.setVisionMeasurementStdDevs(vtArm);
                 poseEstimator.addVisionMeasurement(visionMeasurementLimelightArm, limelightArm.getLimelightLatency());
             }
         }
 
-        // else {
-        //     // System.out.println("TELEOP"); 
-        // }
-        
         // limelights computes the correct pose but it's placed incorrectly on glass (offsetted by 1 meter)
-        field.setRobotPose(new Pose2d(getPose().getX(), getPose().getY(), getPose().getRotation())); //switch to getPose later 
+        field.setRobotPose(getPose()); //switch to getPose later 
 
         Logger.recordOutput("Odometry/Robot", getPose());
         Logger.recordOutput("Odometry/Robot3d", new Pose3d(getPose()));

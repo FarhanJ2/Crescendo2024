@@ -213,6 +213,7 @@ public class RobotContainer {
         s_Shooter.setDefaultCommand(
             new HomeCommand(s_Shooter)
         );
+
         // s_Shooter.setDefaultCommand(
         //     new ConditionalCommand(
         //         new RampShooter(500, 500, 1.05),
@@ -326,7 +327,7 @@ public class RobotContainer {
         configureAbsoluteButtonBindings();
         configureNormalModeButtonBindings();
         configureEndGameButtonBindings();
-        configureSysIdButtonBindings();
+        // configureSysIdButtonBindings();
         configureLEDBindings();
     }
 
@@ -807,10 +808,16 @@ public class RobotContainer {
         operator.a()
             .and(isNormalMode)
                 .onTrue( // Home
-                    s_AmpArm.getAmpDangleCommand() // used to be home
-                        .alongWith(s_Elevator.getHomeCommand())
-                        .alongWith(new InstantCommand(() -> s_AmpArm.status = ArmStatus.NOTHING))
-                );
+                    Commands.sequence(
+                        s_AmpArm.getAmpDangleCommand(),
+                        new WaitCommand(0.3),
+                        s_Elevator.getHomeCommand(),
+                        new ConditionalCommand(s_AmpArm.getHandoffCommand(), new InstantCommand(), s_Elevator::limitPressed)
+                    ).alongWith(new InstantCommand(() -> s_AmpArm.status = ArmStatus.NOTHING)));
+                    // s_AmpArm.getAmpDangleCommand() // used to be home
+                    //     .alongWith(s_Elevator.getHomeCommand())
+                     //   .
+                //);
         // operator.povLeft()
         //     .and(isNormalMode)
         //         .onTrue( // Arm to intake
