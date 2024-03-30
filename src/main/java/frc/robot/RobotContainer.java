@@ -97,7 +97,7 @@ public class RobotContainer {
         "3 note center",
         "4 piece reverse",
         "2 note center",
-        "red 5",
+        "5 piece",
         "blue 1",
         "blue 2",
         "blue 3",
@@ -112,7 +112,7 @@ public class RobotContainer {
         true,       // 3 note center
         false,      // 4 piece reverse
         true,       // 2 note center
-        false,
+        true,       // 5 piece
         false,
         false,
         false,
@@ -256,7 +256,7 @@ public class RobotContainer {
         // Feed from anywhere, only works if feed is already running from ramping
         NamedCommands.registerCommand("anywhere feed",
             new ParallelRaceGroup(
-                new WaitCommand(2),
+                new WaitCommand(1),
                 new SequentialCommandGroup(
                     new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
                     new ParallelDeadlineGroup(

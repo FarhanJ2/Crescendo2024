@@ -1,0 +1,104 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.7,
+        "y": 4.2
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.104753708423154,
+        "y": 4.242357716437862
+      },
+      "isLocked": false,
+      "linkedName": "stage note (5 note)"
+    },
+    {
+      "anchor": {
+        "x": 2.0,
+        "y": 5.55
+      },
+      "prevControl": {
+        "x": 1.4742849623480567,
+        "y": 5.530688151179226
+      },
+      "nextControl": {
+        "x": 2.5164811156759863,
+        "y": 5.56897264584492
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.729224912779601,
+        "y": 5.55
+      },
+      "prevControl": {
+        "x": 2.1657807335157284,
+        "y": 5.55
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "mid note"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.75,
+      "maxWaypointRelativePos": 0.95,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 50.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "Shoot",
+      "waypointRelativePos": 0.85,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "anywhere feed"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 0.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "5 piece",
+  "previewStartingState": {
+    "rotation": -30.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

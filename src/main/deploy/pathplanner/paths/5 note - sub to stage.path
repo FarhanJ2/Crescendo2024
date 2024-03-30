@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.34,
+        "y": 5.6
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.0452263720512573,
+        "y": 5.131624865170425
+      },
+      "isLocked": false,
+      "linkedName": "subwoofer"
+    },
+    {
+      "anchor": {
+        "x": 2.7,
+        "y": 4.2
+      },
+      "prevControl": {
+        "x": 2.1707256899953706,
+        "y": 4.6964895860614995
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "stage note (5 note)"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.15,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -30.0,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "5 piece",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}
