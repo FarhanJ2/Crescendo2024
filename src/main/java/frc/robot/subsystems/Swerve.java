@@ -262,24 +262,28 @@ public class Swerve extends SubsystemBase {
         return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
+    private void addLimelightToEstimator(Limelight limelight) {
+        if (poseEstimator == null) return;
+
+        Pose2d visionMeasurement = odometryImpl.getVisionMeasurement(limelight);
+        Vector<N3> stdDevs = odometryImpl.getCalculatedStdDevs(visionMeasurement, limelight);
+        if (visionMeasurement != null) {
+            if (stdDevs == null) {
+                // Use default stdDevs if no filters are met
+                stdDevs = odometryImpl.createStdDevs(PoseConfig.kVisionStdDevX, PoseConfig.kVisionStdDevY, PoseConfig.kVisionStdDevTheta);
+            }
+            poseEstimator.setVisionMeasurementStdDevs(stdDevs);
+            poseEstimator.addVisionMeasurement(visionMeasurement, limelight.getLimelightLatency());
+        }
+    }
+
     @Override
     public void periodic(){
         if (poseEstimator != null) poseEstimator.update(getGyroYaw(), getModulePositions());
     
         if (Robot.state != Robot.State.AUTON && RobotContainer.addVisionMeasurement) {
-            Pose2d visionMeasurementLimelightShooter = odometryImpl.getVisionMeasurement(limelightShooter);
-            Vector<N3> vtShooter = odometryImpl.getCalculatedStdDevs(visionMeasurementLimelightShooter, limelightShooter);
-            if (visionMeasurementLimelightShooter != null && poseEstimator != null) {
-                poseEstimator.setVisionMeasurementStdDevs(vtShooter);
-                poseEstimator.addVisionMeasurement(visionMeasurementLimelightShooter, limelightShooter.getLimelightLatency());
-            }
-
-            Pose2d visionMeasurementLimelightArm = odometryImpl.getVisionMeasurement(limelightArm);
-            if (visionMeasurementLimelightArm != null && poseEstimator != null) {
-                Vector<N3> vtArm = odometryImpl.getCalculatedStdDevs(visionMeasurementLimelightArm, limelightArm);
-                poseEstimator.setVisionMeasurementStdDevs(vtArm);
-                poseEstimator.addVisionMeasurement(visionMeasurementLimelightArm, limelightArm.getLimelightLatency());
-            }
+            addLimelightToEstimator(limelightShooter);
+            addLimelightToEstimator(limelightArm);
         }
 
         field.setRobotPose(getPose());

@@ -21,15 +21,11 @@ public class OdometryImpl extends SubsystemBase {
   /** Creates a new OdometryImpl. */
   Swerve s_Swerve;
 
-  // Counts total rejected vision measurements because of large error
-  private int totalRejections = 0;
-
   public OdometryImpl(Swerve s_Swerve) {
       this.s_Swerve = s_Swerve;
   }
  
   public double getDistance(Pose2d target) {
-    //changed from getRelativePose()
       double distance = s_Swerve.getRelativePose().getTranslation().getDistance(target.getTranslation());
       return distance;
   }
@@ -40,17 +36,13 @@ public class OdometryImpl extends SubsystemBase {
        
     if (alliance == DriverStation.Alliance.Red) {
         base = getDistance(Constants.RedTeamPoses.redSpeakerPose);
- 
     }
 
     else {
         base = getDistance(Constants.BlueTeamPoses.blueSpeakerPose);
     }
         
-    // System.out.println(Math.atan(height / base));
-    return Math.atan(height / base); 
-
-
+    return Math.atan(height / base);
   }
 
   //This is assuming that the robot is directly facing the target object
@@ -78,15 +70,11 @@ public class OdometryImpl extends SubsystemBase {
   public boolean isValidVisionMeasurement(Limelight limelight) {
     if(limelight == null) return false;
       Pose2d predictedPose = limelight.getVisionPredictedRobotPose();
-      //deleted the predictedPose = null check 
       if (predictedPose != null && (predictedPose.getX() != 0 && predictedPose.getY() != 0)) {
           if ((limelight.getTagArea() > LimelightConstants.minAreaOfTag) || limelight.getNumberOfTagsInView() > 1) {
-              //Newly added if it doesn't work take out
               return true;
-              
           }
       }
-
       return false;
   }
 
@@ -95,10 +83,8 @@ public class OdometryImpl extends SubsystemBase {
       //added variable for predicted pose instead of calling function directly
       Pose2d predictedPose = limelight.getVisionPredictedRobotPose();
       if (isValidVisionMeasurement(limelight) && predictedPose != null) {
-          //.out.println("ADDED VISION MEASUREMENT");
           return new Pose2d(predictedPose.getTranslation(), s_Swerve.getHeading());
       }
- 
       return null;
   } 
 
@@ -109,7 +95,6 @@ public class OdometryImpl extends SubsystemBase {
       if (isValidVisionMeasurement(limelight) && predictedPose != null) {
           return predictedPose;
       }
-
       return null;
   }
   
@@ -120,35 +105,25 @@ public class OdometryImpl extends SubsystemBase {
 
   public Vector<N3> getCalculatedStdDevs(Pose2d visionMeasurement, Limelight limelight) {
     double error = getVisionPoseError(limelight);
-    double xyStds = 0;
-    double thetaStds = 0;  
+
     if (limelight.getNumberOfTagsInView() >= 2) {
-        xyStds = 0.5; 
-        thetaStds = 6; 
+      createStdDevs(1, 1, 15);
     }
-  
+
     else if (limelight.getNumberOfTagsInView() == 1) {
+
         //one tag with large area but larger pose error 
-        if (limelight.getTagArea() > 0.8 && error < 0.5) {
-          xyStds = 1; 
-          thetaStds = 12; 
+        if (limelight.getTagArea() > 0.6 && error < 0.5) {
+          createStdDevs(3, 3, 50);
         }
 
         //one tag with small area but smaller pose error
         else if (limelight.getTagArea() > 0.1 && error < 0.3) {
-          xyStds = 2; 
-          thetaStds = 30; //basically disregard limelight pose 
+          createStdDevs(4, 4, 50);
         }
-
     }
 
-    totalRejections++; // TODO dont forget this
-
-    return VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(thetaStds)); 
-
-
-
-
+    return null;
   }
 
   public double getDistanceToSpeaker() {
@@ -156,13 +131,10 @@ public class OdometryImpl extends SubsystemBase {
     return getDistance(speaker);
   }
 
-
   @Override
   public void periodic() {
-      // This method will be called once per scheduler run
-      // newly added
-      // SmartDashboard.putNumber("Vision Pose Error Limelight Front", getVisionPoseError(s_Swerve.limelightShooter));
-      // SmartDashboard.putNumber("Vision Pose Error Limelight Back", getVisionPoseError(s_Swerve.limelightArm));
+      SmartDashboard.putNumber("Vision Pose Error Limelight Front", getVisionPoseError(s_Swerve.limelightShooter));
+      SmartDashboard.putNumber("Vision Pose Error Limelight Back", getVisionPoseError(s_Swerve.limelightArm));
 
       SmartDashboard.putNumber(
         (RobotContainer.alliance == DriverStation.Alliance.Red) ? "Red speaker distance" : "Blue speaker distance", 
