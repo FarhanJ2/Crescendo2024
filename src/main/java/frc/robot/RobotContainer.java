@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -28,7 +27,7 @@ import frc.robot.commands.intake.ReverseIntakeCommand;
 import frc.robot.commands.shooter.HomeCommand;
 import frc.robot.commands.shooter.ManualShooterPivot;
 import frc.robot.commands.shooter.RampAmp;
-import frc.robot.commands.shooter.RampCenterLine;
+import frc.robot.commands.shooter.RampFerryShot;
 import frc.robot.commands.shooter.RampPodium;
 import frc.robot.commands.shooter.RampSubwoofer;
 import frc.robot.commands.swerve.RotateToAngle;
@@ -58,12 +57,11 @@ public class RobotContainer {
     private final CommandXboxController operator = new CommandXboxController(1);
 
     /* Driver */
-    private final Trigger centerLineShotButton = driver.leftBumper();
+    private final Trigger ferryShotButton = driver.leftBumper();
     private final Trigger intakeButton = driver.rightBumper();
     private final Trigger slowModeButton = driver.rightTrigger();
     private final Trigger zeroGyroButton = driver.b();
     private final Trigger toggleVisionMeasurement = driver.povUp();
-    private final Trigger robotCentricButton = driver.povDown();
 
     /* Operator */
     private final int manualShootAxis = 1;
@@ -99,10 +97,6 @@ public class RobotContainer {
         "3 note center",
         "4 piece reverse",
         "2 note center",
-        "",
-        "",
-        "",
-        "",
         "red 5",
         "blue 1",
         "blue 2",
@@ -110,6 +104,21 @@ public class RobotContainer {
         "blue 4",
         "blue 5",
         "nothing"
+    };
+
+    // Must correspond with auton names
+    private static final boolean[] useVisionInAuton = {
+        false,      // 4 piece
+        true,       // 3 note center
+        false,      // 4 piece reverse
+        true,       // 2 note center
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
     };
 
     /* Subsystems */
@@ -154,8 +163,9 @@ public class RobotContainer {
                 () -> -driver.getLeftY(),
                 () -> -driver.getLeftX(),
                 () -> -driver.getRightX(),
-                robotCentricButton,
-                () -> driver.getHID().getLeftTriggerAxis() > 0.5
+                () -> driver.getHID().getPOV() == 180,              // Robot centric (pov down)
+                () -> driver.getHID().getLeftTriggerAxis() > 0.5,   // Aim at speaker (left trigger)
+                () -> driver.getHID().getLeftBumper()               // Aim at amp for ferry shot (left bumper)
             )
         );
 
@@ -193,14 +203,15 @@ public class RobotContainer {
             )
         );
         
-        NamedCommands.registerCommand("spot 1 shot",
+        // Ramps and shoots when ready
+        NamedCommands.registerCommand("anywhere shot",
             new ParallelRaceGroup(
                 new WaitCommand(4),
                 new ParallelDeadlineGroup(
                     new SequentialCommandGroup(
                         new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
                         new ParallelDeadlineGroup(
-                            new WaitCommand(0.5),
+                            new WaitCommand(0.3),
                             s_Shooter.feedToTrigShooter()
                         )
                     ),
@@ -225,6 +236,37 @@ public class RobotContainer {
             )
         );
 
+        // Only ramps from anywhere and runs feeder
+        NamedCommands.registerCommand("anywhere ramp",
+            Commands.parallel(
+                Commands.run(
+                    () -> s_Shooter.setPivot(RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance))
+                ),
+                Commands.runEnd(
+                    () -> s_Shooter.rampShooter(
+                        s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker()), 
+                        s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker())
+                    ),
+                    () -> s_Shooter.stopShooter()
+                ),
+                new Feed()
+            )
+        );
+
+        // Feed from anywhere, only works if feed is already running from ramping
+        NamedCommands.registerCommand("anywhere feed",
+            new ParallelRaceGroup(
+                new WaitCommand(2),
+                new SequentialCommandGroup(
+                    new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
+                    new ParallelDeadlineGroup(
+                        new WaitCommand(0.3),
+                        s_Shooter.feedToTrigShooter()
+                    )
+                )
+            )
+        );
+
         NamedCommands.registerCommand("intake", new IntakeCommand());
     }
 
@@ -236,20 +278,8 @@ public class RobotContainer {
             )
         );
 
-        centerLineShotButton.whileTrue(
-            new ParallelCommandGroup(
-                //aligns to the amp
-                new RotateToAngle(
-                    () -> s_Swerve.calculateTurnAngle(alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueAmpPose : Constants.RedTeamPoses.redAmpPose, s_Swerve.getHeading().getDegrees() + 180), 
-                    () -> s_Swerve.getHeading().getDegrees(),
-                    () -> driver.getHID().getLeftBumper()
-                ),
-                new RampCenterLine(),
-                new SequentialCommandGroup(
-                    new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
-                    s_Shooter.feedToShooter()
-                )
-            )
+        ferryShotButton.whileTrue(
+            new RampFerryShot()
         );
 
         toggleVisionMeasurement.onTrue(
@@ -266,15 +296,26 @@ public class RobotContainer {
             new IntakeCommand()
         );
 
+        // Switch between normal and end game mode, changing leds depending on mode
         operator.start()
         .and(operator.back())
             .onTrue(
                 new InstantCommand(() -> {
                     if (operatorMode == OperatorMode.NORMAL_MODE) {
                         operatorMode = OperatorMode.END_GAME_MODE;
+                        s_Led.getDefaultCommand().cancel();
+                        s_Led.removeDefaultCommand();
+                        s_Led.setDefaultCommand(
+                            s_Led.fadeCommand(LEDColor.PURPLE)
+                        );
 
                     } else {
                         operatorMode = OperatorMode.NORMAL_MODE;
+                        s_Led.getDefaultCommand().cancel();
+                        s_Led.removeDefaultCommand();
+                        s_Led.setDefaultCommand(
+                            s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
+                        );
                     }
                 })
             );
@@ -285,11 +326,12 @@ public class RobotContainer {
         new Trigger(
             () -> s_Shooter.isReadyToShoot()
         )
-        .and(operator.leftBumper()
+        .and(operator.leftBumper() // One of the ramp buttons is held
             .or(operator.leftTrigger())
             .or(operator.rightTrigger())
             .or(operator.rightBumper())
             .or(operator.povRight())
+            .or(driver.leftBumper())
         )
         .onTrue(
             Commands.runOnce(
@@ -401,9 +443,7 @@ public class RobotContainer {
         operator.leftTrigger()
             .and(isNormalMode)
                 .whileTrue(
-                    new ParallelCommandGroup(
-                        new RampPodium()
-                    )
+                    new RampPodium()
                 );
 
         // Ramp subwoofer
@@ -430,7 +470,7 @@ public class RobotContainer {
             )
         );
 
-        // Shoot from podium or subwoofer
+        // Shoot from podium or subwoofer, or ferry shoot
         operator.rightTrigger()
             .and(isNormalMode)
                 .and(() -> !s_Shooter.isScoringAmp).and(operator.rightBumper().negate())
@@ -622,6 +662,10 @@ public class RobotContainer {
         }
 
         return 0;
+    }
+
+    public static boolean useVisionInAuton() {
+        return useVisionInAuton[getSelected()];
     }
 
     public static Command getAutonomousCommand() {

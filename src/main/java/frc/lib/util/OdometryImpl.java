@@ -103,7 +103,7 @@ public class OdometryImpl extends SubsystemBase {
       return VecBuilder.fill(n1, n2, Units.degreesToRadians(angleOffset));
   }
 
-  public Vector<N3> getCalculatedStdDevs(Pose2d visionMeasurement, Limelight limelight) {
+  public Vector<N3> getCalculatedStdDevs(Limelight limelight) {
     double error = getVisionPoseError(limelight);
 
     if (limelight.getNumberOfTagsInView() >= 2) {

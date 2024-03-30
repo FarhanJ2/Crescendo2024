@@ -2,7 +2,12 @@
   "robotWidth": 0.914,
   "robotLength": 0.94,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "4 piece",
+    "Center line",
+    "Drafts",
+    "5 piece"
+  ],
   "autoFolders": [
     "Drafts"
   ],

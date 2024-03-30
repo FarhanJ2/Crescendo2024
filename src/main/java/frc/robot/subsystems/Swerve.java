@@ -266,8 +266,9 @@ public class Swerve extends SubsystemBase {
         if (poseEstimator == null) return;
 
         Pose2d visionMeasurement = odometryImpl.getVisionMeasurement(limelight);
-        Vector<N3> stdDevs = odometryImpl.getCalculatedStdDevs(visionMeasurement, limelight);
         if (visionMeasurement != null) {
+            Vector<N3> stdDevs = odometryImpl.getCalculatedStdDevs(limelight);
+            // TODO check if stdDevs is null inside of getCalculatedStdDevs
             if (stdDevs == null) {
                 // Use default stdDevs if no filters are met
                 stdDevs = odometryImpl.createStdDevs(PoseConfig.kVisionStdDevX, PoseConfig.kVisionStdDevY, PoseConfig.kVisionStdDevTheta);
@@ -281,7 +282,7 @@ public class Swerve extends SubsystemBase {
     public void periodic(){
         if (poseEstimator != null) poseEstimator.update(getGyroYaw(), getModulePositions());
     
-        if (Robot.state != Robot.State.AUTON && RobotContainer.addVisionMeasurement) {
+        if ((Robot.state != Robot.State.AUTON || RobotContainer.useVisionInAuton()) && RobotContainer.addVisionMeasurement) {
             addLimelightToEstimator(limelightShooter);
             addLimelightToEstimator(limelightArm);
         }

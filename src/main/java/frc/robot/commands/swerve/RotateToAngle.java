@@ -1,5 +1,6 @@
 package frc.robot.commands.swerve;
 
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 import java.util.function.Supplier;
@@ -13,10 +14,10 @@ public class RotateToAngle extends Command {
     private Supplier<Boolean> buttonPressed;
     boolean finished = false;
 
-    private final PIDController pidController = new PIDController(
-        0.14,
-        0,
-        0
+    private final PIDController alignPID = new PIDController(
+        Constants.Swerve.autoAlignKP,
+        Constants.Swerve.autoAlignKI,
+        Constants.Swerve.autoAlignKD
     );
 
     public RotateToAngle(Supplier<Double> requestedAngle, Supplier<Double> currentAngle) {
@@ -25,8 +26,8 @@ public class RotateToAngle extends Command {
 
     public RotateToAngle(Supplier<Double> requestedAngle, Supplier<Double> currentAngle, Supplier<Boolean> buttonPressed) {
         
-        pidController.enableContinuousInput(0, 360);
-        pidController.setTolerance(1);
+        alignPID.enableContinuousInput(0, 360);
+        alignPID.setTolerance(1);
         
         this.buttonPressed = buttonPressed;
         this.requestedAngle = requestedAngle;
@@ -39,7 +40,7 @@ public class RotateToAngle extends Command {
         double robotHeading = continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees());
         double setpoint = (robotHeading + requestedAngle.get()) % 360;
 
-        pidController.setSetpoint(setpoint);
+        alignPID.setSetpoint(setpoint);
     }
 
     private double continuous180To360(double angle) {
@@ -50,7 +51,7 @@ public class RotateToAngle extends Command {
     public void execute() {
         RobotContainer.s_Swerve.drive(
             new Translation2d(),
-            (RobotContainer.s_Swerve.isLowGear() ? 5 : 1) * pidController.calculate(continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees())),
+            (RobotContainer.s_Swerve.isLowGear() ? 5 : 1) * alignPID.calculate(continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees())),
             true,
             false
         );
@@ -58,8 +59,8 @@ public class RotateToAngle extends Command {
 
     @Override
     public boolean isFinished() {
-        if(buttonPressed == null) return pidController.atSetpoint();
-        else return (pidController.atSetpoint() && !buttonPressed.get())
+        if(buttonPressed == null) return alignPID.atSetpoint();
+        else return (alignPID.atSetpoint() && !buttonPressed.get())
             || !buttonPressed.get();
     }
 

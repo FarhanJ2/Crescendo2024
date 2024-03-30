@@ -9,6 +9,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,14 +21,22 @@ public class TeleopSwerve extends Command {
     private DoubleSupplier rotationSup;
     private BooleanSupplier robotCentricSup;
     private BooleanSupplier alignSpeakerSup;
+    private BooleanSupplier rampFerrySup;
 
     private final PIDController alignPID = new PIDController(
-        0.07,
-        0,
-        0
+        Constants.Swerve.autoAlignKP,
+        Constants.Swerve.autoAlignKI,
+        Constants.Swerve.autoAlignKD
     );
 
-    public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier alignSpeakerSup) {
+    public TeleopSwerve(Swerve s_Swerve, 
+                        DoubleSupplier translationSup, 
+                        DoubleSupplier strafeSup, 
+                        DoubleSupplier rotationSup, 
+                        BooleanSupplier robotCentricSup, 
+                        BooleanSupplier alignSpeakerSup,
+                        BooleanSupplier rampFerrySup) {
+
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
 
@@ -36,6 +45,7 @@ public class TeleopSwerve extends Command {
         this.rotationSup = rotationSup;
         this.robotCentricSup = robotCentricSup;
         this.alignSpeakerSup = alignSpeakerSup;
+        this.rampFerrySup = rampFerrySup;
 
         alignPID.enableContinuousInput(0, 360);
         alignPID.setTolerance(1);
@@ -43,6 +53,16 @@ public class TeleopSwerve extends Command {
 
     private double continuous180To360(double angle) {
         return (angle + 360) % 360;
+    }
+
+    private double getRotationSpeedFromPID(Pose2d target) {
+        double robotHeading = continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees());
+        double requestedAngle = s_Swerve.calculateTurnAngle(target, s_Swerve.getHeading().getDegrees() + 180);
+        double setpoint = (robotHeading + requestedAngle) % 360;
+
+        alignPID.setSetpoint(setpoint);
+
+        return (RobotContainer.s_Swerve.isLowGear() ? 5 : 1) * alignPID.calculate(continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees()));
     }
 
     @Override
@@ -54,17 +74,18 @@ public class TeleopSwerve extends Command {
         double multipliedRotation = 0;
         Translation2d multipliedTranslation = new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed);
 
-        if (!alignSpeakerSup.getAsBoolean()) { // Drive normally
-            multipliedRotation = rotationVal * Constants.Swerve.maxAngularVelocity;
-        } else { // Drive with alignment
-            double robotHeading = continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees());
-            double requestedAngle = s_Swerve.calculateTurnAngle(RobotContainer.alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueSpeakerPose : Constants.RedTeamPoses.redSpeakerPose, s_Swerve.getHeading().getDegrees() + 180);
-            double setpoint = (robotHeading + requestedAngle) % 360;
-
-            alignPID.setSetpoint(setpoint);
-
-            multipliedRotation = (RobotContainer.s_Swerve.isLowGear() ? 5 : 1) * alignPID.calculate(continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees()));
+        // Align to speaker
+        if (alignSpeakerSup.getAsBoolean()) {
+            getRotationSpeedFromPID(RobotContainer.alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueSpeakerPose : Constants.RedTeamPoses.redSpeakerPose);
             multipliedTranslation = RobotContainer.s_Swerve.isLowGear() ? multipliedTranslation : multipliedTranslation.times(0.3);
+
+        // Align to amp
+        } else if (rampFerrySup.getAsBoolean()) {
+            getRotationSpeedFromPID(RobotContainer.alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueAmpPose : Constants.RedTeamPoses.redAmpPose);
+        
+        // Normal drive
+        } else {
+            multipliedRotation = rotationVal * Constants.Swerve.maxAngularVelocity;
         }
 
         /* Drive */

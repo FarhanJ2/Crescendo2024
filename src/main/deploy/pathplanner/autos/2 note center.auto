@@ -43,7 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Copy of Subwoofer bottom to bottom center STRAIGHT"
+                  "pathName": "Sub bottom to bottom center straight"
                 }
               }
             ]
@@ -58,7 +58,7 @@
         {
           "type": "named",
           "data": {
-            "name": "spot 1 shot"
+            "name": "anywhere shot"
           }
         }
       ]

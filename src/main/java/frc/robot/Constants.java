@@ -88,6 +88,10 @@ public final class Constants {
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
         public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
+        public static final double autoAlignKP = 0.07;
+        public static final double autoAlignKI = 0;
+        public static final double autoAlignKD = 0;
+
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
         public static final class Mod0 {
@@ -371,8 +375,8 @@ public final class Constants {
       public static final double spotOneRPM = 3000;
       public static final double spotOneAngle = 0.42;
 
-      public static final double centerToAmpRPM = 1500;
-      public static final double canterToAmpAngle = 0.7;
+      public static final double ferryShotRPM = 1500;
+      public static final double ferryShotAngle = 0.7;
     }
 
     public static final class StructureConstants {
