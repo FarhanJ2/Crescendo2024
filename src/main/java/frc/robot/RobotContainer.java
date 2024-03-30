@@ -97,9 +97,9 @@ public class RobotContainer {
         "3 note center",
         "4 piece reverse",
         "2 note center",
-        "5 piece",
-        "blue 1",
-        "blue 2",
+        "5 piece top",
+        "5 piece top 2",
+        "6 piece",
         "blue 3",
         "blue 4",
         "blue 5",
@@ -112,9 +112,9 @@ public class RobotContainer {
         true,       // 3 note center
         false,      // 4 piece reverse
         true,       // 2 note center
-        true,       // 5 piece
-        false,
-        false,
+        true,       // 5 piece top
+        true,       // 5 piece top 2
+        true,       // 6 piece
         false,
         false,
         false,

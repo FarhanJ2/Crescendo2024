@@ -4,9 +4,9 @@
   "holonomicMode": true,
   "pathFolders": [
     "4 piece",
+    "5+ piece",
     "Center line",
-    "Drafts",
-    "5 piece"
+    "Drafts"
   ],
   "autoFolders": [
     "Drafts"
