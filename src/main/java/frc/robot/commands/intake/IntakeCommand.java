@@ -27,8 +27,6 @@ public class IntakeCommand extends Command {
             return false;
         }
         return RobotContainer.s_Intake.intakeBeamBroken();
-        // return false;
-        // return RobotContainer.s_Intake.beamBroken();
     }
 
     @Override

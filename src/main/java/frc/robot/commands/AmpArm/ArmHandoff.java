@@ -1,11 +1,6 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
-package frc.robot.commands.AmpArm;
+package frc.robot.commands.ampArm;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class ArmHandoff extends Command {
@@ -29,7 +24,6 @@ public class ArmHandoff extends Command {
     if (toArm && RobotContainer.s_AmpArm.inHandoffPosition()) {
       RobotContainer.s_AmpArm.armHandoff();
     }
-    // RobotContainer.s_AmpArm.armHandoff();
     
     if (RobotContainer.s_Intake.armBeamBroken()) {
       prevBroken = true;

@@ -4,7 +4,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,7 +24,6 @@ public class Intake extends SubsystemBase {
     private final TalonFX m_forkMotor = new TalonFX(Constants.Intake.forkMotorID, Constants.canivoreName);
 
     private final DigitalInput intakeBeam = new DigitalInput(Constants.Intake.beamBreakerIntake);
-    // private final DigitalInput shooterBeam = new DigitalInput(Constants.Intake.beamBrakerShooter);
     private final DigitalInput armBeam = new DigitalInput(Constants.Intake.beamBreakerArm);
 
     private boolean prevBeamBroken = false;
@@ -35,7 +33,6 @@ public class Intake extends SubsystemBase {
     }
 
     public void intake() {
-        // m_intakeMotor.setVoltage(Constants.Intake.intakeVoltage);
         m_forkMotor.setVoltage(1);
         m_intakeMotor1.set(-Constants.Intake.intakeSpeed);
         m_intakeMotor2.set(-Constants.Intake.intakeSpeed);

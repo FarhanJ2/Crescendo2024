@@ -1,19 +1,12 @@
 package frc.robot;
 
-import java.sql.Driver;
-import java.util.function.BooleanSupplier;
-
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -23,39 +16,26 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-// import frc.lib.util.NoteVisualizer;
-import frc.robot.commands.AmpArm.ArmHandoff;
-import frc.robot.commands.AmpArm.ArmShot;
-import frc.robot.commands.AmpArm.ManualArmPivot;
-import frc.robot.commands.Elevator.ManualElevator;
+import frc.lib.util.NoteVisualizer;
+import frc.robot.commands.ampArm.ArmShot;
+import frc.robot.commands.ampArm.ManualArmPivot;
+import frc.robot.commands.elevator.ManualElevator;
 import frc.robot.commands.feeder.Feed;
-import frc.robot.commands.intake.ForkCommand;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.ReverseIntakeCommand;
-import frc.robot.commands.led.LedCommand;
 import frc.robot.commands.shooter.HomeCommand;
 import frc.robot.commands.shooter.ManualShooterPivot;
-import frc.robot.commands.shooter.ManualShot;
-import frc.robot.commands.shooter.Pivot;
 import frc.robot.commands.shooter.RampAmp;
 import frc.robot.commands.shooter.RampCenterLine;
 import frc.robot.commands.shooter.RampPodium;
-import frc.robot.commands.shooter.RampShooter;
-import frc.robot.commands.shooter.RampSpeaker;
-import frc.robot.commands.shooter.RampSpotOne;
-import frc.robot.commands.shooter.RampStartLine;
+import frc.robot.commands.shooter.RampSubwoofer;
 import frc.robot.commands.swerve.RotateToAngle;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.AmpArm.ArmStatus;
 import frc.robot.subsystems.LED.LEDColor;
-import frc.robot.subsystems.LED.LEDMode;
 
 public class RobotContainer {
 
@@ -70,78 +50,50 @@ public class RobotContainer {
     }
 
     public static Command autonomousCommand;
-   
-    private final Thread allianceGetter = new Thread(() -> {
-
-        // while(!DriverStation.waitForDsConnection(0)) {
-        //     DriverStation.reportWarning("SHET UP", false);
-        // }
-
-        while(!DriverStation.isDSAttached()) {
-            DriverStation.reportWarning("SHET UP", false);
-        }
-        //TODO fix for comp
-        DriverStation.reportWarning("ME SHET UP???", false);
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {}
-        
-        alliance = DriverStation.getAlliance().get();
-        DriverStation.silenceJoystickConnectionWarning(true);
-        s_Swerve.poseEstimatorInitializer.start();
-
-        s_Led.setDefaultCommand(
-            s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
-        );
-    });
-
     public static DriverStation.Alliance alliance;
+    public static boolean addVisionMeasurement = true;
+
+    /* Controllers */
+    private final CommandXboxController driver = new CommandXboxController(0);
+    private final CommandXboxController operator = new CommandXboxController(1);
+
+    /* Driver */
+    private final Trigger centerLineShotButton = driver.leftBumper();
+    private final Trigger intakeButton = driver.rightBumper();
+    private final Trigger slowModeButton = driver.rightTrigger();
+    private final Trigger zeroGyroButton = driver.b();
+    private final Trigger toggleVisionMeasurement = driver.povUp();
+    private final Trigger robotCentricButton = driver.povDown();
+
+    /* Operator */
+    private final int manualShootAxis = 1;
+    private final int manualArmAxis = 5;
+    private final int manualElevatorAxis = 1;
 
     private OperatorMode operatorMode = OperatorMode.NORMAL_MODE;
     private OperatorLock armManual = OperatorLock.LOCKED;
     private OperatorLock shooterManual = OperatorLock.LOCKED;
     private OperatorLock elevatorManual = OperatorLock.LOCKED;
 
-    /* Controllers */
-    private final CommandXboxController driver = new CommandXboxController(0);
-    private final CommandXboxController operator = new CommandXboxController(1);
-    // private final Joystick sysIDJoystick = new Joystick(2);
-
-    /* Drive Controls */
-    private final Trigger robotCentricButton = driver.leftBumper();
-    private final Trigger intakeButton = driver.rightBumper();
-    private final Trigger slowModeButton = driver.rightTrigger();
-    private final Trigger alignSpeakerButton = driver.leftTrigger();
-    private final Trigger zeroGyroButton = driver.b();
-    // private final Trigger pivotToAngleButton = driver.a(); 
-    private final Trigger toggleVisionMeasurement = driver.povUp();
-    private final Trigger centerLineShotButton = driver.povDown();
-
-    public static boolean addVisionMeasurement = true;
-
-    /* Operator Buttons */
-    private final int manualShootAxis = 1;
-    private final int manualArmAxis = 5;
-    private final int manualElevatorAxis = 1;
-
     private final Trigger isNormalMode = new Trigger(() -> operatorMode == OperatorMode.NORMAL_MODE);
     private final Trigger elevatorLocked = new Trigger(() -> elevatorManual == OperatorLock.LOCKED);
 
     /* Auton selector */
     private static final DigitalInput[] autonSelector = {
-        new DigitalInput(10), // red 1
-        new DigitalInput(11), // red 2
-        new DigitalInput(12), // red 3
-        new DigitalInput(13), // red 4
-        new DigitalInput(18), // red 5
-        new DigitalInput(19), // blue 1
-        new DigitalInput(20), // blue 2
-        new DigitalInput(21), // blue 3
-        new DigitalInput(22), // blue 4
-        new DigitalInput(23), // blue 5
-        new DigitalInput(24) // nothing
+        new DigitalInput(10),
+        new DigitalInput(11),
+        new DigitalInput(12),
+        new DigitalInput(13),
+        new DigitalInput(18),
+        new DigitalInput(19),
+        new DigitalInput(20),
+        new DigitalInput(21),
+        new DigitalInput(22),
+        new DigitalInput(23),
+        new DigitalInput(24)
     };
 
+    // Must match auton names in pathplanner
     public static final String[] autonNames = {
         "4 piece",
         "3 note center",
@@ -160,17 +112,6 @@ public class RobotContainer {
         "nothing"
     };
 
-    /* Sysid Tuning Controller */
-    // private final JoystickButton sysidX = new JoystickButton(sysIDJoystick, 1);
-    // private final JoystickButton sysidA = new JoystickButton(sysIDJoystick, 2);
-    // private final JoystickButton sysidB = new JoystickButton(sysIDJoystick, 3);
-    // private final JoystickButton sysidY = new JoystickButton(sysIDJoystick, 4);
-    // private final JoystickButton sysidLeftBumper = new JoystickButton(sysIDJoystick, 5);
-    // private final JoystickButton sysidRightBumper = new JoystickButton(sysIDJoystick, 6);
-    // private final JoystickButton sysidLeftTrigger = new JoystickButton(sysIDJoystick, 7);
-    // private final JoystickButton sysidLeftStick = new JoystickButton(sysIDJoystick, 11);
-    // private final JoystickButton sysidRightStick = new JoystickButton(sysIDJoystick, 12);
-
     /* Subsystems */
     public static final Swerve s_Swerve = new Swerve();
     public static final AmpArm s_AmpArm = new AmpArm();
@@ -180,24 +121,32 @@ public class RobotContainer {
     public static final Elevator s_Elevator = new Elevator();
     public static final LED s_Led = new LED(Constants.Led.port, Constants.Led.length);
 
-    // These commands must correspond to its selection on the selector
-    // private static final Command[] autons = {
-    //     // new InstantCommand(),
-    //     // new PathPlannerAuto("2 piece"),
-    //     // new PathPlannerAuto("3 piece"),
-    //     // new PathPlannerAuto("Copy of 4 piece"),
-    //     // new PathPlannerAuto("Center line")
-    //     new PathPlannerAuto("Copy of 4 piece"),
-    //     new PathPlannerAuto("3 piece"),
-    // };
 
-    
-    
+    // Alliance getter thread
+    private final Thread allianceGetter = new Thread(() -> {
+
+        while(!DriverStation.isDSAttached()) {
+            DriverStation.reportWarning("attaching DS...", false);
+        }
+        DriverStation.reportWarning("DS attached", false);
+
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {}
+        
+        alliance = DriverStation.getAlliance().get();
+        DriverStation.silenceJoystickConnectionWarning(true);
+        s_Swerve.poseEstimatorInitializer.start();
+
+        s_Led.setDefaultCommand(
+            s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
+        );
+    });
+
+
     public RobotContainer() {
 
         allianceGetter.start();
-
-        // DriverStation.silenceJoystickConnectionWarning(true);
 
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -206,7 +155,7 @@ public class RobotContainer {
                 () -> -driver.getLeftX(),
                 () -> -driver.getRightX(),
                 robotCentricButton,
-                () -> alignSpeakerButton.getAsBoolean()
+                () -> driver.getHID().getLeftTriggerAxis() > 0.5
             )
         );
 
@@ -214,87 +163,45 @@ public class RobotContainer {
             new HomeCommand(s_Shooter)
         );
 
-        // s_Shooter.setDefaultCommand(
-        //     new ConditionalCommand(
-        //         new RampShooter(500, 500, 1.05),
-        //         new HomeCommand(
-        //             s_Shooter
-        //         ), 
-        //         () -> Robot.state == Robot.State.AUTON
-        //     )
-        // );
+        autonomousCommand = new PathPlannerAuto(autonNames[getSelected()]);
 
-        // s_AmpArm.setDefaultCommand(
-        //     //s_AmpArm.getAmpCommand()
-        //     s_AmpArm.getHomeCommand()
-        // );
+        // Set up note visualizer
+        NoteVisualizer.setRobotPoseSupplier(s_Swerve::getPose);
 
-        // s_Led.setDefaultCommand(
-        //     s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
-        // );
+        // Configure all commands
+        registerNamedCommands();
+        configureAbsoluteButtonBindings();
+        configureNormalModeButtonBindings();
+        configureEndGameButtonBindings();
+        configureTriggers();
+    }
 
-        // NamedCommands.registerCommand("ramp", new RampShooter(1000, 1000, 0.13));
-        // NamedCommands.registerCommand("subwoofer shot", 
-        //     new ParallelDeadlineGroup(
-        //         new WaitCommand(1.6),
-        //         new RampPodium(),
-        //         new SequentialCommandGroup(
-        //             new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
-        //             new InstantCommand(() -> System.out.println("READY TO SHOOT")),
-        //             new ParallelDeadlineGroup(
-        //                 new WaitCommand(0.3),
-        //                 s_Shooter.feedToShooter()
-        //             )
-        //         )
-        //     )
-        // );
+    private void registerNamedCommands() {
         NamedCommands.registerCommand("subwoofer shot", 
             new ParallelRaceGroup(
                 new WaitCommand(2),
                 new ParallelDeadlineGroup(
                     new SequentialCommandGroup(
                         new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
-                        new InstantCommand(() -> System.out.println("READY TO SHOOT")),
                         new ParallelDeadlineGroup(
                             new WaitCommand(0.3),
                             s_Shooter.feedToShooter()
                         )
                     ),
-                    new RampSpeaker()
+                    new RampSubwoofer()
                 )
             )
         );
-        // NamedCommands.registerCommand("spot 1 shot", 
-        //     new ParallelRaceGroup(
-        //         new WaitCommand(4),
-        //         new ParallelDeadlineGroup(
-        //             new SequentialCommandGroup(
-        //                 new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
-        //                 new InstantCommand(() -> System.out.println("READY TO SHOOT")),
-        //                 new ParallelDeadlineGroup(
-        //                     new WaitCommand(0.5),
-        //                     s_Shooter.feedToShooter()
-        //                 )
-        //             ),
-        //             new RotateToAngle(
-        //                 () -> s_Swerve.calculateTurnAngle(alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueSpeakerPose : Constants.RedTeamPoses.redSpeakerPose, s_Swerve.getHeading().getDegrees() + 180), 
-        //                 () -> s_Swerve.getHeading().getDegrees()
-        //             ),
-        //             new RampSpotOne()
-        //         )
-        //     )
-        // );
-        NamedCommands.registerCommand("spot 1 shot", 
+        
+        NamedCommands.registerCommand("spot 1 shot",
             new ParallelRaceGroup(
                 new WaitCommand(4),
                 new ParallelDeadlineGroup(
                     new SequentialCommandGroup(
                         new WaitUntilCommand(() -> s_Shooter.isReadyToShoot()),
-                        new InstantCommand(() -> System.out.println("READY TO SHOOT")),
                         new ParallelDeadlineGroup(
                             new WaitCommand(0.5),
                             s_Shooter.feedToTrigShooter()
-                            // s_Shooter.feedToShooter()
                         )
                     ),
                     new RotateToAngle(
@@ -306,7 +213,10 @@ public class RobotContainer {
                             () -> s_Shooter.setPivot(RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance))
                         ),
                         Commands.runEnd(
-                            () -> s_Shooter.rampShooter(3000, 3000),
+                            () -> s_Shooter.rampShooter(
+                                s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker()), 
+                                s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker())
+                            ),
                             () -> s_Shooter.stopShooter()
                         ),
                         new Feed()
@@ -316,21 +226,9 @@ public class RobotContainer {
         );
 
         NamedCommands.registerCommand("intake", new IntakeCommand());
-
-        // autonomousCommand = new PathPlannerAuto("Copy of 4 piece");
-        autonomousCommand = new PathPlannerAuto(autonNames[getSelected()]);
-
-        // Set up note visualizer
-        // NoteVisualizer.setRobotPoseSupplier(s_Swerve::getPose);
-
-        // Configure the button bindings
-        configureAbsoluteButtonBindings();
-        configureNormalModeButtonBindings();
-        configureEndGameButtonBindings();
-        // configureSysIdButtonBindings();
-        configureLEDBindings();
     }
 
+    // Configures the button bindings that don't change depending on end game/normal game mode
     private void configureAbsoluteButtonBindings() {
         zeroGyroButton.onTrue(
             new InstantCommand(
@@ -344,7 +242,7 @@ public class RobotContainer {
                 new RotateToAngle(
                     () -> s_Swerve.calculateTurnAngle(alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueAmpPose : Constants.RedTeamPoses.redAmpPose, s_Swerve.getHeading().getDegrees() + 180), 
                     () -> s_Swerve.getHeading().getDegrees(),
-                    () -> centerLineShotButton.getAsBoolean()
+                    () -> driver.getHID().getLeftBumper()
                 ),
                 new RampCenterLine(),
                 new SequentialCommandGroup(
@@ -357,41 +255,12 @@ public class RobotContainer {
         toggleVisionMeasurement.onTrue(
             new InstantCommand(() -> addVisionMeasurement = !addVisionMeasurement)
         );
-
-        // pivotToAngleButton.whileTrue(
-        //     Commands.parallel(
-        //         Commands.run(
-        //             () -> s_Shooter.setPivot(RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance))
-        //         ),
-        //         Commands.runEnd(
-        //             () -> s_Shooter.rampShooter(3000, 3000),
-        //             () -> s_Shooter.stopShooter()
-        //         )
-        //     )
-        // );
         
         slowModeButton.onTrue(
             new InstantCommand(
                 () -> s_Swerve.toggleMultiplier()
             )
         );
-        // TODO removed after rotate while moving
-        // alignSpeakerButton.onTrue(
-        //     new RotateToAngle(
-        //         () -> s_Swerve.calculateTurnAngle(alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueSpeakerPose : Constants.RedTeamPoses.redSpeakerPose, s_Swerve.getHeading().getDegrees() + 180), 
-        //         () -> s_Swerve.getHeading().getDegrees(),
-        //         () -> alignSpeakerButton.getAsBoolean()
-        //     )
-        // );
-
-        // flashButton.onTrue(
-        //     new InstantCommand(() -> {
-        //             if (s_Swerve.getFlashedLimelight() != null) {
-        //                 s_Swerve.getFlashedLimelight().flashLimelight();
-        //             }
-        //         } 
-        //     )
-        // );
 
         intakeButton.whileTrue(
             new IntakeCommand()
@@ -402,48 +271,17 @@ public class RobotContainer {
             .onTrue(
                 new InstantCommand(() -> {
                     if (operatorMode == OperatorMode.NORMAL_MODE) {
-                        // lockManualControls();
                         operatorMode = OperatorMode.END_GAME_MODE;
 
                     } else {
-                        // lockManualControls();
                         operatorMode = OperatorMode.NORMAL_MODE;
                     }
                 })
             );
     }
 
-    private void lockManualControls() {
-        // clearDefaultCommands();
-
-        s_Shooter.setDefaultCommand(
-            new HomeCommand(
-                s_Shooter
-            )
-        );
-
-        armManual = OperatorLock.LOCKED;
-        shooterManual = OperatorLock.LOCKED;
-        elevatorManual = OperatorLock.LOCKED;
-    }
-
-    private void clearDefaultCommands() {
-        s_AmpArm.disable();
-        s_AmpArm.getDefaultCommand().cancel();
-        s_AmpArm.removeDefaultCommand();
-
-        s_Shooter.disable();
-        s_Shooter.getDefaultCommand().cancel();
-        s_Shooter.removeDefaultCommand();
-
-        s_Elevator.disable();
-        s_Elevator.getDefaultCommand().cancel();
-        s_Elevator.removeDefaultCommand();
-    }
-
-    private void configureLEDBindings() {
-
-        //Ready To Shoot
+    private void configureTriggers() {
+        // Vibrate operator when ready to shoot
         new Trigger(
             () -> s_Shooter.isReadyToShoot()
         )
@@ -466,6 +304,7 @@ public class RobotContainer {
                 }
         ));
 
+        // Flash led when intake is done
         new Trigger(
             () -> RobotContainer.s_Intake.intakeBeamBroken()
         ).onTrue(
@@ -478,293 +317,30 @@ public class RobotContainer {
             .andThen(
                 Commands.runOnce(() -> driver.getHID().setRumble(RumbleType.kBothRumble, 0))
             )
-            .andThen(new InstantCommand(() -> System.out.println("intake done")))
         );
     }
 
-    private void configureSysIdButtonBindings() {
-        // sysidY
-        //     .whileTrue(
-        //         s_Swerve.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-        //     );
-            
-        // sysidA
-        //     .whileTrue(
-        //         s_Swerve.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-        //     );
-        
-        // sysidB
-        //     .whileTrue(
-        //         s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kForward)
-        //     );
-
-        // sysidX
-        //     .whileTrue(
-        //         s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-        //     );
-
-        // sysidX.whileTrue(
-        //     s_Elevator.applykG()
-        // );
-
-        // sysidA.whileTrue(
-        //     s_Elevator.applykV()
-        // );
-
-        // sysidX.whileTrue(
-        //     s_AmpArm.applykS()
-        // );
-
-        // sysidY.whileTrue(
-        //     s_AmpArm.applykG()
-        // );
-
-        // sysidB.whileTrue(
-        //     s_AmpArm.applykV()
-        // );
-        // sysidA.onTrue(
-        //     new InstantCommand(() -> {s_AmpArm.setGoal(0); s_AmpArm.enable();})
-        // );
-
-        // sysidY.onTrue(
-        //     Commands.runOnce(() -> s_Shooter.setGoal(1))
-        // );
-
-        // sysidB.onTrue(
-        //     Commands.runOnce(() -> s_Shooter.setGoal(0))
-        // );
-        // sysidX.whileTrue(
-        //     s_Shooter.applykV()
-        // );
-
-        // sysidY
-        //     .whileTrue(
-        //         s_Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-        //     );
-            
-        // sysidA
-        //     .whileTrue(
-        //         s_Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-        //     );
-        
-        // sysidB
-        //     .whileTrue(
-        //         s_Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward)
-        //     );
-
-        // sysidX
-        //     .whileTrue(
-        //         s_Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-        //     );
-
-        // sysidY
-        //     .whileTrue(
-        //         s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-        //     );
-            
-        // sysidA
-        //     .whileTrue(
-        //         s_AmpArm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-        //     );
-        
-        // sysidB
-        //     .whileTrue(
-        //         s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kForward)
-        //     );
-
-        // sysidX
-        //     .whileTrue(
-        //         s_AmpArm.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-        //     );
-
-
-
-        // sysidY
-        //     .whileTrue(
-        //         s_Elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-        //     );
-            
-        // sysidA
-        //     .whileTrue(
-        //         s_Elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-        //     );
-        
-        // sysidB
-        //     .whileTrue(
-        //         s_Elevator.sysIdDynamic(SysIdRoutine.Direction.kForward)
-        //     );
-
-        // sysidX
-        //     .whileTrue(
-        //         s_Elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-        //     );
-
-        // sysidY.onTrue(
-        //     s_Elevator.getTrapCommand()
-        // );
-
-        // sysidY.onTrue(
-        //     new InstantCommand(() -> {System.out.println("running"); s_Elevator.setGoal(1.5); s_Elevator.enable();})
-        // );
-
-        // sysidA.onTrue(
-        //     s_Elevator.getHomeCommand()
-        // );
-
-        // sysidX.onTrue(
-        //     new InstantCommand(() -> s_Elevator.disable())
-        // );
-        
-        // sysidLeftBumper
-        //     .whileTrue(
-        //         s_AmpArm.applykS()
-        //     );
-
-        // sysidRightBumper
-        //     .whileTrue(
-        //         s_AmpArm.applykG()
-        //     );
-        
-        // sysidLeftTrigger
-        //     .whileTrue(
-        //         s_AmpArm.applykV()
-        //     );
-
-        // sysidLeftBumper
-        //     .whileTrue(
-        //         s_Shooter.applykS()
-        //     );
-
-        // sysidRightBumper
-        //     .whileTrue(
-        //         s_Shooter.applykG()
-        //     );
-        
-        // sysidLeftTrigger
-        //     .whileTrue(
-        //         s_Shooter.applykV()
-        //     );
-
-        // sysidLeftStick
-        //     .whileTrue(
-        //         Commands.runEnd(
-        //             () -> s_Elevator.moveElevator(true), 
-        //             () -> s_Elevator.stopElevator(), 
-        //             s_Elevator
-        //         )
-        //     );
-
-        // sysidRightStick
-        //     .whileTrue(
-        //         Commands.runEnd(
-        //             () -> s_Elevator.moveElevator(false), 
-        //             () -> s_Elevator.stopElevator(), 
-        //             s_Elevator
-        //         )
-        //     );
-    }
-
-    private void configureEndGameButtonBindings() {
-        // Endgame Mode
-        // operator.axisGreaterThan(manualElevatorAxis, Math.PI * Math.E)
-        //     .and(isNormalMode.negate())
-        //         .whileTrue(
-        //             Commands.runEnd(
-        //                 () -> {
-        //                     s_Elevator.moveElevator(operator.getRawAxis(manualElevatorAxis) > 0);
-        //                     s_Elevator.disable();
-        //                 }, 
-        //                 () -> s_Elevator.stopElevator()
-        //             )
-        //         );
-
-        operator.leftTrigger() 
-            .and(isNormalMode.negate())
-                .and(elevatorLocked)
-                    .onTrue( // Trap Position
-                        Commands.parallel(
-                            s_Elevator.getTrapCommand(),
-                            s_AmpArm.getTrapCommand()
-                        )
-                    );
-
-        operator.rightTrigger()
-            .and(isNormalMode.negate())
-                .whileTrue(
-                    new ArmShot()
-                );
-
-        operator.y()
-            .and(isNormalMode.negate())
-                .and(elevatorLocked)
-                    .onTrue(
-                        Commands.sequence(
-                            s_AmpArm.getClimbPosition(),
-                            new WaitCommand(0.5),
-                            s_Elevator.getClimbCommand()
-                        )
-                    );
-        
-        operator.a()
-            .and(isNormalMode.negate())
-                .and(elevatorLocked)
-                    .onTrue(
-                        Commands.parallel(
-                            s_Elevator.getHomeCommand(),
-                            s_AmpArm.getAmpDangleCommand() // TODO used to be home
-                        )
-                    );
-        
-        operator.leftStick()
-            .and(isNormalMode.negate())
-                .onTrue(
-                    new InstantCommand(
-                        () -> {
-                            if(elevatorManual == OperatorLock.LOCKED) {
-                                s_AmpArm.setGoal(Constants.AmpArm.danglePosition);
-                                s_AmpArm.enable();
-                                // s_AmpArm.getAmpDangleCommand().execute();
-                                elevatorManual = OperatorLock.UNLOCKED;
-                                s_Elevator.disable();
-                                s_Elevator.setDefaultCommand(
-                                    new ManualElevator(
-                                        () -> {
-                                            if(isNormalMode.getAsBoolean() || Math.abs(operator.getRawAxis(manualElevatorAxis)) < Constants.stickDeadband * Math.PI * Math.E) { //deadband for joystick
-                                                return null;
-                                            } else {
-                                                return Math.signum(operator.getRawAxis(manualElevatorAxis)) > 0;
-                                            }
-                                        }
-                                    )
-                                );
-                            } else {
-                                elevatorManual = OperatorLock.LOCKED;
-                                // s_Elevator.enable();
-                                s_Elevator.getDefaultCommand().cancel();
-                                s_Elevator.removeDefaultCommand();
-                            }
-                        }
-                    )
-                );
-    }
-
+    // Operator bindings for normal mode
     private void configureNormalModeButtonBindings() {
-        // Normal Mode
+        // Outtake
         operator.povDown()
             .and(isNormalMode)
                 .whileTrue(
                     new ReverseIntakeCommand()
-                ); // Outtake
+                );
+
+        // Manual intake
         operator.povUp()
             .and(isNormalMode)
                 .whileTrue(
-                    Commands.runEnd( // Manual intake
+                    Commands.runEnd(
                         () -> s_Intake.intake(),
                         () -> s_Intake.stop(),
                         s_Intake
                     )
                 );
-        // Arm
+        
+        // Arm handoff
         operator.y()
             .and(isNormalMode)
             .and(new Trigger(() -> s_AmpArm.status == ArmStatus.NOTHING))
@@ -775,16 +351,18 @@ public class RobotContainer {
                         new WaitUntilCommand(
                             () -> s_AmpArm.getController().atGoal()
                         ).raceWith(
-                            new WaitCommand(1.5) // 1.5 second timeout in case doesn't go to goal
+                            new WaitCommand(1.5) // 1.5 second timeout in case it doesn't go to goal exactly
                         ),
                         s_AmpArm.feedToArm(),
                         Commands.runEnd(
                             () -> s_AmpArm.armHandoff(),
                             () -> s_AmpArm.stopShooter()
-                        ).withTimeout(0),
+                        ),
                         new InstantCommand(() -> s_AmpArm.status = ArmStatus.NOTHING)
                     ).alongWith(s_Led.fadeCommand(LEDColor.YELLOW))
                 );
+
+        // Arm amp position
         operator.x()
             .and(isNormalMode)
             .and(new Trigger(() -> s_AmpArm.status == ArmStatus.NOTHING))
@@ -794,17 +372,14 @@ public class RobotContainer {
                         .alongWith(s_Led.flashCommand(LEDColor.YELLOW, 0.2, 2))
                 );
 
+        // Shoot note
         operator.b()
             .and(isNormalMode)
                 .whileTrue(
                     new ArmShot().alongWith(s_Led.setColorCommand(LEDColor.WHITE))
                 );
-                // .onTrue(
-                //     s_AmpArm.getAmpShootCommand()
-                // )
-                // .whileTrue( // Shoot
-                //     new ArmShot().onlyIf(() -> s_AmpArm.getController().atGoal())
-                // );
+
+        // Put arm and elevator at home
         operator.a()
             .and(isNormalMode)
                 .onTrue( // Home
@@ -814,44 +389,48 @@ public class RobotContainer {
                         s_Elevator.getHomeCommand(),
                         new ConditionalCommand(s_AmpArm.getHandoffCommand(), new InstantCommand(), s_Elevator::limitPressed)
                     ).alongWith(new InstantCommand(() -> s_AmpArm.status = ArmStatus.NOTHING)));
-                    // s_AmpArm.getAmpDangleCommand() // used to be home
-                    //     .alongWith(s_Elevator.getHomeCommand())
-                     //   .
-                //);
-        // operator.povLeft()
-        //     .and(isNormalMode)
-        //         .onTrue( // Arm to intake
-        //             new SequentialCommandGroup(
-        //                 s_AmpArm.getHandoffCommand(),
-        //                 new WaitUntilCommand(
-        //                     () -> s_AmpArm.getController().atGoal()
-        //                 ),
-        //                 s_AmpArm.armToIntake()
-        //             )
-        //         );
+        
+        // Intake from shooter
         operator.povLeft()
             .and(isNormalMode)
                 .whileTrue(
                     s_Shooter.feedToIntakeFromShooter()
                 );
 
-        // Shooter
+        // Ramp podium
         operator.leftTrigger()
             .and(isNormalMode)
-                .whileTrue( // Podium shot
+                .whileTrue(
                     new ParallelCommandGroup(
-                        // new Feed(),
-                        new RampPodium() // 0.15 angle 1800-2000rpm for podium
+                        new RampPodium()
                     )
                 );
+
+        // Ramp subwoofer
         operator.leftBumper()
             .and(isNormalMode)
-                .whileTrue( // Speaker shot
-                    new RampSpeaker()
+                .whileTrue(
+                    new RampSubwoofer()
                 );
+        
+        // Ramp anywhere
+        operator.rightBumper().whileTrue(
+            Commands.parallel(
+                Commands.run(
+                    () -> s_Shooter.setPivot(RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance))
+                ),
+                Commands.runEnd(
+                    () -> s_Shooter.rampShooter(
+                        s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker()), 
+                        s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker())
+                    ),
+                    () -> s_Shooter.stopShooter()
+                ),
+                new Feed()
+            )
+        );
 
-
-        //shooting speaker and amp
+        // Shoot from podium or subwoofer
         operator.rightTrigger()
             .and(isNormalMode)
                 .and(() -> !s_Shooter.isScoringAmp).and(operator.rightBumper().negate())
@@ -859,12 +438,10 @@ public class RobotContainer {
                         s_Shooter.feedToShooter()
                     )
                     .onTrue(
-                        s_Led.flashCommand(LEDColor.WHITE, 0.15, 1)
+                        s_Led.flashCommand(LEDColor.WHITE, 0.15, 0.8)
                     );
-                    // .onFalse(
-                    //     s_Led.stopCommand()
-                    // );
 
+        // Shoot from anywhere
         operator.rightTrigger()
             .and(isNormalMode)
                 .and(operator.rightBumper())
@@ -872,13 +449,10 @@ public class RobotContainer {
                         s_Shooter.feedToTrigShooter()
                     )
                     .onTrue(
-                        s_Led.flashCommand(LEDColor.WHITE, 0.15, 1)
-                    )
-                    .onFalse(
-                        s_Led.stopCommand()
+                        s_Led.flashCommand(LEDColor.WHITE, 0.15, 0.8)
                     );
 
-
+        // Shoot into amp
         operator.rightTrigger()
             .and(isNormalMode)
                 .and(() -> s_Shooter.isScoringAmp)
@@ -886,50 +460,10 @@ public class RobotContainer {
                         s_Shooter.feedToShooterAmp()
                     )
                     .onTrue(
-                        s_Led.flashCommand(LEDColor.WHITE, 0.15, 1)
-                    )
-                    .onFalse(
-                        s_Led.stopCommand()
+                        s_Led.flashCommand(LEDColor.WHITE, 0.15, 0.8)
                     );
         
-        // TODO SHOOT FROM ANYWHERE, PUT BACK
-        // operator.rightBumper()
-        // .and(isNormalMode)
-        //         .whileTrue( // Auto shoot ---- shoot from anywhere
-        //             s_Shooter.readyShootCommand(
-        //                 () -> s_Swerve.odometryImpl.getDistance(
-        //                     RobotContainer.alliance == DriverStation.Alliance.Blue ? 
-        //                     Constants.BlueTeamPoses.blueSpeakerPose : 
-        //                     Constants.RedTeamPoses.redSpeakerPose
-        //                 )
-        //             )
-        //         );
-        // operator.rightBumper()
-        //     .and(isNormalMode)
-        //         .whileTrue(
-        //             new RampStartLine()
-        //         );
-
-        // operator.rightBumper().onTrue(
-        //     new InstantCommand(() -> {
-        //         s_Shooter.trigTargetAngle = RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance);
-        //         System.out.println(s_Shooter.trigTargetAngle);
-        //     })
-        // );
-
-        operator.rightBumper().whileTrue(
-            Commands.parallel(
-                Commands.run(
-                    () -> s_Shooter.setPivot(RobotContainer.s_Swerve.odometryImpl.getPivotAngle(alliance))
-                ),
-                Commands.runEnd(
-                    () -> s_Shooter.rampShooter(3000, 3000),
-                    () -> s_Shooter.stopShooter()
-                ),
-                new Feed()
-            )
-        );
-        
+        // Amp shot from shooter (doesnt work anymore)
         (operator.povRight()
         .or(operator.povUpRight())
         .or(operator.povDownRight()))
@@ -938,8 +472,7 @@ public class RobotContainer {
                     new RampAmp()
                 );
 
-        // Locks
-        // TODO don't change default commands, just disable the controller
+        // Manual control of shooter
         operator.leftStick()
             .and(isNormalMode)
                 .onTrue(
@@ -952,7 +485,7 @@ public class RobotContainer {
                                 s_Shooter.setDefaultCommand(
                                     new ManualShooterPivot(
                                         () -> {
-                                            if(!isNormalMode.getAsBoolean() || Math.abs(operator.getRawAxis(manualShootAxis)) < Constants.stickDeadband) { //deadband for joystick
+                                            if(!isNormalMode.getAsBoolean() || Math.abs(operator.getRawAxis(manualShootAxis)) < Constants.Deadbands.shooterDeadband) {
                                                 return null;
                                             } else {
                                                 return Math.signum(-operator.getRawAxis(manualShootAxis)) > 0;
@@ -975,7 +508,7 @@ public class RobotContainer {
                     )
                 );
 
-
+        // Manual control of arm
         operator.rightStick()
             .and(isNormalMode)
                 .onTrue(
@@ -983,12 +516,11 @@ public class RobotContainer {
                         () -> {
                             if (armManual == OperatorLock.LOCKED) {
                                 armManual = OperatorLock.UNLOCKED;
-                                // System.out.println("UNLOCKED");
                                 s_AmpArm.disable();
                                 s_AmpArm.setDefaultCommand(
                                     new ManualArmPivot(
                                         () -> {
-                                            if(!isNormalMode.getAsBoolean() || Math.abs(operator.getRawAxis(manualArmAxis)) < Constants.stickDeadband) { //deadband for joystick
+                                            if(!isNormalMode.getAsBoolean() || Math.abs(operator.getRawAxis(manualArmAxis)) < Constants.Deadbands.armDeadband) {
                                                 return null;
                                             } else {
                                                 return Math.signum(-operator.getRawAxis(manualArmAxis)) > 0;
@@ -998,10 +530,84 @@ public class RobotContainer {
                                 );
                             } else {
                                 armManual = OperatorLock.LOCKED;
-                                // System.out.println("LOCKED");
                                 s_AmpArm.enable();
                                 s_AmpArm.getDefaultCommand().cancel();
                                 s_AmpArm.removeDefaultCommand();
+                            }
+                        }
+                    )
+                );
+    }
+
+    // Operator bindings for end game mode
+    private void configureEndGameButtonBindings() {
+
+        // For trap, which we probably wont ever get :(
+        // operator.leftTrigger() 
+        //     .and(isNormalMode.negate())
+        //         .and(elevatorLocked)
+        //             .onTrue( // Trap Position
+        //                 Commands.parallel(
+        //                     s_Elevator.getTrapCommand(),
+        //                     s_AmpArm.getTrapCommand()
+        //                 )
+        //             );
+
+        // operator.rightTrigger()
+        //     .and(isNormalMode.negate())
+        //         .whileTrue(
+        //             new ArmShot()
+        //         );
+
+        // Climb position
+        operator.y()
+            .and(isNormalMode.negate())
+                .and(elevatorLocked)
+                    .onTrue(
+                        Commands.sequence(
+                            s_AmpArm.getClimbPosition(),
+                            new WaitCommand(0.5),
+                            s_Elevator.getClimbCommand()
+                        )
+                    );
+        
+        // Home position (is not pressed while climbing)
+        operator.a()
+            .and(isNormalMode.negate())
+                .and(elevatorLocked)
+                    .onTrue(
+                        Commands.parallel(
+                            s_Elevator.getHomeCommand(),
+                            s_AmpArm.getAmpDangleCommand()
+                        )
+                    );
+        
+        // Manual elevator control
+        operator.leftStick()
+            .and(isNormalMode.negate())
+                .onTrue(
+                    new InstantCommand(
+                        () -> {
+                            if(elevatorManual == OperatorLock.LOCKED) {
+                                s_AmpArm.setGoal(Constants.AmpArm.danglePosition);
+                                s_AmpArm.enable();
+                                elevatorManual = OperatorLock.UNLOCKED;
+                                s_Elevator.disable();
+                                s_Elevator.setDefaultCommand(
+                                    new ManualElevator(
+                                        () -> {
+                                            if(isNormalMode.getAsBoolean() || Math.abs(operator.getRawAxis(manualElevatorAxis)) < Constants.Deadbands.climbDeadband) {
+                                                return null;
+                                            } else {
+                                                return Math.signum(operator.getRawAxis(manualElevatorAxis)) > 0;
+                                            }
+                                        }
+                                    )
+                                );
+                            } else {
+                                elevatorManual = OperatorLock.LOCKED;
+                                s_Elevator.getDefaultCommand().cancel();
+                                s_Elevator.removeDefaultCommand();
                             }
                         }
                     )
@@ -1019,28 +625,6 @@ public class RobotContainer {
     }
 
     public static Command getAutonomousCommand() {
-        // Copy of 4 piece
-        // System.out.println(autonomousCommand);
         return autonomousCommand;
-        // return new PathPlannerAuto("Copy of 4 piece");
-        // return new PathPlannerAuto("Copy of 4 piece reverse");
-        // return new PathPlannerAuto("Center line revised");
-        // return new PathPlannerAuto("2 note center");
-        // return new PathPlannerAuto("3 note center");
-
-        // System.out.println("jie xuan");
-
-        // switch(getSelected()) {
-        //     case 0:
-        //         return new PathPlannerAuto("Copy of 4 piece");
-        //     case 1:
-        //         return new PathPlannerAuto("3 note center");
-        //     case 2:
-        //         return new PathPlannerAuto("Copy of 4 piece Reverse");
-        //     default:
-        //         return null;
-        // }
-
-        // return autons[getSelected()];
     }
 }

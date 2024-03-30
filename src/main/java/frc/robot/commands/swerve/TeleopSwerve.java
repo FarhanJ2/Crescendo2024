@@ -21,7 +21,7 @@ public class TeleopSwerve extends Command {
     private BooleanSupplier robotCentricSup;
     private BooleanSupplier alignSpeakerSup;
 
-    private final PIDController alignPID = new PIDController( // TODO fix this
+    private final PIDController alignPID = new PIDController(
         0.07,
         0,
         0
@@ -47,9 +47,9 @@ public class TeleopSwerve extends Command {
 
     @Override
     public void execute() {
-        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
-        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
-        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.Deadbands.driveDeadband);
+        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.Deadbands.driveDeadband);
+        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.Deadbands.driveDeadband);
 
         double multipliedRotation = 0;
         Translation2d multipliedTranslation = new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed);

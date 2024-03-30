@@ -6,7 +6,6 @@ import frc.robot.RobotContainer;
 public class ForktoIntakeCommand extends Command {
 
     public ForktoIntakeCommand() {
-        
         addRequirements(RobotContainer.s_Intake);
     }
 

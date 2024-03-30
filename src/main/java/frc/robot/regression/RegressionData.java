@@ -1,12 +1,11 @@
 package frc.robot.regression;
 
-// clapped
+// None of this was used, this is just dummy data
 public class RegressionData {
     public static double[][] kPivotAngle = {
         /* TEMPLATE REGRESSION */
         // @x --> distance from target (in meters)
         // @y --> hood angle (in degrees)
-        // TODO get actual data
         { 0.25, 0.4 },
         { 0.5, 0.35 },
         { 0.75, 0.32 },
@@ -27,21 +26,6 @@ public class RegressionData {
         /* TEMPLATE REGRESSION */
         // @x --> distance from target (in meters)
         // @y --> shooter velocity (in rpm)
-        // TODO get actual data
-        // { 0.25, 2000 },
-        // { 0.5, 2200 },
-        // { 0.75, 2350 },
-        // { 1.0, 2400 },
-        // { 1.25, 2450 },
-        // { 1.5, 2500 },
-        // { 1.75, 2600 },
-        // { 2.0, 2700 },
-        // { 2.25, 2800 },
-        // { 2.5, 2900 },
-        // { 2.75, 3000 },
-        // { 3.0, 3100 },
-        // { 3.25, 3200 },
-        // { 3.5, 3400 },
         { 0.25, 2000 - 1000 },
         { 0.5, 2200 - 1000 },
         { 0.75, 2350 - 1000 },

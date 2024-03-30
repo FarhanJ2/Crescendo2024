@@ -1,8 +1,6 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.Shooter;
 
 public class HomeCommand extends Command {
@@ -14,9 +12,8 @@ public class HomeCommand extends Command {
     }
 
     public void execute() {
-        //TODO Test after getting CANCoder stuff
         s_Shooter.goHome();
-        // s_Shooter.rampShooter(Constants.ShootingConstants.cruiseRPM, Constants.ShootingConstants.cruiseRPM);
+        s_Shooter.runShooterIdle();
     }
 
     public void end(boolean interrupted) {

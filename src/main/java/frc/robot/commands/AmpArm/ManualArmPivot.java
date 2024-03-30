@@ -1,9 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
-package frc.robot.commands.AmpArm;
-
+package frc.robot.commands.ampArm;
 
 import java.util.function.Supplier;
 
@@ -24,18 +19,12 @@ public class ManualArmPivot extends Command {
 
   @Override
   public void execute() {
-    // System.out.println(pivotingUp.get());
-  
-      RobotContainer.s_AmpArm.manualArmPivot(this.pivotingUp.get());
-
+    RobotContainer.s_AmpArm.manualArmPivot(this.pivotingUp.get());
   }
 
   @Override
-  public void end(boolean interrupted) {
-    // RobotContainer.s_AmpArm.stopArm();
-  }
+  public void end(boolean interrupted) {}
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;

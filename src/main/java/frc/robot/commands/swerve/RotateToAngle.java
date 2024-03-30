@@ -14,7 +14,7 @@ public class RotateToAngle extends Command {
     boolean finished = false;
 
     private final PIDController pidController = new PIDController(
-        0.14, //0.14
+        0.14,
         0,
         0
     );
@@ -36,7 +36,6 @@ public class RotateToAngle extends Command {
 
     @Override
     public void initialize() {
-        // pidController.setTolerance(1000);
         double robotHeading = continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees());
         double setpoint = (robotHeading + requestedAngle.get()) % 360;
 
@@ -55,10 +54,8 @@ public class RotateToAngle extends Command {
             true,
             false
         );
-        // System.out.println(pidController.getSetpoint() + " " + continuous180To360(180 + RobotContainer.s_Swerve.getHeading().getDegrees()));
     }
 
-    // only stop if at setpoint and button unpressed or button is unpressed
     @Override
     public boolean isFinished() {
         if(buttonPressed == null) return pidController.atSetpoint();

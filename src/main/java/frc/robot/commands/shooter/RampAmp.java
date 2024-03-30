@@ -1,6 +1,5 @@
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 

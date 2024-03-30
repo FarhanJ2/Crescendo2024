@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -21,6 +20,9 @@ import frc.robot.subsystems.Swerve;
 public class OdometryImpl extends SubsystemBase {
   /** Creates a new OdometryImpl. */
   Swerve s_Swerve;
+
+  // Counts total rejected vision measurements because of large error
+  private int totalRejections = 0;
 
   public OdometryImpl(Swerve s_Swerve) {
       this.s_Swerve = s_Swerve;
@@ -124,7 +126,6 @@ public class OdometryImpl extends SubsystemBase {
         xyStds = 0.5; 
         thetaStds = 6; 
     }
-
   
     else if (limelight.getNumberOfTagsInView() == 1) {
         //one tag with large area but larger pose error 
@@ -141,11 +142,18 @@ public class OdometryImpl extends SubsystemBase {
 
     }
 
+    totalRejections++; // TODO dont forget this
+
     return VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(thetaStds)); 
 
 
 
 
+  }
+
+  public double getDistanceToSpeaker() {
+    Pose2d speaker = RobotContainer.alliance == DriverStation.Alliance.Red ? Constants.RedTeamPoses.redSpeakerPose : Constants.BlueTeamPoses.blueSpeakerPose;
+    return getDistance(speaker);
   }
 
 

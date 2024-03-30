@@ -41,9 +41,4 @@ public class Conversions {
         double wheelRotations = wheelMeters / circumference;
         return wheelRotations;
     }
-
-    // TODO get the actual conversion factor
-    public static double armRotationsToRadians(double rotations, double conversionFactor) {
-        return rotations * conversionFactor;
-    }
 }

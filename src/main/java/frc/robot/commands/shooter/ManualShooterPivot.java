@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands.shooter;
 
 import java.util.function.Supplier;
@@ -23,14 +19,11 @@ public class ManualShooterPivot extends Command {
 
   @Override
   public void execute() {
-    // System.out.println(pivotingUp.get());
     RobotContainer.s_Shooter.manualShooterPivot(this.pivotingUp.get());
   }
 
   @Override
-  public void end(boolean interrupted) {
-    // RobotContainer.s_Shooter.stopPivot();
-  }
+  public void end(boolean interrupted) {}
 
   @Override
   public boolean isFinished() {
