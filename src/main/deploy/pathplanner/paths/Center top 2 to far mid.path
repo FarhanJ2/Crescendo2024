@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 8.3,
-        "y": 0.749840835387484
+        "y": 5.767210285195044
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.405317625097667,
-        "y": 0.5793628333212892
+        "x": 6.599968320754486,
+        "y": 6.6515134865771595
       },
       "isLocked": false,
-      "linkedName": "bottom center note revised"
+      "linkedName": "top center 2 note (5 note)"
     },
     {
       "anchor": {
-        "x": 2.8406875462656735,
-        "y": 2.5623358573073
+        "x": 3.8772431990341056,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 3.981683929114766,
-        "y": 1.4134705338868336
+        "x": 5.004259406753015,
+        "y": 6.667966570133884
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "shoot spot 1"
+      "linkedName": "far mid"
     }
   ],
   "rotationTargets": [],
@@ -39,14 +39,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -50.0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Center line bottom",
+  "folder": "Center line top",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -20.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

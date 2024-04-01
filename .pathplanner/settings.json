@@ -5,8 +5,9 @@
   "pathFolders": [
     "4 piece",
     "5+ piece",
-    "Center line",
-    "Drafts"
+    "Center line bottom",
+    "Drafts",
+    "Center line top"
   ],
   "autoFolders": [
     "Drafts"

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.Constants.PoseConfig;
 import frc.robot.subsystems.Swerve;
 
 public class OdometryImpl extends SubsystemBase {
@@ -103,27 +104,37 @@ public class OdometryImpl extends SubsystemBase {
       return VecBuilder.fill(n1, n2, Units.degreesToRadians(angleOffset));
   }
 
+  // Returns standard deviations using tag area; there MUST be multiple tags in sight
+  private Vector<N3> getCalculatedStdDevsFromDistanceMultipleTags(double area) {
+      double xyStdDev = 0.5 / Math.pow(area, 4);
+      double thetaStdDev = 10 / area;
+
+      return createStdDevs(xyStdDev, xyStdDev, thetaStdDev);
+  }
+
   public Vector<N3> getCalculatedStdDevs(Limelight limelight) {
     double error = getVisionPoseError(limelight);
 
     if (limelight.getNumberOfTagsInView() >= 2) {
-      createStdDevs(1, 1, 15);
+      return getCalculatedStdDevsFromDistanceMultipleTags(limelight.getTagArea());
     }
 
+    // TODO create a formula rather than a bunch of if statements
     else if (limelight.getNumberOfTagsInView() == 1) {
 
         //one tag with large area but larger pose error 
         if (limelight.getTagArea() > 0.6 && error < 0.5) {
-          createStdDevs(3, 3, 50);
+          return createStdDevs(3, 3, 50);
         }
 
         //one tag with small area but smaller pose error
         else if (limelight.getTagArea() > 0.1 && error < 0.3) {
-          createStdDevs(4, 4, 50);
+          return createStdDevs(4, 4, 50);
         }
     }
 
-    return null;
+    // Return default values if nothing is true
+    return createStdDevs(PoseConfig.kVisionStdDevX, PoseConfig.kVisionStdDevY, PoseConfig.kVisionStdDevTheta);
   }
 
   public double getDistanceToSpeaker() {

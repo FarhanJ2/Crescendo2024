@@ -94,13 +94,13 @@ public class RobotContainer {
     // Must match auton names in pathplanner
     public static final String[] autonNames = {
         "4 piece",
-        "3 note center",
+        "3 note center top",
         "4 piece reverse",
-        "2 note center",
+        "2 note center bottom",
         "5 piece top",
         "5 piece top 2",
         "6 piece",
-        "blue 3",
+        "3 note center bottom",
         "blue 4",
         "blue 5",
         "nothing"
@@ -115,7 +115,7 @@ public class RobotContainer {
         true,       // 5 piece top
         true,       // 5 piece top 2
         true,       // 6 piece
-        false,
+        true,       // 3 note center bottom
         false,
         false,
         false

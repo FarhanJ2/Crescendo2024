@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7231572233013988,
-      "y": 4.382186700316462
+      "x": 0.72,
+      "y": 6.7
     },
-    "rotation": -59.47029410006588
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -34,7 +34,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
+                        "waitTime": 4.3
                       }
                     }
                   ]
@@ -43,7 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Sub bottom to bottom center straight"
+                  "pathName": "Sub top to center top"
                 }
               }
             ]
@@ -52,7 +52,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom center to shoot spot 1"
+            "pathName": "Center top to far mid"
           }
         },
         {
@@ -78,7 +78,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
+                        "waitTime": 2.8
                       }
                     }
                   ]
@@ -87,7 +87,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Shoot spot 1 to bottom 2"
+                  "pathName": "Far mid to center top 2"
                 }
               }
             ]
@@ -96,7 +96,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom 2 to shoot spot 1"
+            "pathName": "Center top 2 to far mid"
           }
         },
         {

@@ -5,7 +5,7 @@
       "x": 0.7231572233013988,
       "y": 4.382186700316462
     },
-    "rotation": -59.47029410006588
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -53,6 +53,50 @@
           "type": "path",
           "data": {
             "pathName": "Bottom center to shoot spot 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "anywhere shot"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intake"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 4.0
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Shoot spot 1 to bottom 2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom 2 to shoot spot 1"
           }
         },
         {
