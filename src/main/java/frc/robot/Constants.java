@@ -205,7 +205,7 @@ public final class Constants {
         public static final double pivotTolerance = 0.01; // <1 degree
         public static final double shooterTolerance = 50;
 
-        public static final double homePosition = 0.9; // 1.05
+        public static final double homePosition = 1.05; // 1.05
 
         public static final double feedSpeed = 0.85;
 
