@@ -107,7 +107,7 @@ public class OdometryImpl extends SubsystemBase {
   // Returns standard deviations using tag area; there MUST be multiple tags in sight
   private Vector<N3> getCalculatedStdDevsFromDistanceMultipleTags(double area) {
       double xyStdDev = 0.5 / Math.pow(area, 4);
-      double thetaStdDev = 10 / area;
+      double thetaStdDev = 50 / area;
 
       return createStdDevs(xyStdDev, xyStdDev, thetaStdDev);
   }
@@ -124,12 +124,12 @@ public class OdometryImpl extends SubsystemBase {
 
         //one tag with large area but larger pose error 
         if (limelight.getTagArea() > 0.6 && error < 0.5) {
-          return createStdDevs(3, 3, 50);
+          return createStdDevs(3, 3, 100);
         }
 
         //one tag with small area but smaller pose error
         else if (limelight.getTagArea() > 0.1 && error < 0.3) {
-          return createStdDevs(4, 4, 50);
+          return createStdDevs(4, 4, 100);
         }
     }
 

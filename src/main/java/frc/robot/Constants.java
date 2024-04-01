@@ -177,9 +177,9 @@ public final class Constants {
 
         public static final int canCoderID = 19;
 
-        public static final double pivotkS = 0.09256;
-        public static final double pivotkG = 0.15116;
-        public static final double pivotkV = 1.275;
+        public static final double pivotkS = 0.09256; // 0.09256
+        public static final double pivotkG = 0.15116; // 0.15116
+        public static final double pivotkV = 1.593; // 1.275
         public static final double pivotkA = 0;
 
         public static final double pivotkP = 5;
@@ -205,7 +205,7 @@ public final class Constants {
         public static final double pivotTolerance = 0.01; // <1 degree
         public static final double shooterTolerance = 50;
 
-        public static final double homePosition = 1.05;
+        public static final double homePosition = 0.9; // 1.05
 
         public static final double feedSpeed = 0.85;
 
@@ -230,7 +230,7 @@ public final class Constants {
         public static final double kMaxVelocityRadPerSecond = 6;
         public static final double kMaxAccelerationRadPerSecSquared = 8;
 
-        public static final double idleSpeed = 0.1;
+        public static final double idleSpeed = 0.07;
     }
 
     public static final class Elevator {

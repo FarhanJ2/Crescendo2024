@@ -76,12 +76,12 @@ public class TeleopSwerve extends Command {
 
         // Align to speaker
         if (alignSpeakerSup.getAsBoolean()) {
-            getRotationSpeedFromPID(RobotContainer.alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueSpeakerPose : Constants.RedTeamPoses.redSpeakerPose);
+            multipliedRotation = getRotationSpeedFromPID(RobotContainer.alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueSpeakerPose : Constants.RedTeamPoses.redSpeakerPose);
             multipliedTranslation = RobotContainer.s_Swerve.isLowGear() ? multipliedTranslation : multipliedTranslation.times(0.3);
 
         // Align to amp
         } else if (rampFerrySup.getAsBoolean()) {
-            getRotationSpeedFromPID(RobotContainer.alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueAmpPose : Constants.RedTeamPoses.redAmpPose);
+            multipliedRotation = getRotationSpeedFromPID(RobotContainer.alliance == DriverStation.Alliance.Blue ? Constants.BlueTeamPoses.blueAmpPose : Constants.RedTeamPoses.redAmpPose);
         
         // Normal drive
         } else {

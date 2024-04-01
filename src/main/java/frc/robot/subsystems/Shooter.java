@@ -84,10 +84,10 @@ public class Shooter extends ProfiledPIDSubsystem {
                 Constants.Shooter.kMaxVelocityRadPerSecond,
                 Constants.Shooter.kMaxAccelerationRadPerSecSquared)
             ),
-            Constants.Shooter.homePosition
+            Constants.Shooter.homePosition   
         );
 
-        getController().setTolerance(Constants.Shooter.pivotTolerance);
+        // getController().setTolerance(Constants.Shooter.pivotTolerance);
         topShooterPIDController.setTolerance(Constants.Shooter.shooterTolerance);
         bottomShooterPIDController.setTolerance(Constants.Shooter.shooterTolerance);
 
@@ -96,6 +96,7 @@ public class Shooter extends ProfiledPIDSubsystem {
         configureNeutralMode();
 
         enable();
+        m_shooterBottomMotor.setVoltage(trigTargetAngle);
     }
 
     public void goHome() {
@@ -163,6 +164,12 @@ public class Shooter extends ProfiledPIDSubsystem {
     protected void useOutput(double output, TrapezoidProfile.State setpoint) {
         double feedforward = pivotFeedforward.calculate(setpoint.position, setpoint.velocity);
         m_pivotMotor.setVoltage(output + feedforward);
+
+        SmartDashboard.putNumber("shooter/feedforward", feedforward);
+        SmartDashboard.putNumber("shooter/setpoint position", setpoint.position);
+        SmartDashboard.putNumber("shooter/setpoint velocity", setpoint.velocity);
+
+
     }
 
     public void setPivot(double goal) {
@@ -241,7 +248,7 @@ public class Shooter extends ProfiledPIDSubsystem {
 
     // Maximum rpm is 3500
     public double getTrigShotRPM(double distance) {
-        return Math.min(3500, distance * 750);
+        return Math.min(3000, distance * 500);
     }
 
     public void manualShoot() {
@@ -311,15 +318,24 @@ public class Shooter extends ProfiledPIDSubsystem {
         );
     }
 
+    private double getMotorVelocity() {
+        return (m_pivotMotor.getVelocity().getValueAsDouble()*2*Math.PI) / ((15)*(60/28)*(64/18));
+    }
+
     @Override
     public void periodic() {
         if (m_enabled) {
             useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
         }
 
+        SmartDashboard.putNumber("shooter/goal", getController().getGoal().position);
+
         SmartDashboard.putNumber("shooter/bottom rpm ", getShooterBottomRPM()); 
         SmartDashboard.putNumber("shooter/top rpm ", getShooterTopRPM());
         SmartDashboard.putNumber("shooter/pivot angle", getMeasurement());
+        SmartDashboard.putNumber("shooter/can velocity", getCANCoderVelocityRadians());
+        SmartDashboard.putNumber("shooter/motor velocity", getMotorVelocity());
+        SmartDashboard.putNumber("shooter/pivot voltage", m_pivotMotor.getMotorVoltage().getValueAsDouble());
     }   
 
 }

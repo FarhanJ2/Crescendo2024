@@ -1,4 +1,4 @@
-package frc.robot.commands.elevator;
+package frc.robot.commands.Elevator;
 
 import java.util.function.Supplier;
 

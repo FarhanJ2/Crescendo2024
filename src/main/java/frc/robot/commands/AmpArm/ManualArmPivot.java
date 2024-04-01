@@ -1,4 +1,4 @@
-package frc.robot.commands.ampArm;
+package frc.robot.commands.AmpArm;
 
 import java.util.function.Supplier;
 

@@ -13,7 +13,7 @@ public class HomeCommand extends Command {
 
     public void execute() {
         s_Shooter.goHome();
-        s_Shooter.runShooterIdle();
+        // s_Shooter.runShooterIdle();
     }
 
     public void end(boolean interrupted) {

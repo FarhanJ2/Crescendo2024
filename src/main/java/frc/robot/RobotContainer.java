@@ -5,6 +5,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -16,11 +17,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.NoteVisualizer;
-import frc.robot.commands.ampArm.ArmShot;
-import frc.robot.commands.ampArm.ManualArmPivot;
-import frc.robot.commands.elevator.ManualElevator;
+import frc.robot.commands.AmpArm.ArmShot;
+import frc.robot.commands.AmpArm.ManualArmPivot;
+import frc.robot.commands.Elevator.ManualElevator;
 import frc.robot.commands.feeder.Feed;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.ReverseIntakeCommand;
@@ -55,6 +57,7 @@ public class RobotContainer {
     /* Controllers */
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
+    private final Joystick sysidJoy = new Joystick(2);
 
     /* Driver */
     private final Trigger ferryShotButton = driver.leftBumper();
@@ -75,6 +78,11 @@ public class RobotContainer {
 
     private final Trigger isNormalMode = new Trigger(() -> operatorMode == OperatorMode.NORMAL_MODE);
     private final Trigger elevatorLocked = new Trigger(() -> elevatorManual == OperatorLock.LOCKED);
+
+    /* SysID */
+    private final JoystickButton xButton = new JoystickButton(sysidJoy, 1);
+    private final JoystickButton aButton = new JoystickButton(sysidJoy, 2);
+    private final JoystickButton bButton = new JoystickButton(sysidJoy, 3);
 
     /* Auton selector */
     private static final DigitalInput[] autonSelector = {
@@ -173,13 +181,14 @@ public class RobotContainer {
             new HomeCommand(s_Shooter)
         );
 
+        registerNamedCommands();
         autonomousCommand = new PathPlannerAuto(autonNames[getSelected()]);
 
         // Set up note visualizer
         NoteVisualizer.setRobotPoseSupplier(s_Swerve::getPose);
 
         // Configure all commands
-        registerNamedCommands();
+        configureSysIDBindings();
         configureAbsoluteButtonBindings();
         configureNormalModeButtonBindings();
         configureEndGameButtonBindings();
@@ -268,6 +277,12 @@ public class RobotContainer {
         );
 
         NamedCommands.registerCommand("intake", new IntakeCommand());
+    }
+
+    private void configureSysIDBindings() {
+        xButton.whileTrue(s_Shooter.applykS());
+        aButton.whileTrue(s_Shooter.applykG());
+        bButton.whileTrue(s_Shooter.applykV());
     }
 
     // Configures the button bindings that don't change depending on end game/normal game mode
@@ -461,8 +476,10 @@ public class RobotContainer {
                 ),
                 Commands.runEnd(
                     () -> s_Shooter.rampShooter(
-                        s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker()), 
-                        s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker())
+                        2000,
+                        2000
+                        // s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker()), 
+                        // s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker())
                     ),
                     () -> s_Shooter.stopShooter()
                 ),
