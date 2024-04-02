@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import frc.lib.util.LimelightHelpers;
 
-public class Limelight extends SubsystemBase {
+public class Limelight {
 
 
 private boolean isFlashing = false;
@@ -87,7 +87,6 @@ private boolean isFlashing = false;
 
     }
 
-  @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber(this.limelightName + " Number of Tags in View", this.getNumberOfTagsInView());

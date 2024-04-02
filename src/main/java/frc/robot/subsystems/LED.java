@@ -205,7 +205,7 @@ public class LED extends SubsystemBase {
   ///////////////////////
 
   public Command setColorCommand(LEDColor color) {
-    return new InstantCommand(() -> this.setColor(color));
+    return Commands.run(() -> this.setColor(color), this);
   }
 
   public Command rainbowCommand() {

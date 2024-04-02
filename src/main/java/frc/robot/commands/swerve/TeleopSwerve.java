@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class TeleopSwerve extends Command {    
-    private Swerve s_Swerve;    
+    // private Swerve s_Swerve;    
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
@@ -29,7 +29,7 @@ public class TeleopSwerve extends Command {
         Constants.Swerve.autoAlignKD
     );
 
-    public TeleopSwerve(Swerve s_Swerve, 
+    public TeleopSwerve( 
                         DoubleSupplier translationSup, 
                         DoubleSupplier strafeSup, 
                         DoubleSupplier rotationSup, 
@@ -37,8 +37,8 @@ public class TeleopSwerve extends Command {
                         BooleanSupplier alignSpeakerSup,
                         BooleanSupplier rampFerrySup) {
 
-        this.s_Swerve = s_Swerve;
-        addRequirements(s_Swerve);
+        // this.s_Swerve = s_Swerve;
+        addRequirements(RobotContainer.s_Swerve);
 
         this.translationSup = translationSup;
         this.strafeSup = strafeSup;
@@ -57,7 +57,7 @@ public class TeleopSwerve extends Command {
 
     private double getRotationSpeedFromPID(Pose2d target) {
         double robotHeading = continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees());
-        double requestedAngle = s_Swerve.calculateTurnAngle(target, s_Swerve.getHeading().getDegrees() + 180);
+        double requestedAngle = RobotContainer.s_Swerve.calculateTurnAngle(target, RobotContainer.s_Swerve.getHeading().getDegrees() + 180);
         double setpoint = (robotHeading + requestedAngle) % 360;
 
         alignPID.setSetpoint(setpoint);
@@ -89,7 +89,7 @@ public class TeleopSwerve extends Command {
         }
 
         /* Drive */
-        s_Swerve.drive(
+        RobotContainer.s_Swerve.drive(
             multipliedTranslation,
             multipliedRotation, 
             !robotCentricSup.getAsBoolean(), 

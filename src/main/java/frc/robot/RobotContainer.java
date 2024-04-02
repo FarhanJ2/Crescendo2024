@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.NoteVisualizer;
-import frc.robot.commands.AmpArm.ArmShot;
-import frc.robot.commands.AmpArm.ManualArmPivot;
+import frc.robot.commands.ampArm.ArmShot;
+import frc.robot.commands.ampArm.ManualArmPivot;
 import frc.robot.commands.Elevator.ManualElevator;
 import frc.robot.commands.feeder.Feed;
 import frc.robot.commands.intake.IntakeCommand;
@@ -102,29 +102,29 @@ public class RobotContainer {
     // Must match auton names in pathplanner
     public static final String[] autonNames = {
         "4 piece",
-        "3 note center top",
+        "3 note center bottom",
         "4 piece reverse",
         "2 note center bottom",
         "5 piece top",
         "5 piece top 2",
         "6 piece",
-        "3 note center bottom",
-        "blue 4",
-        "blue 5",
+        "3 note center top",
+        "Amp-Side 4 Piece",
+        "4 piece heitman",
         "nothing"
     };
 
     // Must correspond with auton names
     private static final boolean[] useVisionInAuton = {
         false,      // 4 piece
-        true,       // 3 note center
+        false,       // 3 note center bottom
         false,      // 4 piece reverse
         true,       // 2 note center
-        true,       // 5 piece top
+        false,       // 5 piece top
         true,       // 5 piece top 2
         true,       // 6 piece
-        true,       // 3 note center bottom
-        false,
+        true,       // 3 note center top
+        false,      // Amp-Side 5 Piece
         false,
         false
     };
@@ -156,7 +156,7 @@ public class RobotContainer {
         s_Swerve.poseEstimatorInitializer.start();
 
         s_Led.setDefaultCommand(
-            s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
+            s_Led.setColorCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
         );
     });
 
@@ -167,7 +167,7 @@ public class RobotContainer {
 
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
-                s_Swerve, 
+                // s_Swerve, 
                 () -> -driver.getLeftY(),
                 () -> -driver.getLeftX(),
                 () -> -driver.getRightX(),
@@ -178,7 +178,7 @@ public class RobotContainer {
         );
 
         s_Shooter.setDefaultCommand(
-            new HomeCommand(s_Shooter)
+            new HomeCommand()
         );
 
         registerNamedCommands();
@@ -234,8 +234,10 @@ public class RobotContainer {
                         ),
                         Commands.runEnd(
                             () -> s_Shooter.rampShooter(
-                                s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker()), 
-                                s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker())
+                                2000,
+                                2000
+                                // s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker()), 
+                                // s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker())
                             ),
                             () -> s_Shooter.stopShooter()
                         ),
@@ -253,8 +255,10 @@ public class RobotContainer {
                 ),
                 Commands.runEnd(
                     () -> s_Shooter.rampShooter(
-                        s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker()), 
-                        s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker())
+                    1700,
+                    1700
+                        // s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker()), 
+                        // s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker())
                     ),
                     () -> s_Shooter.stopShooter()
                 ),
@@ -329,7 +333,7 @@ public class RobotContainer {
                         s_Led.getDefaultCommand().cancel();
                         s_Led.removeDefaultCommand();
                         s_Led.setDefaultCommand(
-                            s_Led.waveCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
+                            s_Led.setColorCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
                         );
                     }
                 })
@@ -411,10 +415,6 @@ public class RobotContainer {
                             new WaitCommand(1.5) // 1.5 second timeout in case it doesn't go to goal exactly
                         ),
                         s_AmpArm.feedToArm(),
-                        Commands.runEnd(
-                            () -> s_AmpArm.armHandoff(),
-                            () -> s_AmpArm.stopShooter()
-                        ),
                         new InstantCommand(() -> s_AmpArm.status = ArmStatus.NOTHING)
                     ).alongWith(s_Led.fadeCommand(LEDColor.YELLOW))
                 );
@@ -476,8 +476,8 @@ public class RobotContainer {
                 ),
                 Commands.runEnd(
                     () -> s_Shooter.rampShooter(
-                        2000,
-                        2000
+                        3000,
+                        3000
                         // s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker()), 
                         // s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker())
                     ),
@@ -557,7 +557,7 @@ public class RobotContainer {
                                 s_Shooter.getDefaultCommand().cancel();
                                 s_Shooter.setDefaultCommand(
                                     new HomeCommand(
-                                        s_Shooter
+                                        // s_Shooter
                                     )
                                 );
                             }
@@ -683,6 +683,10 @@ public class RobotContainer {
 
     public static boolean useVisionInAuton() {
         return useVisionInAuton[getSelected()];
+    }
+
+    public static String getAutonName() {
+        return autonNames[getSelected()];
     }
 
     public static Command getAutonomousCommand() {

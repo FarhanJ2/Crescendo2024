@@ -51,7 +51,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "5 note - sub to stage"
+                              "pathName": "subwoof to out"
                             }
                           }
                         ]
@@ -60,13 +60,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "5 note - stage to mid"
+                        "pathName": "out to center"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "5 note - mid to close"
+                        "pathName": "center to close"
                       }
                     },
                     {
@@ -78,77 +78,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "5 note - close to top"
+                        "pathName": "close to center top"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "5 note - top to close"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "anywhere feed"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "anywhere ramp"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "intake"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 3.0
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "5 note - close to center top"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "5 note - center top to close"
+                        "pathName": "center top to close"
                       }
                     },
                     {

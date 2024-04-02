@@ -270,6 +270,7 @@ public class Swerve extends SubsystemBase {
             Vector<N3> stdDevs = odometryImpl.getCalculatedStdDevs(limelight);
             
             poseEstimator.setVisionMeasurementStdDevs(stdDevs);
+            // poseEstimator.setVisionMeasurementStdDevs(odometryImpl.createStdDevs(Constants.PoseConfig.kVisionStdDevX, Constants.PoseConfig.kVisionStdDevY, Constants.PoseConfig.kVisionStdDevTheta));
             poseEstimator.addVisionMeasurement(visionMeasurement, limelight.getLimelightLatency());
         }
     }

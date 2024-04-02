@@ -64,9 +64,9 @@
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "wait",
                       "data": {
-                        "pathName": "5 note - mid to close"
+                        "waitTime": 0.5
                       }
                     },
                     {
@@ -78,19 +78,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "5 note - close to top"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "5 note - top to close"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "anywhere feed"
+                        "pathName": "5 note - mid to top"
                       }
                     }
                   ]
@@ -103,6 +91,18 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "anywhere shot"
           }
         },
         {
@@ -131,16 +131,22 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "5 note - close to center top"
+                  "pathName": "5 note - top to center top"
                 }
               }
             ]
           }
         },
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "anywhere ramp"
+                }
+              },
               {
                 "type": "sequential",
                 "data": {
@@ -158,12 +164,6 @@
                       }
                     }
                   ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "anywhere ramp"
                 }
               }
             ]

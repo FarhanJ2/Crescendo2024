@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants;
-import frc.robot.commands.AmpArm.ArmHandoff;
+import frc.robot.commands.ampArm.ArmHandoff;
 import frc.robot.commands.intake.ForkCommand;
 
 public class AmpArm extends ProfiledPIDSubsystem {

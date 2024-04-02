@@ -3,50 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.0059352982645073,
-        "y": 6.732874360135019
+        "x": 2.0,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.0943061526467,
-        "y": 7.3183799564869805
+        "x": 2.848556486837046,
+        "y": 6.7092675384209
       },
       "isLocked": false,
-      "linkedName": "top note offset (5 note)"
+      "linkedName": "sub close"
     },
     {
       "anchor": {
-        "x": 8.152222431942485,
-        "y": 6.984680458418957
+        "x": 8.2938633622272,
+        "y": 5.159086245860408
       },
       "prevControl": {
-        "x": 7.393699444109645,
-        "y": 6.9779150785623
+        "x": 6.9797502868079,
+        "y": 6.567626608136186
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "top center note (5 note)"
+      "linkedName": "top center 2 note (5 note)"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.5,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": -40.0,
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "5+ piece",
+  "folder": "Amp-Side 5 Piece",
   "previewStartingState": {
-    "rotation": 40.0,
-    "velocity": 0.0
+    "rotation": 0,
+    "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
