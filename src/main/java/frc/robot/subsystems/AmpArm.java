@@ -184,7 +184,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
         m_shootMotor.setNeutralMode(NeutralModeValue.Coast);
         m_pivotMotor.setPosition(-90 / 14.7);
 
-        m_shootMotor.optimizeBusUtilization();
+        // m_shootMotor.optimizeBusUtilization();
     }
 
     private double convert360To180(double angle) {

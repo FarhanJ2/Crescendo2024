@@ -53,6 +53,7 @@ public class RobotContainer {
     public static Command autonomousCommand;
     public static DriverStation.Alliance alliance;
     public static boolean addVisionMeasurement = true;
+    public static int selectedAuton;
 
     /* Controllers */
     private final CommandXboxController driver = new CommandXboxController(0);
@@ -182,7 +183,8 @@ public class RobotContainer {
         );
 
         registerNamedCommands();
-        autonomousCommand = new PathPlannerAuto(autonNames[getSelected()]);
+        selectedAuton = getSelected();
+        autonomousCommand = new PathPlannerAuto(autonNames[selectedAuton]);
 
         // Set up note visualizer
         NoteVisualizer.setRobotPoseSupplier(s_Swerve::getPose);
@@ -682,11 +684,11 @@ public class RobotContainer {
     }
 
     public static boolean useVisionInAuton() {
-        return useVisionInAuton[getSelected()];
+        return useVisionInAuton[selectedAuton];
     }
 
     public static String getAutonName() {
-        return autonNames[getSelected()];
+        return autonNames[selectedAuton];
     }
 
     public static Command getAutonomousCommand() {

@@ -45,7 +45,6 @@ public class Swerve extends SubsystemBase {
     public Limelight limelightShooter;
     public Limelight limelightArm;
 
-    public DriverStation.Alliance alliance; 
 
     public boolean aimedAtSpeaker = false;
 

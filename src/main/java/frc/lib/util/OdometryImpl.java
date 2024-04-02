@@ -152,6 +152,6 @@ public class OdometryImpl extends SubsystemBase {
         ((RobotContainer.alliance == DriverStation.Alliance.Red) ? getDistance(Constants.RedTeamPoses.redSpeakerPose) : getDistance(Constants.BlueTeamPoses.blueSpeakerPose))
       );
 
-      SmartDashboard.putNumber("Calculated Angle from Odometry", getPivotAngle(RobotContainer.s_Swerve.alliance));
+      SmartDashboard.putNumber("Calculated Angle from Odometry", getPivotAngle(RobotContainer.alliance));
     }
 }
