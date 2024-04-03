@@ -42,8 +42,20 @@ public class OdometryImpl extends SubsystemBase {
     else {
         base = getDistance(Constants.BlueTeamPoses.blueSpeakerPose);
     }
-        
-    return Math.atan(height / base);
+    
+    if(base > 3) {
+      return Math.atan(height / base) + (base - 2.25) * 0.02 + (base - 3) * 0.01;
+
+    } 
+    else if(base > 2.25) {
+      return Math.atan(height / base) + (base - 2.25) * 0.02;
+    }
+    else {
+      return Math.atan(height / base);
+    }
+
+    // return Math.atan(height / base);
+
   }
 
   //This is assuming that the robot is directly facing the target object

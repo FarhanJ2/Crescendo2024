@@ -262,13 +262,13 @@ public class Swerve extends SubsystemBase {
     }
 
     private void addLimelightToEstimator(Limelight limelight) {
-        if (poseEstimator == null) return;
+        if (poseEstimator == null || limelight == null) return;
 
         Pose2d visionMeasurement = odometryImpl.getVisionMeasurement(limelight);
         if (visionMeasurement != null) {
-            Vector<N3> stdDevs = odometryImpl.getCalculatedStdDevs(limelight);
+            // Vector<N3> stdDevs = odometryImpl.getCalculatedStdDevs(limelight);
             
-            poseEstimator.setVisionMeasurementStdDevs(stdDevs);
+            // poseEstimator.setVisionMeasurementStdDevs(stdDevs);
             // poseEstimator.setVisionMeasurementStdDevs(odometryImpl.createStdDevs(Constants.PoseConfig.kVisionStdDevX, Constants.PoseConfig.kVisionStdDevY, Constants.PoseConfig.kVisionStdDevTheta));
             poseEstimator.addVisionMeasurement(visionMeasurement, limelight.getLimelightLatency());
         }
@@ -288,17 +288,17 @@ public class Swerve extends SubsystemBase {
         Logger.recordOutput("Odometry/Robot", getPose());
         Logger.recordOutput("Odometry/Robot3d", new Pose3d(getPose()));
 
-        SmartDashboard.putNumber("swerve/pose error ll arm", odometryImpl.getVisionPoseError(limelightArm)); 
-        SmartDashboard.putNumber("swerve/pose error ll shooter", odometryImpl.getVisionPoseError(limelightShooter));
+        // SmartDashboard.putNumber("swerve/pose error ll arm", odometryImpl.getVisionPoseError(limelightArm)); 
+        // SmartDashboard.putNumber("swerve/pose error ll shooter", odometryImpl.getVisionPoseError(limelightShooter));
 
-        for(SwerveModule mod : mSwerveMods) {
-            SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
-            SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond); 
-            SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Voltage", mod.getVoltage());
-        }
+        // for(SwerveModule mod : mSwerveMods) {
+        //     SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
+        //     SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
+        //     SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond); 
+        //     SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Voltage", mod.getVoltage());
+        // }
 
-        SmartDashboard.putData("field", field);
+        // SmartDashboard.putData("field", field);
     }
 
     public void stop() {

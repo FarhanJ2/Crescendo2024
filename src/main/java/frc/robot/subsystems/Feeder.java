@@ -20,7 +20,8 @@ public class Feeder extends SubsystemBase {
     }
 
     public void feed() {
-        m_feederMotor.set(Constants.Shooter.feedSpeed);
+        // m_feederMotor.set(Constants.Shooter.feedSpeed);
+        m_feederMotor.set(Constants.Shooter.feedVoltage);
     }
 
     public void feedAmp() {

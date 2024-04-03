@@ -208,6 +208,7 @@ public final class Constants {
         public static final double homePosition = 1.05; // 1.05
 
         public static final double feedSpeed = 0.85;
+        public static final double feedVoltage = 10;
 
         public static final double feedToIntakeSpeed = -0.5;
         public static final double forkToIntakeSpeed = -0.5;
@@ -335,9 +336,9 @@ public final class Constants {
         public static final double kPositionStdDevTheta = 10;
 
         // Increase these numbers to trust global measurements from vision less.
-        public static final double kVisionStdDevX = 1; // 5
-        public static final double kVisionStdDevY = 1; // 5
-        public static final double kVisionStdDevTheta = 99999;    
+        public static final double kVisionStdDevX = 5; // 5
+        public static final double kVisionStdDevY = 5; // 5
+        public static final double kVisionStdDevTheta = 500;    
       }
 
     public static class BlueTeamPoses {
