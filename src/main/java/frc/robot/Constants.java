@@ -333,12 +333,12 @@ public final class Constants {
         // Increase these numbers to trust your model's state estimates less.
         public static final double kPositionStdDevX = 0.1;
         public static final double kPositionStdDevY = 0.1;
-        public static final double kPositionStdDevTheta = 10;
+        public static final double kPositionStdDevTheta = 50; // 10
 
         // Increase these numbers to trust global measurements from vision less.
-        public static final double kVisionStdDevX = 5; // 5
-        public static final double kVisionStdDevY = 5; // 5
-        public static final double kVisionStdDevTheta = 500;    
+        public static final double kVisionStdDevX = 5;
+        public static final double kVisionStdDevY = 5;
+        public static final double kVisionStdDevTheta = Double.MAX_VALUE;    
       }
 
     public static class BlueTeamPoses {

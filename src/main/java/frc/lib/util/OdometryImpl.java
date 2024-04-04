@@ -18,16 +18,15 @@ import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.PoseConfig;
 import frc.robot.subsystems.Swerve;
 
-public class OdometryImpl extends SubsystemBase {
+public class OdometryImpl {
   /** Creates a new OdometryImpl. */
-  Swerve s_Swerve;
 
-  public OdometryImpl(Swerve s_Swerve) {
-      this.s_Swerve = s_Swerve;
+  public OdometryImpl() {
+
   }
  
   public double getDistance(Pose2d target) {
-      double distance = s_Swerve.getRelativePose().getTranslation().getDistance(target.getTranslation());
+      double distance = RobotContainer.s_Swerve.getRelativePose().getTranslation().getDistance(target.getTranslation());
       return distance;
   }
 
@@ -62,8 +61,8 @@ public class OdometryImpl extends SubsystemBase {
   public double getTurnAngle(Pose2d target, double robotAngle) {
       double tx = target.getX();
       double ty = target.getY();
-      double rx = s_Swerve.getPose().getX();
-      double ry = s_Swerve.getPose().getY();
+      double rx = RobotContainer.s_Swerve.getPose().getX();
+      double ry = RobotContainer.s_Swerve.getPose().getY();
 
       double requestedAngle = Math.atan((ty - ry) / (tx - rx)) * (180/ Math.PI);
       double calculatedAngle = (180 - robotAngle + requestedAngle);
@@ -72,10 +71,10 @@ public class OdometryImpl extends SubsystemBase {
   }
 
   public double getVisionPoseError(Limelight limelight) {
-    if(limelight == null || s_Swerve.poseEstimator == null) return -1;
+    if(limelight == null || RobotContainer.s_Swerve.poseEstimator == null) return -1;
       Pose2d predictedPose = limelight.getVisionPredictedRobotPose(); 
       if (predictedPose != null) {
-         return Math.abs(s_Swerve.poseEstimator.getEstimatedPosition().getTranslation().getDistance(predictedPose.getTranslation()));
+         return Math.abs(RobotContainer.s_Swerve.poseEstimator.getEstimatedPosition().getTranslation().getDistance(predictedPose.getTranslation()));
       }
       return -1;
   }
@@ -96,7 +95,7 @@ public class OdometryImpl extends SubsystemBase {
       //added variable for predicted pose instead of calling function directly
       Pose2d predictedPose = limelight.getVisionPredictedRobotPose();
       if (isValidVisionMeasurement(limelight) && predictedPose != null) {
-          return new Pose2d(predictedPose.getTranslation(), s_Swerve.getHeading());
+          return new Pose2d(predictedPose.getTranslation(), RobotContainer.s_Swerve.getHeading());
       }
       return null;
   } 
@@ -154,10 +153,9 @@ public class OdometryImpl extends SubsystemBase {
     return getDistance(speaker);
   }
 
-  @Override
   public void periodic() {
-      SmartDashboard.putNumber("Vision Pose Error Limelight Front", getVisionPoseError(s_Swerve.limelightShooter));
-      SmartDashboard.putNumber("Vision Pose Error Limelight Back", getVisionPoseError(s_Swerve.limelightArm));
+      SmartDashboard.putNumber("Vision Pose Error Limelight Front", getVisionPoseError(RobotContainer.s_Swerve.limelightShooter));
+      SmartDashboard.putNumber("Vision Pose Error Limelight Back", getVisionPoseError(RobotContainer.s_Swerve.limelightArm));
 
       SmartDashboard.putNumber(
         (RobotContainer.alliance == DriverStation.Alliance.Red) ? "Red speaker distance" : "Blue speaker distance", 

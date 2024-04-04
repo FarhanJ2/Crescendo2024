@@ -22,6 +22,8 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -45,32 +47,39 @@ public class Swerve extends SubsystemBase {
     public Limelight limelightShooter;
     public Limelight limelightArm;
 
+    private int counter = 0;
 
     public boolean aimedAtSpeaker = false;
 
     private double speedMultiplier = 1;
 
-    // Initialize pose estimator
-    public final Thread poseEstimatorInitializer = new Thread(() -> {
-        DriverStation.reportWarning("Initialziing pose estimator", false);
-        Pose2d origin = new Pose2d();
-        
-        if (RobotContainer.alliance == DriverStation.Alliance.Blue) {
-            origin = Constants.BlueTeamPoses.blueOrigin;
-        }
-        else {
-            origin = Constants.RedTeamPoses.redOrigin;
-        }
+    private final PIDController alignPID = new PIDController(
+        Constants.Swerve.autoAlignKP,
+        Constants.Swerve.autoAlignKI,
+        Constants.Swerve.autoAlignKD
+    );
 
-        poseEstimator = new SwerveDrivePoseEstimator(
-            Constants.Swerve.swerveKinematics,
-            getGyroYaw(),
-            getModulePositions(),
-            origin,
-            odometryImpl.createStdDevs(PoseConfig.kPositionStdDevX, PoseConfig.kPositionStdDevY, PoseConfig.kPositionStdDevTheta),
-            odometryImpl.createStdDevs(PoseConfig.kVisionStdDevX, PoseConfig.kVisionStdDevY, PoseConfig.kVisionStdDevTheta)
-        );
-    });
+    // Initialize pose estimator
+    // public final Thread poseEstimatorInitializer = new Thread(() -> {
+    //     DriverStation.reportWarning("Initialziing pose estimator", false);
+    //     Pose2d origin = new Pose2d();
+        
+    //     if (RobotContainer.alliance == DriverStation.Alliance.Blue) {
+    //         origin = Constants.BlueTeamPoses.blueOrigin;
+    //     }
+    //     else {
+    //         origin = Constants.RedTeamPoses.redOrigin;
+    //     }
+
+    //     poseEstimator = new SwerveDrivePoseEstimator(
+    //         Constants.Swerve.swerveKinematics,
+    //         getGyroYaw(),
+    //         getModulePositions(),
+    //         origin,
+    //         odometryImpl.createStdDevs(PoseConfig.kPositionStdDevX, PoseConfig.kPositionStdDevY, PoseConfig.kPositionStdDevTheta),
+    //         odometryImpl.createStdDevs(PoseConfig.kVisionStdDevX, PoseConfig.kVisionStdDevY, PoseConfig.kVisionStdDevTheta)
+    //     );
+    // });
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.pigeonCanName);
@@ -85,7 +94,7 @@ public class Swerve extends SubsystemBase {
         };
 
         field = new Field2d();
-        odometryImpl = new OdometryImpl(this);
+        odometryImpl = new OdometryImpl();
 
         limelightShooter = new Limelight(Constants.LimelightConstants.limelightShooter);
         limelightArm = new Limelight(Constants.LimelightConstants.limelightArm);
@@ -93,12 +102,16 @@ public class Swerve extends SubsystemBase {
         limelightShooter.setPipeline(LimelightConstants.limelightShooterTagPipeline);
         limelightArm.setPipeline(LimelightConstants.limelightArmTagPipeline);
 
-        new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {}
-            resetModulesToAbsolute();
-        }).start();
+        alignPID.enableContinuousInput(0, 360);
+        alignPID.setTolerance(1);
+
+        resetModulesToAbsolute();//TODO check to make sure this doesn't take time to run
+        // new Thread(() -> {
+        //     try {
+        //         Thread.sleep(1000);
+        //     } catch (Exception e) {}
+        //     resetModulesToAbsolute();
+        // }).start();
 
         AutoBuilder.configureHolonomic(
                 this::getPose,
@@ -128,6 +141,27 @@ public class Swerve extends SubsystemBase {
                     return false;
                 },
                 this
+        );
+    }
+
+    public void initializePoseEstimator() {
+        DriverStation.reportWarning("Initialziing pose estimator", false);
+        Pose2d origin = new Pose2d();
+        
+        if (RobotContainer.alliance == DriverStation.Alliance.Blue) {
+            origin = Constants.BlueTeamPoses.blueOrigin;
+        }
+        else {
+            origin = Constants.RedTeamPoses.redOrigin;
+        }
+
+        poseEstimator = new SwerveDrivePoseEstimator(
+            Constants.Swerve.swerveKinematics,
+            getGyroYaw(),
+            getModulePositions(),
+            origin,
+            odometryImpl.createStdDevs(PoseConfig.kPositionStdDevX, PoseConfig.kPositionStdDevY, PoseConfig.kPositionStdDevTheta),
+            odometryImpl.createStdDevs(PoseConfig.kVisionStdDevX, PoseConfig.kVisionStdDevY, PoseConfig.kVisionStdDevTheta)
         );
     }
 
@@ -261,6 +295,10 @@ public class Swerve extends SubsystemBase {
         return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
+    public PIDController getAlignController() {
+        return alignPID;
+    }
+
     private void addLimelightToEstimator(Limelight limelight) {
         if (poseEstimator == null || limelight == null) return;
 
@@ -276,9 +314,14 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic(){
+        counter++;
+        odometryImpl.periodic();
+
         if (poseEstimator != null) poseEstimator.update(getGyroYaw(), getModulePositions());
     
         if ((Robot.state != Robot.State.AUTON || RobotContainer.useVisionInAuton()) && RobotContainer.addVisionMeasurement) {
+            // if(counter % 2 == 0) addLimelightToEstimator(limelightShooter);
+            // else addLimelightToEstimator(limelightArm);
             addLimelightToEstimator(limelightShooter);
             addLimelightToEstimator(limelightArm);
         }
@@ -298,7 +341,7 @@ public class Swerve extends SubsystemBase {
         //     SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Voltage", mod.getVoltage());
         // }
 
-        // SmartDashboard.putData("field", field);
+        SmartDashboard.putData("field", field);
     }
 
     public void stop() {

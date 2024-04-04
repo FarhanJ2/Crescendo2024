@@ -23,12 +23,6 @@ public class TeleopSwerve extends Command {
     private BooleanSupplier alignSpeakerSup;
     private BooleanSupplier rampFerrySup;
 
-    private final PIDController alignPID = new PIDController(
-        Constants.Swerve.autoAlignKP,
-        Constants.Swerve.autoAlignKI,
-        Constants.Swerve.autoAlignKD
-    );
-
     public TeleopSwerve( 
                         DoubleSupplier translationSup, 
                         DoubleSupplier strafeSup, 
@@ -46,9 +40,6 @@ public class TeleopSwerve extends Command {
         this.robotCentricSup = robotCentricSup;
         this.alignSpeakerSup = alignSpeakerSup;
         this.rampFerrySup = rampFerrySup;
-
-        alignPID.enableContinuousInput(0, 360);
-        alignPID.setTolerance(1);
     }
 
     private double continuous180To360(double angle) {
@@ -60,9 +51,9 @@ public class TeleopSwerve extends Command {
         double requestedAngle = RobotContainer.s_Swerve.calculateTurnAngle(target, RobotContainer.s_Swerve.getHeading().getDegrees() + 180);
         double setpoint = (robotHeading + requestedAngle) % 360;
 
-        alignPID.setSetpoint(setpoint);
+        RobotContainer.s_Swerve.getAlignController().setSetpoint(setpoint);
 
-        return (RobotContainer.s_Swerve.isLowGear() ? 5 : 1) * alignPID.calculate(continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees()));
+        return (RobotContainer.s_Swerve.isLowGear() ? 5 : 1) * RobotContainer.s_Swerve.getAlignController().calculate(continuous180To360(RobotContainer.s_Swerve.getHeading().getDegrees()));
     }
 
     @Override

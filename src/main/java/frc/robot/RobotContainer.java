@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -148,13 +149,15 @@ public class RobotContainer {
         }
         DriverStation.reportWarning("DS attached", false);
 
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {}
+        // try {
+        //     Thread.sleep(1000);
+        // } catch (Exception e) {}
         
         alliance = DriverStation.getAlliance().get();
         DriverStation.silenceJoystickConnectionWarning(true);
-        s_Swerve.poseEstimatorInitializer.start();
+        
+        // s_Swerve.poseEstimatorInitializer.start();
+        s_Swerve.initializePoseEstimator();
 
         s_Led.setDefaultCommand(
             s_Led.setColorCommand(alliance == DriverStation.Alliance.Blue ? LEDColor.BLUE : LEDColor.RED)
@@ -164,6 +167,7 @@ public class RobotContainer {
 
     public RobotContainer() {
 
+        LiveWindow.disableAllTelemetry();
         allianceGetter.start();
 
         s_Swerve.setDefaultCommand(
