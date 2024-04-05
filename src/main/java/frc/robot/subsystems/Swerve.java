@@ -105,7 +105,7 @@ public class Swerve extends SubsystemBase {
         alignPID.enableContinuousInput(0, 360);
         alignPID.setTolerance(1);
 
-        resetModulesToAbsolute();//TODO check to make sure this doesn't take time to run
+        // resetModulesToAbsolute();//TODO check to make sure this doesn't take time to run
         // new Thread(() -> {
         //     try {
         //         Thread.sleep(1000);
@@ -154,6 +154,8 @@ public class Swerve extends SubsystemBase {
         else {
             origin = Constants.RedTeamPoses.redOrigin;
         }
+
+        resetModulesToAbsolute();
 
         poseEstimator = new SwerveDrivePoseEstimator(
             Constants.Swerve.swerveKinematics,
