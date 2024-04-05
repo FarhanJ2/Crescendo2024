@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import org.littletonrobotics.junction.Logger;
-
 import frc.robot.SwerveModule;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.PoseConfig;
@@ -312,9 +310,14 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    public void updateOdometry() {
+        addLimelightToEstimator(limelightShooter);
+        addLimelightToEstimator(limelightArm);
+    }
+
     @Override
     public void periodic(){
-        counter++;
+        // counter++;
         odometryImpl.periodic();
 
         if (poseEstimator != null) poseEstimator.update(getGyroYaw(), getModulePositions());
@@ -327,9 +330,6 @@ public class Swerve extends SubsystemBase {
         }
 
         field.setRobotPose(getPose());
-
-        Logger.recordOutput("Odometry/Robot", getPose());
-        Logger.recordOutput("Odometry/Robot3d", new Pose3d(getPose()));
 
         // SmartDashboard.putNumber("swerve/pose error ll arm", odometryImpl.getVisionPoseError(limelightArm)); 
         // SmartDashboard.putNumber("swerve/pose error ll shooter", odometryImpl.getVisionPoseError(limelightShooter));

@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.lib.util.NoteVisualizer;
 import frc.robot.commands.AmpArm.ArmShot;
 import frc.robot.commands.AmpArm.ManualArmPivot;
 import frc.robot.commands.Elevator.ManualElevator;
@@ -167,7 +166,7 @@ public class RobotContainer {
 
     public RobotContainer() {
 
-        LiveWindow.disableAllTelemetry();
+        // LiveWindow.disableAllTelemetry();
         allianceGetter.start();
 
         s_Swerve.setDefaultCommand(
@@ -189,9 +188,6 @@ public class RobotContainer {
         registerNamedCommands();
         selectedAuton = getSelected();
         autonomousCommand = new PathPlannerAuto(autonNames[selectedAuton]);
-
-        // Set up note visualizer
-        NoteVisualizer.setRobotPoseSupplier(s_Swerve::getPose);
 
         // Configure all commands
         configureSysIDBindings();

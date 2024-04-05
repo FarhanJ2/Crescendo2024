@@ -17,6 +17,8 @@ public final class Constants {
     public static final String canivoreName = "canivore";
     public static final String pigeonCanName = "canivore"; //Pigeon is on separate can loop than others
 
+    public static final double visionUpdateRate = 0.04; //seconds
+
     public static final class Swerve {
         public static final int pigeonID = 0;
 
