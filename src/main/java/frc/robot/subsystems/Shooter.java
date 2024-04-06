@@ -208,7 +208,7 @@ public class Shooter extends ProfiledPIDSubsystem {
 
     @Override
     public double getMeasurement() {
-        return getCANCoder() * Math.PI / 180 + 3.05;
+        return getCANCoder() * Math.PI / 180 + 3.05 - 0.03;
     }
 
     public double getShooterBottomRPM() {

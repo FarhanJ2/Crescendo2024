@@ -41,13 +41,13 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
+    // addPeriodic(() -> RobotContainer.s_Swerve.updateOdometry(), Constants.visionUpdateRate);
+
   }
 
   @Override
   public void robotPeriodic() {
     SmartDashboard.putString("auton/auton", RobotContainer.getAutonName());
-
-    addPeriodic(() -> m_robotContainer.s_Swerve.updateOdometry(), Constants.visionUpdateRate);
     
     CommandScheduler.getInstance().run();
   }

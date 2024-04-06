@@ -68,6 +68,10 @@ private boolean isFlashing = false;
       return Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline(this.limelightName) / 1000) - (LimelightHelpers.getLatency_Capture(this.limelightName) / 1000);
   }
 
+  public double getActualLLDelay() {
+    return (LimelightHelpers.getLatency_Pipeline(this.limelightName) / 1000) + (LimelightHelpers.getLatency_Capture(this.limelightName) / 1000);
+  }
+
   public double getTagArea() {
       return LimelightHelpers.getTA(this.limelightName);
   }

@@ -236,8 +236,8 @@ public class RobotContainer {
                         ),
                         Commands.runEnd(
                             () -> s_Shooter.rampShooter(
-                                2000,
-                                2000
+                                3000,
+                                3000
                                 // s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker()), 
                                 // s_Shooter.getTrigShotRPM(s_Swerve.odometryImpl.getDistanceToSpeaker())
                             ),

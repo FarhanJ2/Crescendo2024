@@ -241,12 +241,12 @@ public class Swerve extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        if(poseEstimator == null) return new Pose2d();
+        if(poseEstimator == null) return Constants.BlueTeamPoses.blueOrigin;
         return poseEstimator.getEstimatedPosition();
     }
 
     public Pose2d getRelativePose() {
-        if(poseEstimator == null) return new Pose2d();
+        if(poseEstimator == null) return Constants.BlueTeamPoses.blueOrigin;
 
         if(RobotContainer.alliance == DriverStation.Alliance.Blue) {
             return poseEstimator.getEstimatedPosition();
@@ -298,7 +298,7 @@ public class Swerve extends SubsystemBase {
     }
 
     private void addLimelightToEstimator(Limelight limelight) {
-        if (poseEstimator == null || limelight == null) return;
+        if (poseEstimator == null || limelight == null /*|| limelight.getLimelightLatency() > 0.5*/) return;
 
         Pose2d visionMeasurement = odometryImpl.getVisionMeasurement(limelight);
         if (visionMeasurement != null) {
@@ -311,25 +311,27 @@ public class Swerve extends SubsystemBase {
     }
 
     public void updateOdometry() {
+                // if ((Robot.state != Robot.State.AUTON || RobotContainer.useVisionInAuton()) && RobotContainer.addVisionMeasurement) {
+
         addLimelightToEstimator(limelightShooter);
         addLimelightToEstimator(limelightArm);
     }
 
     @Override
     public void periodic(){
-        // counter++;
-        odometryImpl.periodic();
+        counter++;
+        // odometryImpl.periodic();
 
         if (poseEstimator != null) poseEstimator.update(getGyroYaw(), getModulePositions());
     
         if ((Robot.state != Robot.State.AUTON || RobotContainer.useVisionInAuton()) && RobotContainer.addVisionMeasurement) {
-            // if(counter % 2 == 0) addLimelightToEstimator(limelightShooter);
-            // else addLimelightToEstimator(limelightArm);
-            addLimelightToEstimator(limelightShooter);
-            addLimelightToEstimator(limelightArm);
+            if(counter % 2 == 0) addLimelightToEstimator(limelightShooter);
+            else addLimelightToEstimator(limelightArm);
+            // addLimelightToEstimator(limelightShooter);
+            // addLimelightToEstimator(limelightArm);
         }
 
-        field.setRobotPose(getPose());
+        // field.setRobotPose(getPose());
 
         // SmartDashboard.putNumber("swerve/pose error ll arm", odometryImpl.getVisionPoseError(limelightArm)); 
         // SmartDashboard.putNumber("swerve/pose error ll shooter", odometryImpl.getVisionPoseError(limelightShooter));
@@ -341,7 +343,9 @@ public class Swerve extends SubsystemBase {
         //     SmartDashboard.putNumber("swerve/Mod " + mod.moduleNumber + " Voltage", mod.getVoltage());
         // }
 
-        SmartDashboard.putData("field", field);
+        // SmartDashboard.putNumber("shooter latency", limelightShooter.getActualLLDelay());
+        // SmartDashboard.putNumber("arm latency", limelightArm.getActualLLDelay());
+        // SmartDashboard.putData("field", field);
     }
 
     public void stop() {

@@ -263,7 +263,7 @@ public final class Constants {
         public static final double trapRotations = 1.5;
         public static final double maxRotations = 3;
 
-        public static final double manualElevatorSpeed = 0.5;
+        public static final double manualElevatorSpeed = 0.7; // 0.5
     }
 
     public static final class AmpArm {
@@ -356,7 +356,6 @@ public final class Constants {
         public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
         public static final Pose2d redSpeakerPose = new Pose2d(new Translation2d(16.535595, 5.554168), new Rotation2d()).relativeTo(redOrigin);
         public static final Pose2d redAmpPose = new Pose2d(new Translation2d(14.722884, 8.220855), new Rotation2d()).relativeTo(redOrigin);
-
     }
 
     public static final class ShootingConstants {
@@ -383,7 +382,7 @@ public final class Constants {
     }
 
     public static final class StructureConstants {
-        public static final double speakerHeight = Units.inchesToMeters(82);
+        public static final double speakerHeight = Units.inchesToMeters(83.5); //82
         public static final double shooterRobotHeight = Units.inchesToMeters(14);
     }
 

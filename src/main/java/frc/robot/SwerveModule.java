@@ -49,7 +49,7 @@ public class SwerveModule {
         mDriveMotor.getConfigurator().apply(Robot.ctreConfigs.swerveDriveFXConfig);
         mDriveMotor.getConfigurator().setPosition(0.0);
 
-        // configureStatusFrameRates();
+        configureStatusFrameRates();
     }
 
     private void configureStatusFrameRates() {

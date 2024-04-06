@@ -83,7 +83,7 @@ public class OdometryImpl {
     if(limelight == null) return false;
       Pose2d predictedPose = limelight.getVisionPredictedRobotPose();
       if (predictedPose != null && (predictedPose.getX() != 0 && predictedPose.getY() != 0)) {
-          if ((limelight.getTagArea() > LimelightConstants.minAreaOfTag) || limelight.getNumberOfTagsInView() > 1) {
+          if ((limelight.getTagArea() > LimelightConstants.minAreaOfTag) /*|| limelight.getNumberOfTagsInView() > 1*/) {
               return true;
           }
       }
