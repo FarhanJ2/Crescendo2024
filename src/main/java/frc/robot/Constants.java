@@ -354,7 +354,8 @@ public final class Constants {
     public static class RedTeamPoses {
         public static final Pose2d initialPose = new Pose2d(new Translation2d(1.225347, 7.652309), new Rotation2d()); // Next to blue speaker
         public static final Pose2d redOrigin = new Pose2d(new Translation2d(16.542, 8.014), Rotation2d.fromDegrees(180)); 
-        public static final Pose2d redSpeakerPose = new Pose2d(new Translation2d(16.535595, 5.554168), new Rotation2d()).relativeTo(redOrigin);
+        public static final Pose2d redSpeakerPose = new Pose2d(new Translation2d(16.535595, 5.554168), new Rotation2d()).
+            relativeTo(redOrigin);
         public static final Pose2d redAmpPose = new Pose2d(new Translation2d(14.722884, 8.220855), new Rotation2d()).relativeTo(redOrigin);
     }
 

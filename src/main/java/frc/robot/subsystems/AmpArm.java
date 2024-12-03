@@ -238,7 +238,7 @@ public class AmpArm extends ProfiledPIDSubsystem {
     @Override
     public void periodic() {
         
-        if (m_enabled) {
+        if (false) {
             useOutput(m_controller.calculate(getMeasurement()), m_controller.getSetpoint());
         }
 
